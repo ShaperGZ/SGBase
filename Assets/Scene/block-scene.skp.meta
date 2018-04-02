@@ -1,0 +1,194 @@
+fileFormatVersion: 2
+guid: f6738e2930c54f04fa81f41e7712b261
+timeCreated: 1522485698
+licenseType: Pro
+SketchUpImporter:
+  generateBackFace: 0
+  mergeCoplanarFaces: 0
+  selectedNodes: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000100000001100000012000000130000001400000015000000160000001700000018000000190000001a0000001b0000001c0000001d0000001e0000001f00000020000000
+  assetHash:
+    serializedVersion: 2
+    Hash: bb78e504b994425c0b09d74f80a2c9d6
+  longitude: -105.242139
+  latitude: 40.018309
+  northCorrection: -0
+  fileUnit: 0
+  sketchUpImportData:
+    defaultCamera:
+      position: {x: 462.4658, y: 787.77075, z: -595.2418}
+      lookAt: {x: 222.72916, y: 407.85574, z: -285.81937}
+      up: {x: -0.4265677, y: 0.71758103, z: 0.550561}
+      fov: 35
+      aspectRatio: 0
+      orthoSize: 1
+      isPerspective: 1
+    scenes: []
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Chris
+    100004: Group 11
+    100006: Group 13
+    100008: Group 15
+    100010: Group 2
+    100012: Group 4
+    100014: Group 5
+    100016: Group 7
+    100018: Group 9
+    100020: plot1
+    100022: plot2
+    100024: plot3
+    100026: plot4
+    100028: plot5
+    100030: plot6
+    100032: plot7
+    400000: //RootNode
+    400002: Chris
+    400004: Group 11
+    400006: Group 13
+    400008: Group 15
+    400010: Group 2
+    400012: Group 4
+    400014: Group 5
+    400016: Group 7
+    400018: Group 9
+    400020: plot1
+    400022: plot2
+    400024: plot3
+    400026: plot4
+    400028: plot5
+    400030: plot6
+    400032: plot7
+    2100000: _defaultMat
+    2100002: '[Color M03]'
+    2100004: '[Color M00]'
+    2100006: '[Chris_Shirt]'
+    2100008: '[Chris_Shoe]'
+    2100010: '[Chris_Skin]'
+    2100012: '[Chris_Shoe_Sole]'
+    2100014: '[Chris_Hair]'
+    2100016: '[Chris_Pants]'
+    2300000: //RootNode
+    2300002: Chris
+    2300004: Group 11
+    2300006: Group 13
+    2300008: Group 15
+    2300010: Group 2
+    2300012: Group 5
+    2300014: Group 7
+    2300016: Group 9
+    2300018: plot1
+    2300020: plot2
+    2300022: plot3
+    2300024: plot4
+    2300026: plot5
+    2300028: plot6
+    2300030: plot7
+    3300000: //RootNode
+    3300002: Chris
+    3300004: Group 11
+    3300006: Group 13
+    3300008: Group 15
+    3300010: Group 2
+    3300012: Group 5
+    3300014: Group 7
+    3300016: Group 9
+    3300018: plot1
+    3300020: plot2
+    3300022: plot3
+    3300024: plot4
+    3300026: plot5
+    3300028: plot6
+    3300030: plot7
+    4300000: Mesh block-scene
+    4300002: Mesh Group 2
+    4300004: Mesh Group 5
+    4300006: Mesh Group 7
+    4300008: Mesh Chris
+    4300010: Mesh plot1
+    4300012: Mesh plot2
+    4300014: Mesh plot3
+    4300016: Mesh plot4
+    4300018: Mesh plot5
+    4300020: Mesh plot6
+    4300022: Mesh plot7
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 2
+    materialSearch: 0
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.0254
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

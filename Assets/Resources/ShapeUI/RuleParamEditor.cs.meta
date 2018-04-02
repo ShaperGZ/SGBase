@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: d75e4ba29558cc440b5e1ea85e52809f
+timeCreated: 1522424333
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - paramGroupPrefab: {instanceID: 0}
+  - inputFieldPrefab: {fileID: 114951398769807446, guid: ad32e4f946ab3364886c26b8cee258e0,
+      type: 2}
+  - sliderPrefab: {fileID: 114477076791879160, guid: 7196a9ae62f9abf4f8cf51c9b46f429c,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
