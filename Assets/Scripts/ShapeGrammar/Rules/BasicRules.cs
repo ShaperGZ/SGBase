@@ -9,6 +9,15 @@ namespace Rules
     public class Bisect:Rule{
 
         Plane cutPlane;
+        public Bisect():base()
+        {
+            name = "Bisect";
+            inputs.names.Add("A");
+            outputs.names.Add("B");
+            outputs.names.Add("C");
+
+            paramGroups = DefaultParam();
+        }
         public Bisect(string inName, string[] outNames, float d, int axis):base(inName,outNames)
         {
             name = "Bisect";
@@ -61,6 +70,13 @@ namespace Rules
     {
 
         Plane cutPlane;
+        public Scale() : base()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+
+            paramGroups = DefaultParam();
+        }
         public Scale(string inName, string outName, float d, int axis) : base(inName, outName)
         {
             name = "Scale";

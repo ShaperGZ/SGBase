@@ -40,16 +40,15 @@ public class TestGrammarUI : MonoBehaviour {
         ruleParamEditor.GenerateUI(g1.rules[1]);
 
         UserStats.SelectedGrammar = g1;
-        UserStats.UI_RuleList = GameObject.Find("ExpandableListPanel").GetComponent<ExpandableList>();
+        UserStats.UI_RuleList = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
         UserStats.UI_RuleList.onAddClick += delegate {
             Rule r = new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0);
             g1.AddRule(r, true);
-            printStructure();
-            //g.AddRule(Rules.Scale.Create("B", new string[] { "B" }, 1.5f, 1),true);
+            UserStats.UI_RuleList.printStructure();
             UserStats.UI_RuleList.AddItem(r.description);
 
         };
-        UserStats.UI_RuleList.onSelectCallbacks += SelectRule;
+        //UserStats.UI_RuleList.onSelectCallbacks += SelectRule;
         UserStats.UI_RuleList.Clear();
 
         foreach (Rule r in g1.rules)
@@ -57,75 +56,43 @@ public class TestGrammarUI : MonoBehaviour {
             UserStats.UI_RuleList.AddItem(r.description);
         }
     }
-    void printStructure()
-    {
-        //display debug texts
-        string txt = "";
-        txt += "Grammar.currentStep=" + g1.currentStep.ToString();
-        for (int i = 0; i < g1.stagedOutputs.Count; i++)
-        {
-            txt += "\nRule #" + i.ToString();
-            txt += "\n   Input: ";
-            foreach (ShapeObject o in g1.rules[i].inputs.shapes)
-            {
-                txt += o.Format() + ",";
-            }
-            txt += "\n   Output: ";
-            foreach (ShapeObject o in g1.rules[i].outputs.shapes)
-            {
-                txt += o.Format() + ",";
-            }
+    //void printStructure()
+    //{
+    //    //display debug texts
+    //    string txt = "";
+    //    txt += "Grammar.currentStep=" + g1.currentStep.ToString();
+    //    for (int i = 0; i < g1.stagedOutputs.Count; i++)
+    //    {
+    //        txt += "\nRule #" + i.ToString();
+    //        txt += "\n   Input: ";
+    //        foreach (ShapeObject o in g1.rules[i].inputs.shapes)
+    //        {
+    //            txt += o.Format() + ",";
+    //        }
+    //        txt += "\n   Output: ";
+    //        foreach (ShapeObject o in g1.rules[i].outputs.shapes)
+    //        {
+    //            txt += o.Format() + ",";
+    //        }
 
 
-            txt += "\n   Staged output: ";
-            SGIO io = g1.stagedOutputs[i];
-            foreach (ShapeObject o in io.shapes)
-            {
-                txt += o.Format() + ",";
-            }
-            txt += "\n";
-        }
-        stageIOText.text = txt;
-    }
-    void SelectRule(int index)
-    {
-        g1.currentStep = index;
-        g1.displayStep = index;
-        bool stage;
-        SGIO sgio;
-        //TODO: add this to grammar
-        for (int i = 0; i < g1.stagedOutputs.Count; i++)
-        {
-            sgio = g1.stagedOutputs[i];
-            List<ShapeObject> tobeRemoved = new List<ShapeObject>();
-            foreach (ShapeObject o in sgio.shapes)
-            {
-                try
-                {
-                    o.gameObject.SetActive(false);
-                }
-                catch
-                {
-                    tobeRemoved.Add(o);
-                }
-                
-            }
-            foreach(ShapeObject o in tobeRemoved)
-            {
-                sgio.shapes.Remove(o);
-            }
-            
-
-        }
-        sgio = g1.stagedOutputs[g1.displayStep];
-        foreach (ShapeObject o in sgio.shapes)
-        {
-            o.gameObject.SetActive(true);
-        }
-        ruleParamEditor.GenerateUI(g1.rules[index]);
-        printStructure();
-
-    }
+    //        txt += "\n   Staged output: ";
+    //        SGIO io = g1.stagedOutputs[i];
+    //        foreach (ShapeObject o in io.shapes)
+    //        {
+    //            txt += o.Format() + ",";
+    //        }
+    //        txt += "\n";
+    //    }
+    //    stageIOText.text = txt;
+    //}
+    //void SelectRule(int index)
+    //{
+    //    g1.SelectStep(index);
+    //    ruleParamEditor.GenerateUI(g1.rules[index]);
+    //    ruleParamEditor.ruleNavigator = UserStats.UI_RuleList;
+    //    printStructure();
+    //}
     // Update is called once per frame
     void Update () {
 		

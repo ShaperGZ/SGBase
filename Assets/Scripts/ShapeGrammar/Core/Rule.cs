@@ -18,12 +18,14 @@ namespace SGCore
             {
                 string txt = "";
                 txt += name + " | "+ inputs.names[0]+"-->";
-                foreach (string n in inputs.names) txt += n + ',';
+                foreach (string n in outputs.names) txt += n + ',';
                 return txt;
             }
         }
         public Rule()
         {
+            inputs.names = new List<string>();
+            outputs.names = new List<string>();
             paramGroups = DefaultParam();
             outMeshables = new List<Meshable>();
         }

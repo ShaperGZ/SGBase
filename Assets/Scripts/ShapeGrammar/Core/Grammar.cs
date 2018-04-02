@@ -54,6 +54,13 @@ namespace SGCore
             rules[i].Execute();
             //Debug.Log("rule outputSHapes.Count=" + rules[i].outputs.shapes.Count);
             PostExecution(i,tobeMerged);
+
+        }
+        public void ExecuteFrom(Rule rule)
+        {
+            int index = rules.IndexOf(rule);
+            if (index >= 0 && index < rules.Count)
+                ExecuteFrom(index);
         }
         public void ExecuteFrom(int start)
         {
@@ -88,14 +95,27 @@ namespace SGCore
             //foreach (ShapeObject so in availableShapes) so.gameObject.active = false;
 
             //select shapes from available shapes base on required names 
+            List<ShapeObject> toBeDeleted = new List<ShapeObject>();
             foreach (ShapeObject o in availableShapes)
             {
-                if (rules[step].inputs.names.Contains(o.name))
-                    outShapes.Add(o);
-                else
+                try
+                {
+                    if (rules[step].inputs.names.Contains(o.name))
+                        outShapes.Add(o);
+                    else
                     if (!tobeMerged.names.Contains(o.name))
                         tobeMerged.names.Add(o.name);
                     tobeMerged.shapes.Add(o);
+                }
+                catch
+                {
+                    toBeDeleted.Add(o);
+                }
+                
+            }
+            foreach(ShapeObject o in toBeDeleted)
+            {
+                availableShapes.Remove(o);
             }
             rules[step].inputs.shapes = outShapes;
             return tobeMerged;
@@ -132,7 +152,42 @@ namespace SGCore
                 }
             }
         }
-        public void SelectStep(int i) { }
+        public void SelectStep(int index)
+        {
+            currentStep = index;
+            displayStep = index;
+            SGIO sgio;
+            //TODO: add this to grammar
+            for (int i = 0; i < stagedOutputs.Count; i++)
+            {
+                sgio = stagedOutputs[i];
+                List<ShapeObject> tobeRemoved = new List<ShapeObject>();
+                foreach (ShapeObject o in sgio.shapes)
+                {
+                    try
+                    {
+                        o.gameObject.SetActive(false);
+                    }
+                    catch
+                    {
+                        tobeRemoved.Add(o);
+                    }
+
+                }
+                foreach (ShapeObject o in tobeRemoved)
+                {
+                    sgio.shapes.Remove(o);
+                }
+
+
+            }
+            sgio = stagedOutputs[displayStep];
+            foreach (ShapeObject o in sgio.shapes)
+            {
+                o.gameObject.SetActive(true);
+            }
+
+        }
 
     }
 }
