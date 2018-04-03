@@ -41,6 +41,13 @@ namespace SGCore
         }
         public virtual void Execute()
         {
+            if(inputs.shapes.Count>0)
+            {
+                string txt = "";
+                txt = string.Format("{0} | inputs[0]=({1})", name, inputs.shapes[0].Format());
+            }
+                
+
             //operate on meshables and update existing shapeobjects
             outMeshables.Clear();
             for(int i = 0; i < inputs.shapes.Count; i++)
@@ -77,15 +84,19 @@ namespace SGCore
         {
             //List<string> newNames = new List<string>();
             //destroy extra shapes
+            //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
             int dif = outputs.shapes.Count - outMeshables.Count;
             if ( dif >0 )
             {
-                for(int i = 0; i < dif; i++)
+                Debug.Log("dif >0 ouputs.shapesCount="+outputs.shapes.Count);
+                for (int i = 0; i < dif; i++)
                 {
                     int index = outputs.shapes.Count - 1;
+                    Debug.Log("DELETING ---->" + outputs.shapes[index].Format());
                     GameObject.Destroy(outputs.shapes[index].gameObject);
                     outputs.shapes.RemoveAt(index);
                 }
+                Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
             }
 
             //update output shapes
@@ -97,19 +108,19 @@ namespace SGCore
                 {
                     outputs.shapes[i].SetMeshable(mb,mb.direction);
                     outputs.shapes[i].name = mb.name;
+                    outputs.shapes[i].parentRule = this;
+                    outputs.shapes[i].step = step;
                 }//end if 
                 else
                 {
                     ShapeObject so= ShapeObject.CreateMeshable(mb);
                     so.name = mb.name;
+                    so.parentRule = this;
+                    so.step = step;
                     outputs.shapes.Add(so);
                 }
-                //if (!newNames.Contains(mb.name))
-                //{
-                //    newNames.Add(mb.name);
-                //}
             }//end for i
-
+            //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
 
         }
     }

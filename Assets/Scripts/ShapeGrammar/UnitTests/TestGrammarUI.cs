@@ -20,15 +20,23 @@ public class TestGrammarUI : MonoBehaviour {
         Polyline pl = new Polyline(pts);
         Polygon pg = new Polygon(pts);
         Form f = pg.Extrude(new Vector3(0, 5, 0));
+        f.direction = PointsBase.LongestDirection(pts).Value;
         ShapeObject init = ShapeObject.CreateMeshable(f);
+        
 
         g1 = new Grammar();
         g1.assignedObjects.Add(init);
 
-        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.7f, 0), false);
-        g1.AddRule(new Rules.Bisect("B", new string[] { "B", "C" }, 0.7f, 2), false);
-        //g1.AddRule(new Rules.Scale("C", "C", 1.5f, 1), false);
+        //g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.7f, 0), false);
+        //g1.AddRule(new Rules.Bisect("B", new string[] { "B", "C" }, 0.7f, 2), false);
+        //g1.AddRule(new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0), false);
+        //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
+        //g1.AddRule(new Rules.Scale("C", "E", 4f, 1), false);
+       // g1.AddRule(new Rules.Bisect("E", new string[] { "D", "C" }, 0.6f, 0), false);
         g1.Execute();
+
+        //Rule ru = new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0);
+        //g1.AddRule(ru, true);
 
         //relate UI elements
         stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
@@ -37,23 +45,24 @@ public class TestGrammarUI : MonoBehaviour {
         gi.SetGrammar(g1);
 
         ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
-        ruleParamEditor.GenerateUI(g1.rules[1]);
+        
+        //ruleParamEditor.GenerateUI(g1.rules[1]);
 
         UserStats.SelectedGrammar = g1;
-        UserStats.UI_RuleList = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
-        UserStats.UI_RuleList.onAddClick += delegate {
+        UserStats.ruleNavigator = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
+        UserStats.ruleNavigator.onAddClick += delegate {
             Rule r = new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0);
             g1.AddRule(r, true);
-            UserStats.UI_RuleList.printStructure();
-            UserStats.UI_RuleList.AddItem(r.description);
+            UserStats.ruleNavigator.printStructure();
+            UserStats.ruleNavigator.AddItem(r.description);
 
         };
         //UserStats.UI_RuleList.onSelectCallbacks += SelectRule;
-        UserStats.UI_RuleList.Clear();
+        UserStats.ruleNavigator.Clear();
 
         foreach (Rule r in g1.rules)
         {
-            UserStats.UI_RuleList.AddItem(r.description);
+            UserStats.ruleNavigator.AddItem(r.description);
         }
     }
     //void printStructure()

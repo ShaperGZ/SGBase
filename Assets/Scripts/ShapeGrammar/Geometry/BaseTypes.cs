@@ -366,7 +366,7 @@ namespace SGGeometry
             {
                 Meshable mb = new Meshable();
                 mb.vertices = pts;
-                mb.triangles = triangles;
+                mb.triangles = triangles.Clone() as int[];
                 return mb;
             }
             else
@@ -577,12 +577,20 @@ namespace SGGeometry
         }
         public Polygon[] SplitByPlane(Plane pln, out Polyline nakedEdge)
         {
+            int nullP = 0;
+            foreach(Vector3 p in vertices)
+            {
+                if (p == null) nullP++;
+            }
+            if(nullP>0)
+                Debug.LogWarningFormat("FOUND NULL POINTS, COUNT={0}",nullP);
+
             //split polygon by a plane and returns the naked edge
             Vector3? nkp1 = new Vector3?();
             Vector3? nkp2 = new Vector3?();
             List<Vector3> left = new List<Vector3>();
             List<Vector3> right = new List<Vector3>();
-
+            
             Vector3 lastP = vertices[vertices.Length - 1];
             bool lastIsRight=pln.GetSide(lastP);
             bool isRight;
@@ -614,6 +622,7 @@ namespace SGGeometry
             else pgs[0] = null;
             if (right.Count > 2) pgs[1] = new Polygon(right.ToArray());
             else pgs[1] = null;
+
             if (nakedPts.Count > 1)
             {
                 nakedEdge = new Polyline(nakedPts.ToArray());
@@ -629,6 +638,10 @@ namespace SGGeometry
         }
         public Form(Polygon[] polygons) : base()
         {
+            //foreach(Polygon pg in polygons)
+            //{
+            //    if (pg.vertices.Length > 2) this.Add(pg);
+            //}
             this.AddRange(polygons);
         }
         public override Meshable[] SplitByPlane(Plane blade)
@@ -639,6 +652,7 @@ namespace SGGeometry
             Form[] forms = new Form[2];
             foreach(Polygon pg in components)
             {
+                
                 Polyline edge;
                 Polygon[] sides = pg.SplitByPlane(blade, out edge);
                 //Debug.Log("edgeVertCount=" + edge.vertices.Length.ToString());
@@ -653,18 +667,12 @@ namespace SGGeometry
                 Vector3[] capPts = GetCapVerts(nakedEdges,blade);
                 Polygon leftCap = new Polygon(capPts.Reverse().ToArray());
                 Polygon rightCap = new Polygon(capPts);
-                ////some how I have to reverse each triangle to show the normal correctly
-                //List<int> tris=new List<int>();
-                //for (int i = 0; i < cap.triangles.Length; i+=3)
-                //{
-                //    int a = cap.triangles[i];
-                //    int b = cap.triangles[i + 1];
-                //    int c = cap.triangles[i + 2];
-                //    tris.AddRange(new int[] { a, c, b });
-                //}
-                //cap.triangles = tris.ToArray();
                 rights.Add(rightCap);
                 lefts.Add(leftCap);
+            }
+            else
+            {
+                Debug.LogWarning("nakedEdges.Count<2; =" + nakedEdges.Count);
             }
             
             if(rights.Count>0) forms[0] = new Form(rights.ToArray());

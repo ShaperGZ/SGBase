@@ -34,33 +34,15 @@ public class RuleCreator
             button.onClick.AddListener
                 (delegate
                 {
-                    Debug.Log("type=" + t.ToString());
                     Rule r = Activator.CreateInstance(t) as Rule;
-                    Debug.Log("r.name=" + r.name);
+                    Debug.Log(string.Format("create {0} on click in RuleCreator",r.name));
                     UserStats.SelectedGrammar.AddRule(r,true);
-                    UserStats.UI_RuleList.AddItem(r.description);
+                    UserStats.ruleNavigator.AddItem(r.description);
                 }
                 );
         }
     }
-    public void AssociateUI2()
-    {
-        //if the UI is already created, associate each creation buttons
-        foreach(Type t in ruleTypes)
-        {
-            string name = UIPrefix + t.Name;
-            Button button = GameObject.Find(name).GetComponent<Button>();
-            button.onClick.AddListener
-                (delegate 
-                    {
-                        Debug.Log("type=" + t.ToString());
-                        Rule r = Activator.CreateInstance(t) as Rule;
-                        Debug.Log("r=" + r.ToString());
-                        grammar.AddRule(r);
-                    }
-                );
-        }
-    }
+ 
     public Type[] GetRuleTypes()
     {
         List<Type> rules = new List<Type>();

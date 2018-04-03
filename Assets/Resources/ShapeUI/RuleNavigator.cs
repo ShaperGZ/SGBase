@@ -91,7 +91,7 @@ public class RuleNavigator : MonoBehaviour {
         Grammar g = UserStats.SelectedGrammar;
         g.SelectStep(i);
         ruleParamEditor.GenerateUI(g.rules[i]);
-        ruleParamEditor.ruleNavigator = UserStats.UI_RuleList;
+        ruleParamEditor.ruleNavigator = this;
         printStructure();
     }
     public void printStructure()
@@ -106,12 +106,14 @@ public class RuleNavigator : MonoBehaviour {
             txt += "\n   Input: ";
             foreach (ShapeObject o in g.rules[i].inputs.shapes)
             {
-                txt += o.Format() + ",";
+                if (o != null)
+                    txt += o.Format() + ",";
             }
             txt += "\n   Output: ";
             foreach (ShapeObject o in g.rules[i].outputs.shapes)
             {
-                txt += o.Format() + ",";
+                if(o!=null)
+                    txt += o.Format() + ",";
             }
 
 
@@ -119,7 +121,8 @@ public class RuleNavigator : MonoBehaviour {
             SGIO io = g.stagedOutputs[i];
             foreach (ShapeObject o in io.shapes)
             {
-                txt += o.Format() + ",";
+                if (o != null)
+                    txt += o.Format() + ",";
             }
             txt += "\n";
         }

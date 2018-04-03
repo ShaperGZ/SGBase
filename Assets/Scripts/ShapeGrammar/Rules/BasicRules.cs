@@ -15,8 +15,7 @@ namespace Rules
             inputs.names.Add("A");
             outputs.names.Add("B");
             outputs.names.Add("C");
-
-            paramGroups = DefaultParam();
+            
         }
         public Bisect(string inName, string[] outNames, float d, int axis):base(inName,outNames)
         {
@@ -39,12 +38,19 @@ namespace Rules
 
             //get the splited meshables
             Meshable mb = so.meshable;
-            Meshable[] temp = mb.SplitByPlane(pln);
+            Meshable[] temp=new Meshable[0];
+            //Debug.Log("mb.verticeCount:"+mb.vertices.Length);
+            temp = mb.SplitByPlane(pln);
+           
+            
             List<Meshable> outs = new List<Meshable>();
             for(int i=0;i<temp.Length;i++)
             {
-                //Debug.Log("temp[" + i + "]=" + temp[i]);
-                if (temp[i] != null) outs.Add(temp[i]);
+                if (temp[i] != null)
+                {
+                    temp[i].direction = mb.direction;
+                    outs.Add(temp[i]);
+                }
             }
             outMeshables.AddRange(outs.ToArray());
             AssignNames(outMeshables.ToArray());
@@ -72,6 +78,7 @@ namespace Rules
         Plane cutPlane;
         public Scale() : base()
         {
+            name = "Scale";
             inputs.names.Add("A");
             outputs.names.Add("A");
 
@@ -99,7 +106,7 @@ namespace Rules
             //get the splited meshables
             Meshable mb = so.meshable;
             Meshable scaledMb = mb.Scale(scale, vects, origin, true);
-            
+            scaledMb.direction = mb.direction;
             outMeshables.Add(scaledMb);
             AssignNames(outMeshables.ToArray());
 
@@ -116,7 +123,7 @@ namespace Rules
             pg1.name = "Bisect percentage";
             pg1.Add(new Parameter(1.5f,0.2f,5f,0.01f));
             pg2.name = "Bisect Axis";
-            pg2.Add(new Parameter(0, 0, 2, 1));
+            pg2.Add(new Parameter(1, 0, 2, 1));
 
             return outParamGroups;
         }

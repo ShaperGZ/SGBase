@@ -66,7 +66,8 @@ public class RuleParamEditor : MonoBehaviour {
         ipfNameOut.onValueChanged.AddListener(delegate { OnNamesChanged(ipfNameOut, r, false); });
         ((RectTransform)ipfNameOut.transform).sizeDelta = size;
         ((RectTransform)ipfNameOut.transform).anchoredPosition = new Vector2(0, h);
-        
+        inputFields.Add(ipfNameIn);
+        inputFields.Add(ipfNameOut);
 
 
         for (int i = 0; i < r.paramGroups.Count; i++)
@@ -95,7 +96,7 @@ public class RuleParamEditor : MonoBehaviour {
         {
             Parameter p = pg.parameters[i];
             float value = p.value;
-            GameObject o = new GameObject();
+            //GameObject o = new GameObject();
             InputField ipf = Instantiate(inputFieldPrefab, pgui);
             RectTransform ipftrans=ipf.transform as RectTransform;
             ipftrans.anchoredPosition = new Vector2(30, -h * i - h2);

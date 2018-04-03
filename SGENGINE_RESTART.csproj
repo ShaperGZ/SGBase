@@ -358,6 +358,7 @@
     <Compile Include="Assets\Scripts\ShapeGrammar\Core\SGIO.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\Core\ShapeObject.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\Geometry\BaseTypes.cs" />
+    <Compile Include="Assets\Scripts\ShapeGrammar\HighlightMouseOver.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\Rules\BasicRules.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestGrammar.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestGrammarUI.cs" />

@@ -30,6 +30,8 @@ public class ShapeObject : MonoBehaviour {
     }
     public Meshable meshable;
     public Rule parentRule;
+    public int step;
+
     public static Material DefaultMat
     {
         get
@@ -48,7 +50,6 @@ public class ShapeObject : MonoBehaviour {
     private MeshRenderer meshRenderer;
     // Use this for initialization
     void Start () {
-		
 	}
 	
 	// Update is called once per frame
@@ -61,7 +62,10 @@ public class ShapeObject : MonoBehaviour {
         string txt = "";
         string draw = "-";
         if (gameObject.activeSelf) draw = "+";
-        txt += draw + name;
+        string ruleName;
+        if (parentRule == null) ruleName = "unnamedRule";
+        else ruleName = parentRule.name;
+        txt += draw + name + "_("+ruleName + "_step" + step+")";
 
         return txt;
     }
@@ -133,6 +137,7 @@ public class ShapeObject : MonoBehaviour {
 
         GL.End();
     }
+   
     public void SetMeshable(Meshable imeshable, Vector3? direction=null)
     {
         meshable = imeshable;
@@ -152,12 +157,19 @@ public class ShapeObject : MonoBehaviour {
         //print("mesh.verticeCount=" + mesh.vertexCount.ToString());
 
     }
+    private void OnDestroy()
+    {
+        Debug.LogWarning("SHAPE OBJECT DESTROY WARNING:" + Format());
+    }
     public static ShapeObject CreateBasic()
     {
         GameObject o = new GameObject();
         ShapeObject so = o.AddComponent<ShapeObject>();
         so.meshFilter = o.AddComponent<MeshFilter>();
         so.meshRenderer = o.AddComponent<MeshRenderer>();
+        BoxCollider bc= o.AddComponent<BoxCollider>();
+        bc.center = new Vector3(0.5f, 0.5f, 0.5f);
+        o.AddComponent<HighlightMouseOver>();
         so.meshRenderer.material = DefaultMat;
         return so;
     }
