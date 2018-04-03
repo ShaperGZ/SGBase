@@ -99,13 +99,6 @@ namespace SGCore
             }
             else
             {
-                //before fetching the objects, remove all nul values;
-                List<ShapeObject> noNull = new List<ShapeObject>();
-                foreach(ShapeObject so in stagedOutputs[step - 1].shapes)
-                {
-                    if (so != null) noNull.Add(so);
-                }
-                stagedOutputs[step - 1].shapes = noNull;
                 availableShapes.AddRange(stagedOutputs[step-1].shapes);
             }
 
@@ -113,7 +106,7 @@ namespace SGCore
             //foreach (ShapeObject so in availableShapes) so.gameObject.active = false;
 
             //select shapes from available shapes base on required names 
-            List<ShapeObject> toBeDeleted = new List<ShapeObject>();
+            ////List<ShapeObject> toBeDeleted = new List<ShapeObject>();
             foreach (ShapeObject o in availableShapes)
             {
                 try
@@ -135,16 +128,45 @@ namespace SGCore
                 }
                 
             }
-            foreach(ShapeObject o in toBeDeleted)
-            {
-                availableShapes.Remove(o);
-            }
+            ////foreach(ShapeObject o in toBeDeleted)
+            ////{
+            ////    availableShapes.Remove(o);
+            ////}
             rules[step].inputs.shapes = outShapes;
+
+            Debug.Log("pre execution --------------" + step.ToString());
+            Debug.Log("available shapes:");
+            foreach (ShapeObject o in availableShapes)
+            {
+                if (!o) Debug.Log("null shape");
+                else Debug.Log(o.Format());
+            }
+            Debug.Log("rules[step].inputs.shapes:");
+            foreach (ShapeObject o in rules[step].inputs.shapes)
+            {
+                if (!o) Debug.Log("null shape");
+                else Debug.Log(o.Format());
+            }
+
             return tobeMerged;
 
         }
         public void PostExecution(int step, SGIO tobeMerged)
         {
+            Debug.Log("post execution --------------"+step.ToString());
+            Debug.Log("tobeMerged:");
+            foreach(ShapeObject o in tobeMerged.shapes)
+            {
+                if (!o) Debug.Log("null shape");
+                else Debug.Log(o.Format());
+            }
+            Debug.Log("outputs:");
+            foreach (ShapeObject o in rules[step].outputs.shapes)
+            {
+                if (!o) Debug.Log("null shape");
+                else Debug.Log(o.Format());
+            }
+
             SGIO tempOut=new SGIO();
             tempOut = SGIO.Merge(rules[step].outputs, tobeMerged);
             if (step >= stagedOutputs.Count)

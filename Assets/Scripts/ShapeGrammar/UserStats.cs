@@ -66,7 +66,7 @@ public class UserStats : MonoBehaviour {
         colors["red"] = new Color(0.95f, 0.32f, 0.36f);
         colors["yellow"] = new Color(0.99f, 0.81f, 0.27f);
         colors["green"] = new Color(0.58f, 0.70f, 0.23f);
-        colors["blue"] = new Color(0.14f, 0.75f, 0.96f);
+        colors["blue"] = new Color(0.14f, 0.65f, 0.90f);
         string[] names = new string[] { "red", "yellow", "green", "blue" };
 
         float incrm = 0.2f;

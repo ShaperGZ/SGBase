@@ -20,19 +20,27 @@ public class TestGrammarUI : MonoBehaviour {
         Polyline pl = new Polyline(pts);
         Polygon pg = new Polygon(pts);
         Form f = pg.Extrude(new Vector3(0, 5, 0));
-        f.direction = PointsBase.LongestDirection(pts).Value;
-        ShapeObject init = ShapeObject.CreateMeshable(f);
-        
+
+        Vector3 nml = pts[4] - pts[0];
+        nml.Normalize();
+        Plane pln = new Plane(nml, new Vector3());
+        Meshable[] forms = f.SplitByPlane(pln);
+        forms[0].direction= PointsBase.LongestDirection(pts).Value;
+
+        //f.direction = PointsBase.LongestDirection(pts).Value;
+        //ShapeObject init = ShapeObject.CreateMeshable(f);
+        ShapeObject init = ShapeObject.CreateMeshable(forms[0]);
 
         g1 = new Grammar();
         g1.assignedObjects.Add(init);
 
-        //g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.7f, 0), false);
-        //g1.AddRule(new Rules.Bisect("B", new string[] { "B", "C" }, 0.7f, 2), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.7f, 0), false);
+        g1.AddRule(new Rules.Scale("C", "E", 4f, 1), false);
+        g1.AddRule(new Rules.Bisect("E", new string[] { "B", "C" }, 0.7f, 2), false);
         //g1.AddRule(new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0), false);
         //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
         //g1.AddRule(new Rules.Scale("C", "E", 4f, 1), false);
-       // g1.AddRule(new Rules.Bisect("E", new string[] { "D", "C" }, 0.6f, 0), false);
+        // g1.AddRule(new Rules.Bisect("E", new string[] { "D", "C" }, 0.6f, 0), false);
         g1.Execute();
 
         //Rule ru = new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0);

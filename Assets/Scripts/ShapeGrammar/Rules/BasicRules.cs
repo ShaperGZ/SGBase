@@ -39,10 +39,14 @@ namespace Rules
             //get the splited meshables
             Meshable mb = so.meshable;
             Meshable[] temp=new Meshable[0];
-            //Debug.Log("mb.verticeCount:"+mb.vertices.Length);
+            Debug.Log("+++ Before split");
+            Debug.Log("mb.verticeCount:"+mb.vertices.Length);
+            Debug.Log("mb.type:" + mb.GetType());
             temp = mb.SplitByPlane(pln);
-           
-            
+            Debug.Log("+++ After split");
+            Debug.Log("temp[0]="+temp[0]);
+            Debug.Log("temp[1]=" + temp[1]);
+
             List<Meshable> outs = new List<Meshable>();
             for(int i=0;i<temp.Length;i++)
             {
@@ -52,7 +56,16 @@ namespace Rules
                     outs.Add(temp[i]);
                 }
             }
+            
             outMeshables.AddRange(outs.ToArray());
+
+            string txt = "post executing bisect: outMeshables.Count=" + outMeshables.Count;
+            foreach (Meshable s in outMeshables)
+            {
+                txt += "mb(" + s.vertices.Length + "),";
+            }
+            Debug.Log(txt);
+
             AssignNames(outMeshables.ToArray());
             
         }

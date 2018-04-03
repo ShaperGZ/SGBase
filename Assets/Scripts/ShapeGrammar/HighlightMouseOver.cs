@@ -32,6 +32,7 @@ public class HighlightMouseOver : MonoBehaviour {
         colors = new Dictionary<ShapeObject, Color>();
         commonNameObjects.Clear();
         int step = UserStats.SelectedGrammar.displayStep;
+        if (step < 0) return;
         Color c= meshRenderer.material.color;
         orgColor = new Color(c.r,c.g,c.b);
         foreach (ShapeObject so in UserStats.SelectedGrammar.stagedOutputs[step].shapes)

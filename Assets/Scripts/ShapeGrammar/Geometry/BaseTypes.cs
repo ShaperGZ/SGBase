@@ -375,10 +375,7 @@ namespace SGGeometry
             }
             return null;
         }
-        public virtual Meshable[] SplitByPlane(Plane pln)
-        {
-            return new Meshable[0];
-        }
+
         /// <summary>
         /// merges the new given Meshable onto its own data
         /// also return the given Meshable with adjusted triangle index  
@@ -398,7 +395,66 @@ namespace SGGeometry
             this.triangles = (this.triangles.Concat(tris)).ToArray();
             
         }
-        
+        public virtual Meshable[] SplitByPlane(Plane pln)
+        {
+            Polyline edge;
+            return SplitByPlane(pln, out edge);
+        }
+        public virtual Meshable[] SplitByPlane(Plane pln, out Polyline nakedEdge)
+        {
+            int nullP = 0;
+            foreach (Vector3 p in vertices)
+            {
+                if (p == null) nullP++;
+            }
+            if (nullP > 0)
+                Debug.LogWarningFormat("FOUND NULL POINTS, COUNT={0}", nullP);
+
+            //split polygon by a plane and returns the naked edge
+            Vector3? nkp1 = new Vector3?();
+            Vector3? nkp2 = new Vector3?();
+            List<Vector3> left = new List<Vector3>();
+            List<Vector3> right = new List<Vector3>();
+
+            Vector3 lastP = vertices[vertices.Length - 1];
+            bool lastIsRight = pln.GetSide(lastP);
+            bool isRight;
+            List<Vector3> nakedPts = new List<Vector3>();
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Vector3 p = vertices[i];
+                isRight = pln.GetSide(p);
+
+                if (lastIsRight != isRight)
+                {
+                    Ray r = new Ray(p, lastP - p);
+                    float d;
+                    pln.Raycast(r, out d);
+                    Vector3 xp = r.GetPoint(d);
+                    left.Add(xp);
+                    right.Add(xp);
+                    nakedPts.Add(xp);
+                }
+                if (isRight) right.Add(p);
+                else left.Add(p);
+
+                lastIsRight = isRight;
+                lastP = p;
+            }
+            Polygon[] pgs = new Polygon[2];
+            if (left.Count > 2) pgs[0] = new Polygon(left.ToArray());
+            else pgs[0] = null;
+            if (right.Count > 2) pgs[1] = new Polygon(right.ToArray());
+            else pgs[1] = null;
+
+            if (nakedPts.Count > 1)
+            {
+                nakedEdge = new Polyline(nakedPts.ToArray());
+            }
+            else nakedEdge = new Polyline();
+            return pgs;
+        }
         public Mesh GetNormalizedMesh(BoundingBox bbox)
         {
             //Vector3 org = bbox.position;
@@ -451,7 +507,122 @@ namespace SGGeometry
         {
             return this.components[index];
         }
+        public override Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
+        {
+            Meshable dup = base.Scale(scale, vects, origin, duplicate);
+            List<Meshable> comps = new List<Meshable>();
+            foreach(Meshable m in components)
+            {
+                comps.Add(m.Scale(scale, vects, origin, true));
+            }
 
+            if (duplicate)
+            {
+                CompositMeshable cm = new CompositMeshable();
+                cm.vertices = dup.vertices;
+                cm.triangles = dup.triangles;
+                cm.components = comps;
+                return cm;
+            }
+
+            components = comps;
+            return null;
+        }
+        public override Meshable[] SplitByPlane(Plane blade)
+        {
+            List<Polyline> nakedEdges = new List<Polyline>();
+            List<Polygon> rights = new List<Polygon>();
+            List<Polygon> lefts = new List<Polygon>();
+            Form[] forms = new Form[2];
+            foreach (Meshable pg in components)
+            {
+                Polyline edge;
+                Meshable[] sides = pg.SplitByPlane(blade, out edge);
+                //Debug.Log("edgeVertCount=" + edge.vertices.Length.ToString());
+                if (edge.vertices.Length > 1)
+                    nakedEdges.Add(edge);
+                if (sides[0] != null) rights.Add((Polygon)sides[0]);
+                if (sides[1] != null) lefts.Add((Polygon)sides[1]);
+            }
+            Debug.Log("nakeEdgeCount=" + nakedEdges.Count.ToString());
+            if (nakedEdges.Count > 2)
+            {
+                Vector3[] capPts = GetCapVerts(nakedEdges, blade);
+                Polygon leftCap = new Polygon(capPts.Reverse().ToArray());
+                Polygon rightCap = new Polygon(capPts);
+                rights.Add(rightCap);
+                lefts.Add(leftCap);
+            }
+            else
+            {
+                Debug.LogWarning("nakedEdges.Count<2; =" + nakedEdges.Count);
+            }
+
+            if (rights.Count > 0) forms[0] = new Form(rights.ToArray());
+            if (lefts.Count > 0) forms[1] = new Form(lefts.ToArray());
+            return forms;
+        }
+        Vector3[] GetCapVerts(List<Polyline> nakedEdges, Plane pln)
+        {
+            //orient the edges according to plan
+            Vector3 center = new Vector3();
+            foreach (Polyline pl in nakedEdges)
+            {
+                center += pl.startPoint;
+            }
+            center /= nakedEdges.Count;
+
+
+
+            for (int i = 0; i < nakedEdges.Count; i++)
+            {
+                Polyline pl = nakedEdges[i];
+                Vector3 v1 = (center - pl.startPoint).normalized;
+                Vector3 v2 = (pl.endPoint - pl.startPoint).normalized;
+                Vector3 nml = Vector3.Cross(v2, v1);
+                nml.Normalize();
+                bool sameAsPlanNml = nml == pln.normal;
+                //Debug.Log("nml=" + nml.ToString() + "pln,nml="+pln.normal.ToString() + sameAsPlanNml);
+                if (!sameAsPlanNml)
+                {
+                    Vector3 temp = pl.vertices[0];
+                    pl.vertices[0] = pl.vertices[1];
+                    pl.vertices[1] = temp;
+                }
+            }
+
+            List<Vector3> pts = new List<Vector3>();
+            Polyline edge = nakedEdges[0];
+            Polyline lastEdge = nakedEdges[nakedEdges.Count - 1];
+            //pts.Add(edge.startPoint);
+            int count = 0;
+            while (edge != lastEdge && count < nakedEdges.Count)
+            {
+                //Debug.Log("edge=" + edge.ToString() + " count=" + count.ToString());
+                count++;
+                lastEdge = edge;
+                for (int j = 0; j < nakedEdges.Count; j++)
+                {
+                    Polyline edge2 = nakedEdges[j];
+                    //if (edge == edge2) continue;
+                    bool flag = edge.endPoint == edge2.startPoint;
+                    //Debug.Log(edge.startPoint.ToString() + "-" + edge.endPoint.ToString() + "," + edge2.startPoint.ToString()+"-"+edge2.endPoint.ToString() + flag.ToString());
+                    if (flag)
+                    {
+                        pts.Add(edge2.startPoint);
+                        edge = edge2;
+                        break;
+                    }
+                }
+                //string txt = "";
+                //foreach(Vector3 v in pts)
+                //{
+                //    txt += v.ToString() + ",";
+                //}
+                //Debug.Log(txt);
+            }
+            return pts.ToArray();
+        }
     }
 
     //Geometries
@@ -570,66 +741,7 @@ namespace SGGeometry
             Form outForm = new Form(pgs.ToArray());
             return outForm;
         }
-        public override Meshable[] SplitByPlane(Plane pln)
-        {
-            Polyline edge;
-            return SplitByPlane(pln, out edge);
-        }
-        public Polygon[] SplitByPlane(Plane pln, out Polyline nakedEdge)
-        {
-            int nullP = 0;
-            foreach(Vector3 p in vertices)
-            {
-                if (p == null) nullP++;
-            }
-            if(nullP>0)
-                Debug.LogWarningFormat("FOUND NULL POINTS, COUNT={0}",nullP);
-
-            //split polygon by a plane and returns the naked edge
-            Vector3? nkp1 = new Vector3?();
-            Vector3? nkp2 = new Vector3?();
-            List<Vector3> left = new List<Vector3>();
-            List<Vector3> right = new List<Vector3>();
-            
-            Vector3 lastP = vertices[vertices.Length - 1];
-            bool lastIsRight=pln.GetSide(lastP);
-            bool isRight;
-            List<Vector3> nakedPts = new List<Vector3>();
-
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                Vector3 p = vertices[i];
-                isRight = pln.GetSide(p);
-
-                if (lastIsRight != isRight)
-                {
-                    Ray r = new Ray(p, lastP-p);
-                    float d;
-                    pln.Raycast(r, out d);
-                    Vector3 xp = r.GetPoint(d);
-                    left.Add(xp);
-                    right.Add(xp);
-                    nakedPts.Add(xp);
-                }
-                if (isRight) right.Add(p);
-                else left.Add(p);
-
-                lastIsRight = isRight;
-                lastP = p;
-            }
-            Polygon[] pgs = new Polygon[2];
-            if (left.Count > 2)pgs[0] = new Polygon(left.ToArray());
-            else pgs[0] = null;
-            if (right.Count > 2) pgs[1] = new Polygon(right.ToArray());
-            else pgs[1] = null;
-
-            if (nakedPts.Count > 1)
-            {
-                nakedEdge = new Polyline(nakedPts.ToArray());
-            }
-            else nakedEdge = new Polyline();
-            return pgs;
-        }
+       
     }
     public class Form : CompositMeshable
     {
@@ -644,102 +756,9 @@ namespace SGGeometry
             //}
             this.AddRange(polygons);
         }
-        public override Meshable[] SplitByPlane(Plane blade)
-        {
-            List<Polyline> nakedEdges = new List<Polyline>();
-            List<Polygon> rights = new List<Polygon>();
-            List<Polygon> lefts= new List<Polygon>();
-            Form[] forms = new Form[2];
-            foreach(Polygon pg in components)
-            {
-                
-                Polyline edge;
-                Polygon[] sides = pg.SplitByPlane(blade, out edge);
-                //Debug.Log("edgeVertCount=" + edge.vertices.Length.ToString());
-                if (edge.vertices.Length>1)
-                    nakedEdges.Add(edge);
-                if (sides[0] !=null) rights.Add(sides[0]);
-                if (sides[1] != null) lefts.Add(sides[1]);
-            }
-            //Debug.Log("nakeEdgeCount=" + nakedEdges.Count.ToString());
-            if (nakedEdges.Count > 2)
-            {
-                Vector3[] capPts = GetCapVerts(nakedEdges,blade);
-                Polygon leftCap = new Polygon(capPts.Reverse().ToArray());
-                Polygon rightCap = new Polygon(capPts);
-                rights.Add(rightCap);
-                lefts.Add(leftCap);
-            }
-            else
-            {
-                Debug.LogWarning("nakedEdges.Count<2; =" + nakedEdges.Count);
-            }
-            
-            if(rights.Count>0) forms[0] = new Form(rights.ToArray());
-            if(lefts.Count>0) forms[1] = new Form(lefts.ToArray());
-            return forms;
-        }
-        Vector3[] GetCapVerts(List<Polyline> nakedEdges, Plane pln)
-        {
-            //orient the edges according to plan
-            Vector3 center=new Vector3();
-            foreach(Polyline pl in nakedEdges)
-            {
-                center += pl.startPoint;
-            }
-            center /= nakedEdges.Count;
-            
 
-            
-            for(int i=0;i<nakedEdges.Count;i++)
-            {
-                Polyline pl = nakedEdges[i];
-                Vector3 v1 = (center - pl.startPoint).normalized;
-                Vector3 v2 = (pl.endPoint - pl.startPoint).normalized;
-                Vector3 nml = Vector3.Cross(v2, v1);
-                nml.Normalize();
-                bool sameAsPlanNml = nml==pln.normal;
-                //Debug.Log("nml=" + nml.ToString() + "pln,nml="+pln.normal.ToString() + sameAsPlanNml);
-                if (!sameAsPlanNml)
-                {
-                    Vector3 temp = pl.vertices[0];
-                    pl.vertices[0] = pl.vertices[1];
-                    pl.vertices[1] = temp;
-                }
-            }
-
-            List<Vector3> pts = new List<Vector3>();
-            Polyline edge = nakedEdges[0];
-            Polyline lastEdge= nakedEdges[nakedEdges.Count-1];
-            //pts.Add(edge.startPoint);
-            int count = 0;
-            while(edge != lastEdge && count<nakedEdges.Count)
-            {
-                //Debug.Log("edge=" + edge.ToString() + " count=" + count.ToString());
-                count++;
-                lastEdge = edge;
-                for (int j = 0; j < nakedEdges.Count; j++)
-                {
-                    Polyline edge2 = nakedEdges[j];
-                    //if (edge == edge2) continue;
-                    bool flag = edge.endPoint == edge2.startPoint;
-                    //Debug.Log(edge.startPoint.ToString() + "-" + edge.endPoint.ToString() + "," + edge2.startPoint.ToString()+"-"+edge2.endPoint.ToString() + flag.ToString());
-                    if (flag)
-                    {
-                        pts.Add(edge2.startPoint);
-                        edge = edge2;
-                        break;
-                    }
-                }
-                //string txt = "";
-                //foreach(Vector3 v in pts)
-                //{
-                //    txt += v.ToString() + ",";
-                //}
-                //Debug.Log(txt);
-            }
-            return pts.ToArray();
-        }
+        
+        
     }
 
     public class TriangulatorV3

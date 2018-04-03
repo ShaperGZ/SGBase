@@ -1113,7 +1113,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00006459635, y: 0.00010107769}
+  m_AnchoredPosition: {x: -0.00004865976, y: 0.00010107769}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &594378672
@@ -2130,8 +2130,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 120709503}
   m_HandleRect: {fileID: 120709502}
   m_Direction: 2
-  m_Value: 0.9999996
-  m_Size: 0.4863333
+  m_Value: 0.9999994
+  m_Size: 0.48633325
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3055,8 +3055,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 376.8, y: -101.9}
-  m_SizeDelta: {x: 332.4, y: 400.2}
+  m_AnchoredPosition: {x: 306.1, y: -101.9}
+  m_SizeDelta: {x: 473.8, y: 400.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1395152921
 MonoBehaviour:
@@ -3071,7 +3071,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3710,8 +3710,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 483025565}
   m_HandleRect: {fileID: 483025564}
   m_Direction: 0
-  m_Value: 0.16666667
-  m_Size: 0.9999995
+  m_Value: 1
+  m_Size: 0.99999976
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4131,8 +4131,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 125205638}
   m_HandleRect: {fileID: 125205637}
   m_Direction: 0
-  m_Value: 0.00000027768482
-  m_Size: 0.7415941
+  m_Value: 0.0000011107396
+  m_Size: 0.8060702
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4727,7 +4727,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4736,7 +4736,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 8
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1

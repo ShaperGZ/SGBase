@@ -52,7 +52,14 @@ namespace SGCore
             outMeshables.Clear();
             for(int i = 0; i < inputs.shapes.Count; i++)
             {
+                Debug.Log("processing:" + inputs.shapes[i].Format());
                 ExecuteShape(inputs.shapes[i]);
+                string txt = "";
+                foreach(Meshable so in outMeshables)
+                {
+                    txt+="mb(" + so.vertices.Length+"),";
+                }
+                Debug.Log(txt);
             }
             UpdateOutputShapes();
         }

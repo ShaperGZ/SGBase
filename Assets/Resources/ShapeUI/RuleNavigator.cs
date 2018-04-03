@@ -108,12 +108,16 @@ public class RuleNavigator : MonoBehaviour {
             {
                 if (o != null)
                     txt += o.Format() + ",";
+                else
+                    txt += "null,";
             }
             txt += "\n   Output: ";
             foreach (ShapeObject o in g.rules[i].outputs.shapes)
             {
                 if(o!=null)
                     txt += o.Format() + ",";
+                else
+                    txt += "null,";
             }
 
 
