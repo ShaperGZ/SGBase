@@ -536,6 +536,9 @@ namespace SGGeometry
             Form[] forms = new Form[2];
             foreach (Meshable pg in components)
             {
+                //TODO: debug why there are empty components generated
+                if (pg.vertices == null || pg.vertices.Length < 3) continue;
+
                 Polyline edge;
                 Meshable[] sides = pg.SplitByPlane(blade, out edge);
                 //Debug.Log("edgeVertCount=" + edge.vertices.Length.ToString());

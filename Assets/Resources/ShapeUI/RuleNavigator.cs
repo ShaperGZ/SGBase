@@ -22,6 +22,8 @@ public class RuleNavigator : MonoBehaviour {
     public OnSelect onSelectCallbacks;
     public OnClick onAddClick;
     public OnClick onSubClick;
+    public OnClick onSaveClick;
+    public OnClick onLoadClick;
     RuleParamEditor ruleParamEditor;
 
     private void Awake()
@@ -41,6 +43,16 @@ public class RuleNavigator : MonoBehaviour {
         pnContent = transform.Find("ContentPanel") as RectTransform;
         btAddTransform.GetComponent<Button>().onClick.AddListener(delegate { onAddClick(); });
         btSubTransform.GetComponent<Button>().onClick.AddListener(delegate { onSubClick(); });
+
+        GameObject.Find("BtHolder/BtSaveRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onSaveClick(); });
+        GameObject.Find("BtHolder/BtLoadRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onLoadClick(); });
+        GameObject.Find("BtHolder/BtClearGrammar").GetComponent<Button>().onClick.AddListener(
+            delegate {
+                UserStats.SelectedGrammar.Clear();
+                this.Clear();
+            });
+
+
         selectedIndexText = transform.Find("BtHolder/SelectIndex").GetComponent<Text>() as Text;
         stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
         ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
@@ -134,6 +146,10 @@ public class RuleNavigator : MonoBehaviour {
     }
     public void Clear()
     {
+        foreach(GameObject o in items)
+        {
+            GameObject.Destroy(o);
+        }
         items.Clear();
         selectedIndex = -1;
     }

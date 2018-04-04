@@ -69,16 +69,19 @@ public class RuleParamEditor : MonoBehaviour {
         inputFields.Add(ipfNameIn);
         inputFields.Add(ipfNameOut);
 
-
-        for (int i = 0; i < r.paramGroups.Count; i++)
+        //IDictionaryEnumerator em = r.paramGroups.GetEnumerator();
+        int i = 0;
+        foreach(DictionaryEntry em in r.paramGroups)
         {
-            ParameterGroup pg = r.paramGroups[i];
-            //the actual UI elements are added here
-            AddParameterGroup(r, pg,i);
+            string name = (string)em.Key;
+            ParameterGroup pg = (ParameterGroup)em.Value;
+            AddParameterGroup(r,name, pg, i);
+            i++;
         }
+       
     }
 
-    public void AddParameterGroup(Rule r, ParameterGroup pg, int index)
+    public void AddParameterGroup(Rule r, string pgName, ParameterGroup pg, int index)
     {
 
         float h2 = h * 2;
@@ -87,10 +90,8 @@ public class RuleParamEditor : MonoBehaviour {
         Vector3 size = pgui.sizeDelta;
         size.y = pg.parameters.Count * h + (h *3);
         pgui.sizeDelta = size;
-        pgui.transform.Find("Title").GetComponent<Text>().text = pg.name;
+        pgui.transform.Find("Title").GetComponent<Text>().text = pgName;
         ParameterGroups.Add(pgui);
-
-
 
         for(int i = 0; i < pg.parameters.Count; i++)
         {

@@ -23,24 +23,27 @@ public class TestGrammarUI : MonoBehaviour {
 
         Vector3 nml = pts[4] - pts[0];
         nml.Normalize();
-        Plane pln = new Plane(nml, new Vector3());
-        Meshable[] forms = f.SplitByPlane(pln);
-        forms[0].direction= PointsBase.LongestDirection(pts).Value;
+        //Plane pln = new Plane(nml, new Vector3());
+        //Meshable[] forms = f.SplitByPlane(pln);
+        //forms[0].direction= PointsBase.LongestDirection(pts).Value;
+        //ShapeObject init = ShapeObject.CreateMeshable(forms[0]);
 
-        //f.direction = PointsBase.LongestDirection(pts).Value;
-        //ShapeObject init = ShapeObject.CreateMeshable(f);
-        ShapeObject init = ShapeObject.CreateMeshable(forms[0]);
+        f.direction = PointsBase.LongestDirection(pts).Value;
+        ShapeObject init = ShapeObject.CreateMeshable(f);
+        init.name = "init";
 
         g1 = new Grammar();
         g1.assignedObjects.Add(init);
-
-        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.7f, 0), false);
-        g1.AddRule(new Rules.Scale("C", "E", 4f, 1), false);
-        g1.AddRule(new Rules.Bisect("E", new string[] { "B", "C" }, 0.7f, 2), false);
+        g1.Load(@"D:\FIrstRule.sgr", false);
+        //g1.AddRule(new Rules.Bisect("A", new string[] { "C", "C" }, 0.7f, 0), false);
         //g1.AddRule(new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0), false);
-        //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
-        //g1.AddRule(new Rules.Scale("C", "E", 4f, 1), false);
-        // g1.AddRule(new Rules.Bisect("E", new string[] { "D", "C" }, 0.6f, 0), false);
+        //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.5f, 2), false);
+        //g1.AddRule(new Rules.Bisect("E", new string[] { "D", "C" }, 0.6f, 0), false);
+        //g1.AddRule(new Rules.Scale("B",  "B" , 2, 1), false);
+        //g1.AddRule(new Rules.Scale("D", "D", 3, 1), false);
+        //g1.AddRule(new Rules.Bisect("D", new string[] { "B", "C" }, 0.6f, 0), false);
+        //g1.AddRule(new Rules.Scale("B", "B", 3, 1), false);
+
         g1.Execute();
 
         //Rule ru = new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0);
@@ -58,13 +61,24 @@ public class TestGrammarUI : MonoBehaviour {
 
         UserStats.SelectedGrammar = g1;
         UserStats.ruleNavigator = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
-        UserStats.ruleNavigator.onAddClick += delegate {
-            Rule r = new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0);
-            g1.AddRule(r, true);
-            UserStats.ruleNavigator.printStructure();
-            UserStats.ruleNavigator.AddItem(r.description);
+
+        //Assign rule navigator actions
+        UserStats.ruleNavigator.onSaveClick += delegate {
+            UserStats.SelectedGrammar.Save(@"D:\FIrstRule.sgr");
 
         };
+        UserStats.ruleNavigator.onLoadClick += delegate {
+            UserStats.SelectedGrammar.Clear();
+
+            Grammar g = new Grammar();
+            g.assignedObjects = UserStats.SelectedGrammar.assignedObjects;
+            UserStats.SelectedGrammar = g;
+            g.Load(@"D:\FIrstRule.sgr");
+            g.Execute();
+
+        };
+
+
         //UserStats.UI_RuleList.onSelectCallbacks += SelectRule;
         UserStats.ruleNavigator.Clear();
 
@@ -73,44 +87,7 @@ public class TestGrammarUI : MonoBehaviour {
             UserStats.ruleNavigator.AddItem(r.description);
         }
     }
-    //void printStructure()
-    //{
-    //    //display debug texts
-    //    string txt = "";
-    //    txt += "Grammar.currentStep=" + g1.currentStep.ToString();
-    //    for (int i = 0; i < g1.stagedOutputs.Count; i++)
-    //    {
-    //        txt += "\nRule #" + i.ToString();
-    //        txt += "\n   Input: ";
-    //        foreach (ShapeObject o in g1.rules[i].inputs.shapes)
-    //        {
-    //            txt += o.Format() + ",";
-    //        }
-    //        txt += "\n   Output: ";
-    //        foreach (ShapeObject o in g1.rules[i].outputs.shapes)
-    //        {
-    //            txt += o.Format() + ",";
-    //        }
-
-
-    //        txt += "\n   Staged output: ";
-    //        SGIO io = g1.stagedOutputs[i];
-    //        foreach (ShapeObject o in io.shapes)
-    //        {
-    //            txt += o.Format() + ",";
-    //        }
-    //        txt += "\n";
-    //    }
-    //    stageIOText.text = txt;
-    //}
-    //void SelectRule(int index)
-    //{
-    //    g1.SelectStep(index);
-    //    ruleParamEditor.GenerateUI(g1.rules[index]);
-    //    ruleParamEditor.ruleNavigator = UserStats.UI_RuleList;
-    //    printStructure();
-    //}
-    // Update is called once per frame
+    
     void Update () {
 		
 	}

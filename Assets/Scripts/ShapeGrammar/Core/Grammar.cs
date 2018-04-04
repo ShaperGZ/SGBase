@@ -219,6 +219,42 @@ namespace SGCore
 
         }
 
+        public void Save(string path)
+        {
+            List<string> txts=new List<string>();
+            foreach(Rule r in rules)
+            {
+                txts.Add( "\n" + r.ToSentence());
+            }
+            System.IO.File.WriteAllLines(path, txts.ToArray());
+
+        }
+        public void Load(string path, bool execute = true)
+        {
+            string[] lines=System.IO.File.ReadAllLines(path);
+            Clear();
+            foreach (string text in lines)
+            {
+                Rule r = Rule.CreateFromSentence(text);
+                AddRule(r, false);
+            }
+            if (execute) Execute();
+        }
+        public void Clear()
+        {
+            foreach(SGIO sgio in stagedOutputs)
+            {
+                foreach (ShapeObject so in sgio.shapes)
+                {
+                    if (so != null)
+                    {
+                        GameObject.Destroy(so.gameObject);
+                        GameObject.Destroy(so);
+                    }
+                }
+            }
+            rules.Clear();
+        }
     }
 }
 

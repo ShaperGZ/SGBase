@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿
+using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using UnityEngine;
 using SGCore;
@@ -11,7 +14,7 @@ namespace SGCore
     {
         public Grammar grammar;
         public int step=-1;
-        public List<ParameterGroup> paramGroups;
+        public OrderedDictionary paramGroups;
         public List<Meshable> outMeshables;
         public new string description {
             get
@@ -83,9 +86,9 @@ namespace SGCore
         {
 
         }
-        public virtual List<ParameterGroup> DefaultParam()
+        public virtual OrderedDictionary DefaultParam()
         {
-            return new List<ParameterGroup>();
+            return new OrderedDictionary();
         }
         public void UpdateOutputShapes()
         {
@@ -128,6 +131,70 @@ namespace SGCore
                 }
             }//end for i
             //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
+
+        }
+        public new string name
+        {
+            get
+            {
+                return this.GetType().ToString();
+            }
+        }
+
+
+        public string ToSentence()
+        {
+            //sample: Bisec A -> B,C, | bisectDistance(0.5f,),axies(0,), 
+
+            string outnames = "";
+            foreach(string n in outputs.names)
+            {
+                outnames += n + ",";
+            }
+            string paramTexts = "";
+            foreach( DictionaryEntry kvp in paramGroups)
+            {
+                ParameterGroup pg = (ParameterGroup)kvp.Value;
+                paramTexts += (string)kvp.Key+"(";
+                foreach(Parameter p in pg.parameters)
+                {
+                    paramTexts += p.value.ToString() + ",";
+                }
+                paramTexts += "),";
+            }
+
+            string txt = string.Format(
+                "{0} {1} -> {2} | {3}",
+                name, 
+                inputs.names[0],
+                outnames,
+                paramTexts
+                );
+            return txt;
+
+        }
+        public static Rule CreateFromSentence(string txt)
+        {
+            //sample: Bisec A -> B,C, | bisectDistance(0.5f,),axies(0,), 
+            Debug.Log(txt);
+            string[] truncks = txt.Split('|');
+            foreach (string t in truncks) Debug.Log(t);
+            string front = truncks[0];
+            string back = truncks[1];
+            truncks = front.Split('>');
+            string[] header1 = truncks[0].Split(' ');
+            string[] header2 = truncks[1].Remove(' ').Split(',');
+
+            string ruleName = header1[0];
+            string inputName = header1[1];
+            List<string> outNames = new List<string>();
+            foreach(string n in header2)
+            {
+                outNames.Add(n);
+            }
+
+            Rule r=new Rule();
+            return r;
 
         }
     }
