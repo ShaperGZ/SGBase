@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System.Collections.Specialized;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using System.Xml.Serialization;
+
 
 namespace SGCore
 {
@@ -13,6 +15,9 @@ namespace SGCore
         public List<SGIO> stagedOutputs;
         public List<Rule> rules;
         public List<ShapeObject> assignedObjects;
+
+        public List<ShapeObject> dubugAvauilables;
+        
 
         public Grammar():base()
         {
@@ -54,14 +59,17 @@ namespace SGCore
         }
         public void Execute(int i)
         {
+            //------------------------------------
             currentStep = i;
             SGIO tobeMerged = PreExecution(i);
+            
+            
             //Debug.Log("rule inputSHapes.Count=" + rules[i].inputs.shapes.Count);
             rules[i].step = i;
             rules[i].Execute();
-           // Debug.Log("  ---rule outputSHapes.Count=" + rules[i].outputs.shapes.Count);
-            PostExecution(i,tobeMerged);
+            //------------------------------------
 
+            PostExecution(i,tobeMerged);
         }
         public void ExecuteFrom(Rule rule)
         {
@@ -89,6 +97,7 @@ namespace SGCore
             //get available shapes
             if (step == 0)
             {
+
                 if (assignedObjects.Count > 0)
                 {
                     foreach (ShapeObject so in assignedObjects) so.gameObject.active = false;
@@ -111,10 +120,30 @@ namespace SGCore
             {
                 try
                 {
-                    if (rules[step].inputs.names.Contains(o.name))
+                    //bool contains = false;
+                    //foreach(string n in rules[step].inputs.names)
+                    //{
+                    //    string oname = o.name.ToString();
+                    //    //string msg = step+ " >>>>>Compare" + n + " vs " + oname;
+                    //    //msg += string.Format("\n {0}.type={1} count={2}", n, n.GetType(),n.Length);
+                    //    //msg += string.Format("\n {0}.type={1} count={2}", oname, oname.GetType(),oname.Length);
+                    //    //Debug.Log(msg);
+                    //    if (n.ToString() == oname)
+                    //    {
+                    //        contains = true;
+                    //        break;
+                    //    }
+                    //}
+                    ////if(contains)
+                    if(rules[step].inputs.names.Contains(o.name))
+                    {
                         outShapes.Add(o);
+                    }
+                    //if (rules[step].inputs.names.Contains(o.name))
+                    //    outShapes.Add(o);
                     else
                     {
+                        //Debug.Log(step + " " + rules[step].inputs.names[0] + " name not match " + o.name);
                         if (!tobeMerged.names.Contains(o.name))
                             tobeMerged.names.Add(o.name);
                         tobeMerged.shapes.Add(o);
@@ -134,38 +163,19 @@ namespace SGCore
             ////}
             rules[step].inputs.shapes = outShapes;
 
-            Debug.Log("pre execution --------------" + step.ToString());
-            Debug.Log("available shapes:");
-            foreach (ShapeObject o in availableShapes)
+            String strs = "";
+            foreach(ShapeObject so in availableShapes)
             {
-                if (!o) Debug.Log("null shape");
-                else Debug.Log(o.Format());
+                strs += "\n"+ so.Format();
             }
-            Debug.Log("rules[step].inputs.shapes:");
-            foreach (ShapeObject o in rules[step].inputs.shapes)
-            {
-                if (!o) Debug.Log("null shape");
-                else Debug.Log(o.Format());
-            }
+            //Debug.Log(step + "availables:" + strs);
 
             return tobeMerged;
 
         }
         public void PostExecution(int step, SGIO tobeMerged)
         {
-            Debug.Log("post execution --------------"+step.ToString());
-            Debug.Log("tobeMerged:");
-            foreach(ShapeObject o in tobeMerged.shapes)
-            {
-                if (!o) Debug.Log("null shape");
-                else Debug.Log(o.Format());
-            }
-            Debug.Log("outputs:");
-            foreach (ShapeObject o in rules[step].outputs.shapes)
-            {
-                if (!o) Debug.Log("null shape");
-                else Debug.Log(o.Format());
-            }
+            
 
             SGIO tempOut=new SGIO();
             tempOut = SGIO.Merge(rules[step].outputs, tobeMerged);
@@ -219,26 +229,70 @@ namespace SGCore
 
         }
 
+        public void SaveXML(string path)
+        {
+            XmlSerializer xsl = new XmlSerializer(typeof(List<Rule>));
+            System.IO.TextWriter tw = new System.IO.StreamWriter(path);
+            xsl.Serialize(tw, rules);
+            tw.Close();
+        }
+        public void LoadXML(string path)
+        {
+            XmlSerializer xsl = new XmlSerializer(typeof(List<Rule>));
+            System.IO.TextReader tr = new System.IO.StreamReader(path);
+            rules=(List<Rule>)xsl.Deserialize(tr);
+            tr.Close();
+            foreach(Rule r in rules)
+            {
+                Debug.Log(r.description);
+            }
+
+            updateRuleNavigator();
+            
+        }
+        public void updateRuleNavigator()
+        {
+            if(UserStats.SelectedGrammar == this || UserStats.ruleNavigator != null)
+            {
+                foreach (Rule r in rules)
+                {
+                    UserStats.ruleNavigator.AddItem(r.description);
+                }
+            }
+        }
         public void Save(string path)
         {
+            string text = "";
             List<string> txts=new List<string>();
             foreach(Rule r in rules)
             {
+                text += "\n" + r.ToSentence();
                 txts.Add( "\n" + r.ToSentence());
             }
-            System.IO.File.WriteAllLines(path, txts.ToArray());
-
+            //System.IO.File.WriteAllLines(path, txts.ToArray());
+            System.IO.File.WriteAllText(path, text);
         }
         public void Load(string path, bool execute = true)
         {
-            string[] lines=System.IO.File.ReadAllLines(path);
             Clear();
-            foreach (string text in lines)
+            string texts=System.IO.File.ReadAllText(path);
+            string[] lines = System.IO.File.ReadAllLines(path);
+            foreach (string s in lines)
             {
-                Rule r = Rule.CreateFromSentence(text);
-                AddRule(r, false);
+                if (s.Length < 4) continue;
+                //Debug.Log(s);
+                Rule r = Rule.CreateFromSentence(s);
+                if (r!=null)
+                {
+                    AddRule(r, false);
+                }
             }
+            
             if (execute) Execute();
+            if(UserStats.ruleNavigator != null &&UserStats.SelectedGrammar == this)
+            {
+                UserStats.ruleNavigator.UpdateButtonDescriptions();
+            }
         }
         public void Clear()
         {
@@ -253,6 +307,7 @@ namespace SGCore
                     }
                 }
             }
+            stagedOutputs.Clear();
             rules.Clear();
         }
     }

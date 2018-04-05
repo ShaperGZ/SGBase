@@ -114,7 +114,14 @@ public class RuleNavigator : MonoBehaviour {
         txt += "Grammar.currentStep=" + g.currentStep.ToString();
         for (int i = 0; i < g.stagedOutputs.Count; i++)
         {
-            txt += "\nRule #" + i.ToString();
+            if (i < g.rules.Count)
+            {
+                txt += "\nRule #" + i.ToString() + g.rules[i].description;
+            }
+            else
+            {
+                txt += "\nRule #" + i.ToString() +">="+ g.rules.Count;
+            }
             txt += "\n   Input: ";
             foreach (ShapeObject o in g.rules[i].inputs.shapes)
             {
@@ -158,7 +165,10 @@ public class RuleNavigator : MonoBehaviour {
         Grammar g = UserStats.SelectedGrammar;
         for (int i =0;i<g.rules.Count; i++)
         {
-            items[i].transform.Find("Text").GetComponent<Text>().text = g.rules[i].description;
+            if (i < items.Count)
+                items[i].transform.Find("Text").GetComponent<Text>().text = g.rules[i].description;
+            else
+                AddItem(g.rules[i].description);
         }
     }
 }

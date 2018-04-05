@@ -1,0 +1,8 @@
+
+Rules.Bisect A -> D,C, | Axis(0-0-2-1,) Position(0-0.7-1-0.01,) 
+Rules.Bisect C -> B,C, | Axis(0-0-2-1,) Position(0-0.4-1-0.01,) 
+Rules.Bisect C -> D,C, | Axis(0-2-2-1,) Position(0-0.5-1-0.01,) 
+Rules.Bisect C -> D,C, | Axis(0-0-2-1,) Position(0-0.6-1-0.01,) 
+Rules.Scale C -> D, | Axis(0-1-2-1,) Position(0.2-2-10-0.01,) 
+Rules.Scale D -> D, | Axis(0-1-2-1,) Position(0.2-3-10-0.01,) 
+Rules.Bisect D -> B,C, | Axis(0-0-2-1,) Position(0-0.6-1-0.01,) 

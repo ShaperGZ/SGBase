@@ -15,6 +15,7 @@ namespace SGCore
         public Grammar grammar;
         public int step=-1;
         public OrderedDictionary paramGroups;
+        
         public List<Meshable> outMeshables;
         public new string description {
             get
@@ -55,14 +56,14 @@ namespace SGCore
             outMeshables.Clear();
             for(int i = 0; i < inputs.shapes.Count; i++)
             {
-                Debug.Log("processing:" + inputs.shapes[i].Format());
+                //Debug.Log("processing:" + inputs.shapes[i].Format());
                 ExecuteShape(inputs.shapes[i]);
                 string txt = "";
                 foreach(Meshable so in outMeshables)
                 {
                     txt+="mb(" + so.vertices.Length+"),";
                 }
-                Debug.Log(txt);
+                //Debug.Log(txt);
             }
             UpdateOutputShapes();
         }
@@ -98,7 +99,7 @@ namespace SGCore
             int dif = outputs.shapes.Count - outMeshables.Count;
             if ( dif >0 )
             {
-                Debug.Log("dif >0 ouputs.shapesCount="+outputs.shapes.Count);
+                //Debug.Log("dif >0 ouputs.shapesCount="+outputs.shapes.Count);
                 for (int i = 0; i < dif; i++)
                 {
                     int index = outputs.shapes.Count - 1;
@@ -106,7 +107,7 @@ namespace SGCore
                     GameObject.Destroy(outputs.shapes[index].gameObject);
                     outputs.shapes.RemoveAt(index);
                 }
-                Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
+                //Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
             }
 
             //update output shapes
@@ -158,9 +159,10 @@ namespace SGCore
                 paramTexts += (string)kvp.Key+"(";
                 foreach(Parameter p in pg.parameters)
                 {
-                    paramTexts += p.value.ToString() + ",";
+                    string pstr = p.min + "-" + p.value + "-" + p.max + "-" + p.step + ",";
+                    paramTexts += pstr;
                 }
-                paramTexts += "),";
+                paramTexts += ") ";
             }
 
             string txt = string.Format(
@@ -175,26 +177,76 @@ namespace SGCore
         }
         public static Rule CreateFromSentence(string txt)
         {
-            //sample: Bisec A -> B,C, | bisectDistance(0.5f,),axies(0,), 
-            Debug.Log(txt);
+            string confirmStr = "[confirm string]";
             string[] truncks = txt.Split('|');
-            foreach (string t in truncks) Debug.Log(t);
             string front = truncks[0];
             string back = truncks[1];
             truncks = front.Split('>');
             string[] header1 = truncks[0].Split(' ');
-            string[] header2 = truncks[1].Remove(' ').Split(',');
+            string[] header2 = truncks[1].Split(',');
 
-            string ruleName = header1[0];
-            string inputName = header1[1];
+            string[] part1 = front.Split(' ');
+            string className = part1[0];
+            string inName = part1[1];
             List<string> outNames = new List<string>();
-            foreach(string n in header2)
+            foreach (string n in part1[3].Split(','))
             {
-                outNames.Add(n);
+                if(n.Length>0  && n!=" ")
+                    outNames.Add(n);
             }
+            string[] paramtxts = back.Split(' ');
 
-            Rule r=new Rule();
-            return r;
+            OrderedDictionary paramOD = new OrderedDictionary();
+            List<ParameterGroup> pgs = new List<ParameterGroup>();
+            foreach (string ps in paramtxts)
+            {
+                string[] kvp = ps.Split('(');
+                if (kvp.Length < 2) continue;
+
+                ParameterGroup pg = new ParameterGroup();
+                string pKey = kvp[0];
+                pg.name = pKey;
+                confirmStr += "\nKey:" + pKey;
+                string[] pVals = kvp[1].Split(',');
+                int i = 0;
+                foreach (string pval in pVals)
+                {
+                    //if(pval == ")")
+                    //confirmStr += "\n " + pval;
+                    string[] pmstr = pval.Split('-');
+                    if (pmstr.Length < 3) continue;
+                    Parameter pm = new Parameter();
+                    pm.min = float.Parse(pmstr[0]);
+                    pm.value = float.Parse(pmstr[1]);
+                    pm.max = float.Parse(pmstr[2]);
+                    pm.step = float.Parse(pmstr[3]);
+                    pg.Add(pm);
+                    
+                    i++;
+                }
+
+                paramOD.Add(pKey, pg);
+            }
+            
+
+            
+            //Debug.Log(confirmStr);
+            string[] pair = className.Split('.');
+            foreach (Type t in UserStats.ruleCreator.ruleTypes)
+            {
+                //Debug.Log("type:" + t.ToString()+"class:" + className);
+                if (t.Name == className.Split('.')[1])
+                {
+                    Debug.Log("type:" + t.Name + "paramCount:" + paramOD.Count);
+                    Rule rule = Activator.CreateInstance(t) as Rule;
+                    rule.inputs.names = new List<string>{ inName};
+                    rule.outputs.names = outNames;
+                    rule.paramGroups = paramOD;
+                    return rule;
+                }
+            }
+            
+            return null;
 
         }
     }

@@ -547,7 +547,7 @@ namespace SGGeometry
                 if (sides[0] != null) rights.Add((Polygon)sides[0]);
                 if (sides[1] != null) lefts.Add((Polygon)sides[1]);
             }
-            Debug.Log("nakeEdgeCount=" + nakedEdges.Count.ToString());
+            //Debug.Log("nakeEdgeCount=" + nakedEdges.Count.ToString());
             if (nakedEdges.Count > 2)
             {
                 Vector3[] capPts = GetCapVerts(nakedEdges, blade);

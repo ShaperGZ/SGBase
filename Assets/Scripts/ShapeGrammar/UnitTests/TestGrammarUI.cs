@@ -34,14 +34,14 @@ public class TestGrammarUI : MonoBehaviour {
 
         g1 = new Grammar();
         g1.assignedObjects.Add(init);
-        g1.Load(@"D:\FIrstRule.sgr", false);
-        //g1.AddRule(new Rules.Bisect("A", new string[] { "C", "C" }, 0.7f, 0), false);
-        //g1.AddRule(new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0), false);
-        //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.5f, 2), false);
-        //g1.AddRule(new Rules.Bisect("E", new string[] { "D", "C" }, 0.6f, 0), false);
-        //g1.AddRule(new Rules.Scale("B",  "B" , 2, 1), false);
-        //g1.AddRule(new Rules.Scale("D", "D", 3, 1), false);
-        //g1.AddRule(new Rules.Bisect("D", new string[] { "B", "C" }, 0.6f, 0), false);
+        //g1.Load(@"FirstRule.sgr", false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.7f, 0), false);
+        g1.AddRule(new Rules.Bisect("C", new string[] { "B", "C" }, 0.4f, 0), false);
+        g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.5f, 2), false);
+        g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
+        g1.AddRule(new Rules.Scale("C", "D", 2, 1), false);
+        g1.AddRule(new Rules.Scale("D", "D", 3, 1), false);
+        g1.AddRule(new Rules.Bisect("D", new string[] { "B", "C" }, 0.6f, 0), false);
         //g1.AddRule(new Rules.Scale("B", "B", 3, 1), false);
 
         g1.Execute();
@@ -64,7 +64,7 @@ public class TestGrammarUI : MonoBehaviour {
 
         //Assign rule navigator actions
         UserStats.ruleNavigator.onSaveClick += delegate {
-            UserStats.SelectedGrammar.Save(@"D:\FIrstRule.sgr");
+            UserStats.SelectedGrammar.Save(@"FirstRule.sgr");
 
         };
         UserStats.ruleNavigator.onLoadClick += delegate {
@@ -73,7 +73,7 @@ public class TestGrammarUI : MonoBehaviour {
             Grammar g = new Grammar();
             g.assignedObjects = UserStats.SelectedGrammar.assignedObjects;
             UserStats.SelectedGrammar = g;
-            g.Load(@"D:\FIrstRule.sgr");
+            g.Load(@"FirstRule.sgr");
             g.Execute();
 
         };
