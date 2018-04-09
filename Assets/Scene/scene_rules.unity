@@ -2413,8 +2413,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 120709503}
   m_HandleRect: {fileID: 120709502}
   m_Direction: 2
-  m_Value: 0.9999994
-  m_Size: 0.48633325
+  m_Value: 0.9999992
+  m_Size: 0.48633322
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2693,7 +2693,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1085425056}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfba0502d392ead4aa858a246f7319cf, type: 3}
   m_Name: 
@@ -2704,7 +2704,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1085425056}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6369c3eb6f734646ab05578c108d247, type: 3}
   m_Name: 
@@ -4007,8 +4007,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 483025565}
   m_HandleRect: {fileID: 483025564}
   m_Direction: 0
-  m_Value: 0.35714287
-  m_Size: 0.9999994
+  m_Value: 0
+  m_Size: 0.99999964
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4509,8 +4509,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 125205638}
   m_HandleRect: {fileID: 125205637}
   m_Direction: 0
-  m_Value: 0.000001388425
-  m_Size: 0.7312959
+  m_Value: 0.00000055537026
+  m_Size: 0.73129594
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

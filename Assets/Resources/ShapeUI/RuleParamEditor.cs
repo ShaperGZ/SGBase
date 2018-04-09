@@ -69,6 +69,8 @@ public class RuleParamEditor : MonoBehaviour {
         inputFields.Add(ipfNameIn);
         inputFields.Add(ipfNameOut);
 
+
+
         //IDictionaryEnumerator em = r.paramGroups.GetEnumerator();
         int i = 0;
         foreach(DictionaryEntry em in r.paramGroups)

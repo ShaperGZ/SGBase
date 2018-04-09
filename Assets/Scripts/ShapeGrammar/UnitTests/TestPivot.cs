@@ -29,14 +29,16 @@ public class TestPivot : MonoBehaviour {
     { 
         Vector3[] pts = initShape1();
         Polygon pg = new Polygon(pts);
+        ShapeObject pgo = ShapeObject.CreatePolygon(pts);
         Form f = pg.Extrude(new Vector3(0, 40, 0));
 
         ShapeObject rf = ShapeObject.CreateMeshable(f);
         rf.name = "rf";
-
-
-        ShapeObject so = ShapeObject.CreateMeshable(f);
-        so.PivotMirror(0);
+        
+        //ShapeObject so = ShapeObject.CreateMeshable((Meshable)f.Clone());
+        ShapeObject so = rf.Clone();
+        //so.PivotMirror(0);
+        so.PivotTurn(2);
     }
 	
 	// Update is called once per frame

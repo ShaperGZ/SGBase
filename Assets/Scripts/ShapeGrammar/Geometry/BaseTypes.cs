@@ -899,7 +899,7 @@ namespace SGGeometry
             }
             else if(pts.Length == 4)
             {
-                triangles = new int[] { 0, 1, 2, 0, 2, 3 };
+                triangles = new int[] { 0, 2, 1, 0, 3, 2 };
             }
             else if(pts.Length ==3)
             {
@@ -910,7 +910,9 @@ namespace SGGeometry
         public Form Extrude(Vector3 magUp)
         {
             List<Polygon> pgs = new List<Polygon>();
-            pgs.Add(new Polygon(vertices));
+            Polygon bot = new Polygon(vertices);
+            bot.ReverseTriangle();
+            pgs.Add(bot);
             Vector3[] ptsTop = new Vector3[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -919,10 +921,10 @@ namespace SGGeometry
                 if (j >= vertices.Length) j = 0;
 
                 Vector3[] pts = new Vector3[4];
-                pts[3] = vertices[i];
-                pts[2] = vertices[j];
-                pts[1] = vertices[j] + magUp;
-                pts[0] = vertices[i] + magUp;
+                pts[0] = vertices[i];
+                pts[1] = vertices[j];
+                pts[2] = vertices[j] + magUp;
+                pts[3] = vertices[i] + magUp;
                 Polygon pg = new Polygon(pts);
                 pgs.Add(pg);
             }

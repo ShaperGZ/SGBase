@@ -257,31 +257,108 @@ public class ShapeObject : MonoBehaviour {
         so.SetMeshable(mb, ld);
         return so;
     }
+    public void PivotTurn(int num=1)
+    {
+        if (num <= 0) return;
 
-    public ShapeObject PivotMirror(int axis, bool duplicate=false)
+        Vector3 size = Size;
+        Vector3[] vects = Vects;
+        Vector3 offset;
+        Vector3 uOffset;
+        float euler;
+        num = Mathf.Clamp(num, -3, 3);
+        
+        
+        if (num > 0)//clock wise
+        {
+            euler = 90;
+            offset = vects[2] * size[2];
+            uOffset = new Vector3(1, 0, 0);
+        }
+        else//counter clck wise
+        {
+            euler = -90;
+            offset = vects[2] * size[2] * -1;
+            uOffset = new Vector3(-1, 0, 0);
+        }
+        offset = vects[2] * size[2];
+        Matrix4x4 mt = Matrix4x4.Translate(uOffset);
+        Matrix4x4 mr = Matrix4x4.Rotate(Quaternion.Euler(new Vector3(0, -euler, 0)));
+
+        Mesh m = GetComponent<MeshFilter>().mesh;
+        Vector3[] opts = m.vertices.Clone() as Vector3[];
+        for (int i = 0; i < opts.Length; i++)
+        {
+            opts[i] = mr.MultiplyPoint3x4(opts[i]);
+            opts[i] = mt.MultiplyPoint3x4(opts[i]);
+        }
+        m.vertices = opts;
+        m.RecalculateBounds();
+        m.RecalculateNormals();
+
+        transform.Rotate(new Vector3(0, euler, 0));
+        Vector3 scale = transform.localScale;
+        scale[0] = transform.localScale[2];
+        scale[2] = transform.localScale[0];
+        transform.localScale = scale;
+        transform.position += offset;
+
+        PivotTurn(num - 1);
+
+    }
+    public void PivotMirror(int axis)
     {
         Vector3 size = Size;
         Vector3 vect = Vects[axis].normalized;
         Vector3 offset = vect*size[axis];
-        
-        size[axis] *= -1;
-        //transform.position += offset;
-        //transform.localScale = scale;
-        Vector3 mscale = new Vector3(1, 1, 1);
-        mscale[axis] *= -1;
-        meshable.Scale(mscale, Vects, transform.position, false);
-        meshable.ReverseTriangle();
+        Mesh m = GetComponent<MeshFilter>().mesh;
 
-        //for (int i = 0; i < meshable.vertices.Length; i++)
-        //{
-        //    meshable.vertices[i] = matrix.MultiplyPoint3x4(meshable.vertices[i]);
-        //    //meshable.vertices[i] += offset;
-        //}
+        Matrix4x4 m1 = Matrix4x4.Scale(new Vector3(-1, 1, 1));
+        Matrix4x4 m2 = Matrix4x4.Translate(offset);
+        Matrix4x4 m3 = Matrix4x4.Translate(vect);
 
-        //meshable=((CompositMeshable)meshable).Transform(matrix,true);
-        SetMeshable(meshable);
-
-        return null;
+        Vector3[] opts = m.vertices.Clone() as Vector3[];
+        for (int i = 0; i < opts.Length; i++)
+        {
+            opts[i] = m1.MultiplyPoint3x4(opts[i]);
+            opts[i] = m3.MultiplyPoint3x4(opts[i]);
+        }
+        int[] tris = m.triangles.Clone() as int[];
+        for (int i = 0; i < tris.Length; i += 3)
+        {
+            tris[i + 1] = m.triangles[i + 2];
+            tris[i + 2] = m.triangles[i + 1];
+        }
+        Vector3 scale = transform.localScale;
+        scale[axis] *= -1;
+        transform.localScale = scale;
+        transform.position = m2.MultiplyPoint3x4(transform.position);
+        //so.transform.localScale = scale;
+        //so.transform.position -= magVect;
+        m.vertices = opts;
+        m.triangles = tris;
+        m.RecalculateNormals();
+        m.RecalculateBounds();
     }
-    
+    public ShapeObject Clone( bool geometryOnly = true)
+    {
+        ShapeObject so = ShapeObject.CreateBasic();
+        CloneTo(so);
+        return so;
+    }
+    public void CloneTo(ShapeObject so, bool geometryOnly=true)
+    {
+        so.transform.position = transform.position;
+        so.transform.rotation = transform.rotation;
+        so.transform.up = transform.up;
+        so.transform.localScale = transform.localScale;
+        so.meshable = meshable;
+        so.GetComponent<MeshFilter>().mesh = GetComponent<MeshFilter>().mesh;
+        if (!geometryOnly)
+        {
+            so.name = name;
+            so.step = step;
+            so.parentRule = parentRule;
+        }
+    }
 }
