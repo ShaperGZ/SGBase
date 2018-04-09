@@ -9,14 +9,28 @@ public class UserStats : MonoBehaviour {
 
     
     private static Grammar _selectedGrammar;
+    private static ShapeObject _selectedShape;
 
+    public static ShapeObject selectedShape
+    {
+        get
+        {
+            return _selectedShape;
+        }
+        set
+        {
+            _selectedShape = value;
+            //TODO:assign all selected shape association here
+        }
+    }
     public static Material lineMat;
     public static Material LineMat
     {
         get
         {
             if (lineMat == null)
-                lineMat = Resources.Load("LineMaterial") as Material;
+                lineMat=SGGeometry.GLRender.GetLineMaterial();
+                //lineMat = Resources.Load("LineMaterial") as Material;
             return lineMat;
         }
     }
@@ -28,6 +42,7 @@ public class UserStats : MonoBehaviour {
         {
             _selectedGrammar = value;
             if (ruleCreator != null) ruleCreator.grammar = _selectedGrammar;
+            //TODO: appoint all grammar association here
         }
     }
     public static RuleNavigator ruleNavigator;

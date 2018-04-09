@@ -4,6 +4,7 @@ using UnityEngine;
 using SGGeometry;
 using SGCore;
 
+
 public class ShapeObject : MonoBehaviour {
     public Vector3 Size
     {
@@ -44,12 +45,17 @@ public class ShapeObject : MonoBehaviour {
         }
     }
 
+    public bool highlightScope = false;
     public bool drawScope = true;
     private static Material _defaultMat;
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
+    private BoxCollider boxCollider;
     // Use this for initialization
     void Start () {
+        meshFilter = GetComponent<MeshFilter>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        boxCollider = GetComponent<BoxCollider>();
 	}
 	
 	// Update is called once per frame
@@ -69,12 +75,53 @@ public class ShapeObject : MonoBehaviour {
 
         return txt;
     }
-
+    
+    public void Show(bool flag)
+    {
+        gameObject.active = flag;
+        //if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
+        //meshRenderer.enabled = flag;
+        //if(boxCollider == null) boxCollider = GetComponent<BoxCollider>();
+        //boxCollider.enabled = flag;
+    }
     private void OnRenderObject()
     {
-        if(drawScope && gameObject.activeSelf)
-            GLDrawScope();
+        //GLDrawScope(Color.black);
+        if (drawScope && meshRenderer.enabled)
+        {
+            Color c = Color.black;
+            //if (highlightScope)
+            //    c = Color.red;
+
+            GLDrawScope(c);
+            try
+            {
+                foreach (Meshable m in ((CompositMeshable)meshable).components)
+                {
+                    if (m.displayLines != null && m.displayLines.Count > 0)
+                    {
+                        foreach (Polyline pl in m.displayLines)
+                        {
+                            SGGeometry.GLRender.Polyline(pl.vertices, false, null, Color.black);
+                        }
+                    }
+                }
+            }
+
+            catch { }
+        }
     }
+    private void OnPostRender()
+    {
+        //not working
+        GLDrawScope(Color.red);
+        if (highlightScope)
+        {
+
+            GLDrawScope(Color.red);
+        }
+    }
+
     Vector3[] makeBoxPoints()
     {
         Vector3[] opts = new Vector3[8];
@@ -95,24 +142,16 @@ public class ShapeObject : MonoBehaviour {
         return opts;
 
     }
-    void GLDrawScope()
+    void GLDrawScope(Color color)
     {
-        Color color = Color.black;
+        //Color color = Color.black;
         Material mat = UserStats.LineMat;
         mat.SetPass(0);
         Vector3[] pts = makeBoxPoints();
         GL.Begin(GL.LINES);
-        GL.Color(Color.red);
-        GL.Vertex(pts[0]);
-        GL.Vertex(pts[1]);
-        GL.Color(Color.blue);
-        GL.Vertex(pts[0]);
-        GL.Vertex(pts[3]);
-        GL.Color(Color.green);
-        GL.Vertex(pts[0]);
-        GL.Vertex(pts[4]);
+        
 
-
+        GL.Color(color);
         GL.Vertex(pts[1]);
         GL.Vertex(pts[2]);
         GL.Vertex(pts[2]);
@@ -134,10 +173,28 @@ public class ShapeObject : MonoBehaviour {
             GL.Vertex(pts[i]);
             GL.Vertex(pts[i+4]);
         }
-
+        GL.Color(Color.red);
+        GL.Vertex(pts[0]);
+        GL.Vertex(pts[1]);
+        GL.Color(Color.blue);
+        GL.Vertex(pts[0]);
+        GL.Vertex(pts[3]);
+        GL.Color(Color.green);
+        GL.Vertex(pts[0]);
+        GL.Vertex(pts[4]);
         GL.End();
     }
-   
+    public void RefreshOnMeshableUpdate(Vector3? direction = null)
+    {
+        if (direction.HasValue)
+        {
+            SetMeshable(meshable,direction);
+        }
+        else
+        {
+            GetComponent<MeshFilter>().mesh = meshable.GetMeshForm();
+        }
+    } 
     public void SetMeshable(Meshable imeshable, Vector3? direction=null)
     {
         meshable = imeshable;
@@ -200,4 +257,31 @@ public class ShapeObject : MonoBehaviour {
         so.SetMeshable(mb, ld);
         return so;
     }
+
+    public ShapeObject PivotMirror(int axis, bool duplicate=false)
+    {
+        Vector3 size = Size;
+        Vector3 vect = Vects[axis].normalized;
+        Vector3 offset = vect*size[axis];
+        
+        size[axis] *= -1;
+        //transform.position += offset;
+        //transform.localScale = scale;
+        Vector3 mscale = new Vector3(1, 1, 1);
+        mscale[axis] *= -1;
+        meshable.Scale(mscale, Vects, transform.position, false);
+        meshable.ReverseTriangle();
+
+        //for (int i = 0; i < meshable.vertices.Length; i++)
+        //{
+        //    meshable.vertices[i] = matrix.MultiplyPoint3x4(meshable.vertices[i]);
+        //    //meshable.vertices[i] += offset;
+        //}
+
+        //meshable=((CompositMeshable)meshable).Transform(matrix,true);
+        SetMeshable(meshable);
+
+        return null;
+    }
+    
 }

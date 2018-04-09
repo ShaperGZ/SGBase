@@ -102,6 +102,7 @@ public class RuleNavigator : MonoBehaviour {
             onSelectCallbacks(i);
         Grammar g = UserStats.SelectedGrammar;
         g.SelectStep(i);
+        //g.HighlightStepObjectScope(i);
         ruleParamEditor.GenerateUI(g.rules[i]);
         ruleParamEditor.ruleNavigator = this;
         printStructure();

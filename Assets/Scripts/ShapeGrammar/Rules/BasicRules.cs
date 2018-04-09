@@ -21,30 +21,13 @@ namespace Rules
             ((ParameterGroup)paramGroups["Position"]).parameters[0].value = d;
             ((ParameterGroup)paramGroups["Axis"]).parameters[0].value = axis;
         }
-        public override void ExecuteShape(ShapeObject so)
+        public static List<Meshable> SplitByPlane(Meshable mb, Plane pln)
         {
-            float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
-            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
-
-            //get split plane
-            Vector3 normal = so.Vects[axis];
-            Vector3 v = normal * so.Size[axis] * d;
-            Vector3 org = so.transform.position + v;
-            Plane pln = new Plane(normal,org);
-
-            //get the splited meshables
-            Meshable mb = so.meshable;
-            Meshable[] temp=new Meshable[0];
-            //Debug.Log("+++ Before split");
-            //Debug.Log("mb.verticeCount:"+mb.vertices.Length);
-            //Debug.Log("mb.type:" + mb.GetType());
-            temp = mb.SplitByPlane(pln);
-            //Debug.Log("+++ After split");
-            //Debug.Log("temp[0]="+temp[0]);
-            //Debug.Log("temp[1]=" + temp[1]);
-
             List<Meshable> outs = new List<Meshable>();
-            for(int i=0;i<temp.Length;i++)
+            //get the splited meshables
+            Meshable[] temp = new Meshable[0];
+            temp = mb.SplitByPlane(pln);
+            for (int i = 0; i < temp.Length; i++)
             {
                 if (temp[i] != null)
                 {
@@ -52,8 +35,22 @@ namespace Rules
                     outs.Add(temp[i]);
                 }
             }
+            return outs;
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
+            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
+            List<Meshable> outs = new List<Meshable>();
+            //get split plane
+            Vector3 normal = so.Vects[axis];
+            Vector3 v = normal * so.Size[axis] * d;
+            Vector3 org = so.transform.position + v;
+            Plane pln = new Plane(normal,org);
+
+            outs = SplitByPlane(so.meshable, pln);
             
-            outMeshables.AddRange(outs.ToArray());
+            //outMeshables.AddRange(outs.ToArray());
 
             string txt = "post executing bisect: outMeshables.Count=" + outMeshables.Count;
             foreach (Meshable s in outMeshables)
@@ -61,8 +58,9 @@ namespace Rules
                 txt += "mb(" + s.vertices.Length + "),";
             }
             //Debug.Log(txt);
-
-            AssignNames(outMeshables.ToArray());
+            AssignNames(outs);
+            //AssignNames(outMeshables.ToArray());
+            return outs;
             
         }
         public override OrderedDictionary DefaultParam()
@@ -90,55 +88,77 @@ namespace Rules
             outputs.names.Add("C");
 
         }
-        public Divide(string inName, string[] outNames, float d, int axis) : base(inName, outNames)
+        public Divide(string inName, string[] outNames, float[] ds, int axis) : base(inName, outNames)
         {
-            ((ParameterGroup)paramGroups["Position"]).parameters[0].value = d;
+            for (int i = 0; i < ds.Length; i++)
+            {
+                float d = ds[i];
+                ParameterGroup pg = (ParameterGroup)paramGroups["Position"];
+                if (i < pg.parameters.Count)
+                {
+                    pg.parameters[i].value = d;
+                }
+                else
+                {
+                    pg.parameters.Add(new Parameter(d, 0, 1, 0.01f));
+                }
+            }
+            
             ((ParameterGroup)paramGroups["Axis"]).parameters[0].value = axis;
 
         }
-        public override void ExecuteShape(ShapeObject so)
+        public virtual List<float> GetDivs(List<Parameter> pms, float max)
         {
-            //get paramters
-            float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
-            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
-
-            //get split plane
-            Vector3 normal = so.Vects[axis];
-            Vector3 v = normal * so.Size[axis] * d;
-            Vector3 org = so.transform.position + v;
-            Plane pln = new Plane(normal, org);
-
-            //get the splited meshables
-            Meshable mb = so.meshable;
-            Meshable[] temp = new Meshable[0];
-            //Debug.Log("+++ Before split");
-            //Debug.Log("mb.verticeCount:" + mb.vertices.Length);
-            //Debug.Log("mb.type:" + mb.GetType());
-            temp = mb.SplitByPlane(pln);
-            //Debug.Log("+++ After split");
-            //Debug.Log("temp[0]=" + temp[0]);
-            //Debug.Log("temp[1]=" + temp[1]);
-
+            float total = 0;
+            List<float> outDivs = new List<float>();
+            foreach (Parameter p in pms)
+            {
+                if (total >= max) break;
+                float rest = max - total;
+                float val = p.value * max;
+                if (val > rest) val = rest;
+                outDivs.Add(val);
+                total += val;
+            }
+            return outDivs;
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            Debug.Log("executing so");
             List<Meshable> outs = new List<Meshable>();
-            for (int i = 0; i < temp.Length; i++)
+            //get paramters
+            //float[] ds = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
+            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
+            float max = so.Size[axis];
+            List<float> divs = GetDivs(((ParameterGroup)paramGroups["Position"]).parameters, max);
+            int counter = 0;
+            List<Meshable> touts = new List<Meshable>();
+            Vector3 org = so.transform.position;
+            while (counter==0 || touts.Count > 1)
             {
-                if (temp[i] != null)
+                if (counter >= divs.Count)
                 {
-                    temp[i].direction = mb.direction;
-                    outs.Add(temp[i]);
+                    Debug.LogWarning("counter>divs.Count");
+                    break;
                 }
+                //Debug.Log(counter+" div="+divs[counter]);
+                //get split plane
+                Vector3 normal = so.Vects[axis];
+                Vector3 v = normal *  divs[counter];
+                org += v;
+                Plane pln = new Plane(normal, org);
+
+                if (counter == 0)
+                    touts = Rules.Bisect.SplitByPlane(so.meshable, pln);
+                else
+                    touts = Rules.Bisect.SplitByPlane(touts[1], pln);
+                outs.Add(touts[0]);
+                //Debug.Log(counter + " tout.COunt=" + touts.Count);
+                counter++;
             }
-
-            outMeshables.AddRange(outs.ToArray());
-
-            string txt = "post executing bisect: outMeshables.Count=" + outMeshables.Count;
-            foreach (Meshable s in outMeshables)
-            {
-                txt += "mb(" + s.vertices.Length + "),";
-            }
-            //Debug.Log(txt);
-
-            AssignNames(outMeshables.ToArray());
+            
+            AssignNames(outs);
+            return outs;
 
         }
         public override OrderedDictionary DefaultParam()
@@ -160,6 +180,53 @@ namespace Rules
             return dict;
         }
     }
+    public class DivideTo : Divide
+    {
+        Plane cutPlane;
+        public DivideTo() : base()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+        }
+        public DivideTo(string inName, string outName, float ds, int axis) : base(inName, new string[] { outName }, new float[]{ ds}, axis)
+        {
+        }
+        public DivideTo(string inName, string[] outNames, float ds, int axis) : base(inName, outNames, new float[]{ ds},axis)
+        {
+        }
+        public override List<float> GetDivs(List<Parameter> pms, float max)
+        {
+            Debug.Log("cal culating GetDivs");
+            float d = pms[0].value;
+            float count = Mathf.Round(max / d);
+            d = max / count;
+            Debug.Log(string.Format("cal culating GetDivs d={0}, max={1}, count={2}", d,max,count));
+            List<float> outDivs = new List<float>();
+            for (int i = 0; i < count; i++)
+            {
+                outDivs.Add(d);
+                Debug.Log(i + " adding" + d);
+            }
+            return outDivs;
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+            outParamGroups.Add(pg1);
+            outParamGroups.Add(pg2);
+
+            dict["Position"] = pg1;
+            pg1.Add(new Parameter(10,5,100,1));
+            dict["Axis"] = pg2;
+            pg2.Add(new Parameter(0, 0, 2, 1));
+
+            return dict;
+        }
+
+    }
     public class Scale : Rule
     {
 
@@ -178,7 +245,7 @@ namespace Rules
 
 
         }
-        public override void ExecuteShape(ShapeObject so)
+        public override List<Meshable> ExecuteShape(ShapeObject so)
         {
             float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
@@ -193,8 +260,12 @@ namespace Rules
             Meshable mb = so.meshable;
             Meshable scaledMb = mb.Scale(scale, vects, origin, true);
             scaledMb.direction = mb.direction;
-            outMeshables.Add(scaledMb);
-            AssignNames(outMeshables.ToArray());
+            //outMeshables.Add(scaledMb);
+            List<Meshable> outs = new List<Meshable>();
+            outs.Add(scaledMb);
+            AssignNames(outs);
+            //AssignNames(outMeshables.ToArray());
+            return outs;
 
             //Rule.Execute() will take care of the outMeshables
         }
@@ -217,5 +288,138 @@ namespace Rules
         }
         
     }
+    public class DivideSurface : Rule
+    {
+        public DivideSurface()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("FA");
+        }
+        public DivideSurface(string inName, string OutName, float w, float h) : base(inName, new string[] { OutName })
+        {
+            paramGroups = DefaultParam();
+            ((ParameterGroup)paramGroups["dim width"]).parameters[0].value = w;
+            ((ParameterGroup)paramGroups["dim height"]).parameters[0].value = h;
 
+        }
+
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            dict.Add("dim width", pg1);
+            dict.Add("dim height", pg2);
+            pg1.Add(new Parameter(5, 1, 30, 0.1f));
+            pg2.Add(new Parameter(3, 2, 10, 0.1f));
+            return dict;
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            float w = ((ParameterGroup)paramGroups["dim width"]).parameters[0].value;
+            float h = (int)((ParameterGroup)paramGroups["dim height"]).parameters[0].value;
+            List<Meshable> outs = new List<Meshable>();
+
+            if (so.meshable.GetType() == typeof(CompositMeshable))
+            {
+                foreach (Meshable m in ((CompositMeshable)so.meshable).components)
+                {
+                    try
+                    {
+                        Meshable[] units = m.GridByMag(w, h);
+                        if (units == null) outs.Add(m);
+                        else outs.AddRange(units);
+                    }
+                    catch
+                    {
+                        Debug.Log(string.Format("{0} is not {1}", m.GetType(), typeof(Polygon)));
+                        outs.Add(m);
+                    }
+
+
+                }
+            }
+            else
+            {
+                Debug.Log(string.Format("{0} is not {1}", so.meshable.GetType(),typeof(CompositMeshable)));
+            }
+            Form f = new Form(outs.ToArray());
+            return new List<Meshable>{ f };
+        }
+    }
+
+    public class CreateBox : Rule
+    {
+        public CreateBox() : base()
+        {
+            outputs.names.Add("A");
+
+        }
+        public CreateBox(string outName, Vector3 pos, Vector3 size, Vector3 rotation) :base()
+        {
+            outputs.names.Add("A");
+            for (int i = 0; i < 3; i++)
+            {
+                ((ParameterGroup)paramGroups["Position"]).parameters[i].value = pos[i];
+                ((ParameterGroup)paramGroups["Position"]).parameters[i].min = pos[i] / 5;
+                ((ParameterGroup)paramGroups["Position"]).parameters[i].max = pos[i] * 5;
+
+                ((ParameterGroup)paramGroups["Size"]).parameters[i].value = size[i];
+                ((ParameterGroup)paramGroups["Size"]).parameters[i].min = pos[i] / 5;
+                ((ParameterGroup)paramGroups["Size"]).parameters[i].max = pos[i] * 5;
+
+                ((ParameterGroup)paramGroups["Rotation"]).parameters[i].value = rotation[i];
+            }
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            float[] pos = new float[3];
+            float[] size = new float[3];
+            for (int i = 0; i < 3; i++)
+            {
+                pos[i] = ((ParameterGroup)paramGroups["Position"]).parameters[i].value;
+                size[i] = ((ParameterGroup)paramGroups["Size"]).parameters[i].value;
+            }
+            Vector3 vpos = new Vector3(pos[0], pos[1], pos[2]);
+            Vector3 vsize = new Vector3(size[0], size[1], size[2]);
+
+            Vector3[] pts = new Vector3[4];
+            Vector3 vx = new Vector3(size[0], 0, 0);
+            Vector3 vy = new Vector3(0, size[1], 0);
+            Vector3 vz = new Vector3(0, 0, size[2]);
+
+
+            pts[0] = vpos;
+            pts[1] = vpos + vx;
+            pts[2] = pts[1] + vz;
+            pts[3] = pts[0] + vz;
+            Polygon pg = new Polygon(pts);
+            Form f = pg.Extrude(vy);
+            
+            List<Meshable> outs = new List<Meshable>();
+            outs.Add(f);
+            AssignNames(outs);
+            return outs;
+
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            ParameterGroup pg3 = new ParameterGroup();
+
+            for (int i = 0; i < 3; i++)
+            {
+                pg1.Add(new Parameter(0, 0, 100, 3f));
+                pg2.Add(new Parameter(10, 0, 100, 3f));
+                pg3.Add(new Parameter(0, 0, 90, 1));
+            }
+            dict.Add("Position", pg1);
+            dict.Add("Size", pg2);
+            dict.Add("Rotation", pg3);
+
+            return dict;
+        }
+    }
 }

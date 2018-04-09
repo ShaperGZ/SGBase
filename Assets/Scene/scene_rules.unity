@@ -1240,7 +1240,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000044164997, y: 0.00010107769}
+  m_AnchoredPosition: {x: -0.000013666706, y: 0.00010107769}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &594378672
@@ -2413,8 +2413,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 120709503}
   m_HandleRect: {fileID: 120709502}
   m_Direction: 2
-  m_Value: 0.9999998
-  m_Size: 0.48633337
+  m_Value: 0.9999994
+  m_Size: 0.48633325
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2622,6 +2622,7 @@ GameObject:
   - component: {fileID: 1085425060}
   - component: {fileID: 1085425061}
   - component: {fileID: 1085425062}
+  - component: {fileID: 1085425063}
   m_Layer: 0
   m_Name: ScriptLoder
   m_TagString: Untagged
@@ -2695,6 +2696,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfba0502d392ead4aa858a246f7319cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1085425063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1085425056}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6369c3eb6f734646ab05578c108d247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1088367199
@@ -3155,6 +3167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   step: 0
+  highlightScope: 0
   drawScope: 1
 --- !u!23 &1291845331
 MeshRenderer:
@@ -3513,6 +3526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   step: 0
+  highlightScope: 0
   drawScope: 1
 --- !u!23 &1451161785
 MeshRenderer:
@@ -3993,8 +4007,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 483025565}
   m_HandleRect: {fileID: 483025564}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999976
+  m_Value: 0.35714287
+  m_Size: 0.9999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4495,8 +4509,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 125205638}
   m_HandleRect: {fileID: 125205637}
   m_Direction: 0
-  m_Value: 0.0000011107396
-  m_Size: 0.7312958
+  m_Value: 0.000001388425
+  m_Size: 0.7312959
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4726,6 +4740,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   step: 0
+  highlightScope: 0
   drawScope: 1
 --- !u!23 &1851378755
 MeshRenderer:
@@ -4974,6 +4989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   step: 0
+  highlightScope: 0
   drawScope: 1
 --- !u!23 &1937514789
 MeshRenderer:

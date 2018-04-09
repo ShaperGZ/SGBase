@@ -20,8 +20,11 @@ namespace SGCore
         public new string description {
             get
             {
+                string inName = "";
+                if (inputs.names != null && inputs.names.Count > 0) inName = inputs.names[0];
+
                 string txt = "";
-                txt += name + " | "+ inputs.names[0]+"-->";
+                txt += name + " | "+ inName+"-->";
                 foreach (string n in outputs.names) txt += n + ',';
                 return txt;
             }
@@ -45,31 +48,31 @@ namespace SGCore
         }
         public virtual void Execute()
         {
-            if(inputs.shapes.Count>0)
-            {
-                string txt = "";
-                txt = string.Format("{0} | inputs[0]=({1})", name, inputs.shapes[0].Format());
-            }
-                
-
             //operate on meshables and update existing shapeobjects
             outMeshables.Clear();
-            for(int i = 0; i < inputs.shapes.Count; i++)
+            if (inputs.shapes.Count > 0)
             {
-                //Debug.Log("processing:" + inputs.shapes[i].Format());
-                ExecuteShape(inputs.shapes[i]);
-                string txt = "";
-                foreach(Meshable so in outMeshables)
+                for (int i = 0; i < inputs.shapes.Count; i++)
                 {
-                    txt+="mb(" + so.vertices.Length+"),";
+                    //Debug.Log("processing:" + inputs.shapes[i].Format());
+                    List<Meshable> outs = ExecuteShape(inputs.shapes[i]);
+                    outMeshables.AddRange(outs.ToArray());
+                    //Debug.Log("meshable COunt=" + outMeshables.Count);
+
                 }
-                //Debug.Log(txt);
             }
+            else
+            {
+                List<Meshable> outs = ExecuteShape(null);
+                outMeshables.AddRange(outs.ToArray());
+            }
+            
+
             UpdateOutputShapes();
         }
-        public void AssignNames(ShapeObject[] sos)
+        public void AssignNames(List<Meshable> sos)
         {
-            for(int i = 0; i < sos.Length; i++)
+            for(int i = 0; i < sos.Count; i++)
             {
                 int nameIndex = i % outputs.names.Count;
                 sos[i].name = outputs.names[nameIndex];
@@ -83,9 +86,9 @@ namespace SGCore
                 mbs[i].name = outputs.names[nameIndex];
             }
         }
-        public virtual void ExecuteShape(ShapeObject so)
+        public virtual List<Meshable> ExecuteShape(ShapeObject so)
         {
-
+            return null;
         }
         public virtual OrderedDictionary DefaultParam()
         {
@@ -177,6 +180,7 @@ namespace SGCore
         }
         public static Rule CreateFromSentence(string txt)
         {
+            Debug.Log("creating " + txt);
             string confirmStr = "[confirm string]";
             string[] truncks = txt.Split('|');
             string front = truncks[0];

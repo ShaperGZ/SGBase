@@ -255,6 +255,21 @@ namespace SGGeometry
             Vector3? ld = PointsBase.LongestDirection(vertices, normalized);
             return ld.Value;
         }
+        public virtual PointsBase Clone()
+        {
+            PointsBase pb = new PointsBase();
+            pb.vertices = vertices.Clone() as Vector3[];
+            return pb;
+        }
+        public static Vector3[] transform(Vector3[] ipts, Matrix4x4 matrix)
+        {
+            Vector3[] pts = ipts.Clone() as Vector3[];
+            for (int i = 0; i < pts.Length; i++)
+            {
+                pts[i] = matrix * pts[i];
+            }
+            return pts;
+        }
         public static Vector3? LongestDirection(Vector3[] pts, bool normalized = true)
         {
             if (pts.Length < 2) return null;
@@ -341,8 +356,11 @@ namespace SGGeometry
             triangles = new int[0];
         }
     }
+    
     public class Meshable : TrianglesBase
     {
+        public List<Polyline> displayLines = new List<Polyline>();
+
         public Vector3 direction=new Vector3(1,0,0);
         public Meshable()
         {
@@ -357,6 +375,27 @@ namespace SGGeometry
             m.RecalculateNormals();
             m.RecalculateBounds();
             return m;
+        }
+        public override PointsBase Clone()
+        {
+            Meshable mb = new Meshable();
+            mb.vertices = vertices.Clone() as Vector3[];
+            mb.triangles = triangles.Clone() as int[];
+            return mb;
+        }
+        public virtual Meshable Transform(Matrix4x4 matrix, bool duplicate = false)
+        {
+            if (duplicate)
+            {
+                Meshable outmb = new Meshable();
+                outmb.vertices= PointsBase.transform(vertices, matrix);
+                outmb.triangles = triangles.Clone() as int[];
+                return outmb;
+            }
+            else
+                vertices= PointsBase.transform(vertices, matrix);
+            return null;
+
         }
         public virtual Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate=true)
         {
@@ -374,6 +413,102 @@ namespace SGGeometry
                 vertices = pts;
             }
             return null;
+        }
+
+        public virtual void ReverseTriangle()
+        {
+            int[] ntris = new int[triangles.Length];
+            for (int i = 0; i < triangles.Length; i+=3)
+            {
+                ntris[i] = triangles[i];
+                ntris[i + 1] = triangles[i + 2];
+                ntris[i + 2] = triangles[i + 1];
+            }
+            triangles = ntris;
+        }
+
+        public Polygon[] GridByMag(float w, float h)
+        {
+            if (vertices.Length != 4) return null;
+            float sizeX = Vector3.Distance(vertices[0], vertices[1]);
+            float sizeY = Vector3.Distance(vertices[0], vertices[3]);
+            float countX = Mathf.Round(sizeX / w);
+            float countY = Mathf.Round(sizeY / h);
+            return GridByCount((int)countX, (int)countY);
+        }
+        public Polygon[] GridByCountFake(int w, int h)
+        {
+            displayLines.Clear();
+            if (vertices.Length != 4) return null;
+            Polygon[] grid = new Polygon[w * h];
+            float sx, sy;
+            Vector3 vx, vy;
+            vx = vertices[1] - vertices[0];
+            vy = vertices[3] - vertices[0];
+            sx = vx.magnitude;
+            sy = vy.magnitude;
+
+            float nx = sx / w;
+            float ny = sy / h;
+
+            vx.Normalize();
+            vy.Normalize();
+
+            Vector3 mvx = vx * nx;
+            Vector3 mvy = vy * ny;
+            Polyline[] lines = new Polyline[w + h];
+            for (int i = 0; i < w; i++)
+            {
+                Vector3[] upts = new Vector3[2];
+                upts[0] = vertices[0] + (mvx * i);
+                upts[1] = upts[0] + mvy;
+                lines[i] = new Polyline(upts);
+            }
+            for (int i = 0; i < h; i++)
+            {
+                Vector3[] upts = new Vector3[2];
+                upts[0] = vertices[0] + (mvy * i);
+                upts[1] = upts[0] + mvx;
+                lines[w+i] = new Polyline(upts);
+            }
+            displayLines.AddRange(lines);
+            return grid;
+        }
+        public Polygon[] GridByCount(int w, int h)
+        {
+            if (vertices.Length != 4) return null;
+            Polygon[] grid = new Polygon[w * h];
+            float sx, sy;
+            Vector3 vx, vy;
+            vx = vertices[1] - vertices[0];
+            vy = vertices[3] - vertices[0];
+            sx = vx.magnitude;
+            sy = vy.magnitude;
+
+            float nx = sx / w;
+            float ny = sy / h;
+
+            vx.Normalize();
+            vy.Normalize();
+
+            Vector3 mvx = vx * nx;
+            Vector3 mvy = vy * ny;
+
+            for (int i = 0; i < w; i++)
+            {
+                for (int j = 0; j < h; j++)
+                {
+                    int index = (j * w + i);
+                    Vector3[] upts = new Vector3[4];
+                    upts[0] = vertices[0] + (mvx * i) + (mvy * j);
+                    upts[1] = upts[0] + mvx;
+                    upts[2] = upts[1] + mvy;
+                    upts[3] = upts[0] + mvy;
+                    grid[index] = new Polygon(upts);
+                }
+
+            }
+            return grid;
         }
 
         /// <summary>
@@ -402,6 +537,7 @@ namespace SGGeometry
         }
         public virtual Meshable[] SplitByPlane(Plane pln, out Polyline nakedEdge)
         {
+            Debug.Log("spliting meshable");
             int nullP = 0;
             foreach (Vector3 p in vertices)
             {
@@ -448,6 +584,9 @@ namespace SGGeometry
             if (right.Count > 2) pgs[1] = new Polygon(right.ToArray());
             else pgs[1] = null;
 
+            Debug.Log(string.Format("leg={0} right={1}", left.Count, right.Count));
+
+
             if (nakedPts.Count > 1)
             {
                 nakedEdge = new Polyline(nakedPts.ToArray());
@@ -490,13 +629,22 @@ namespace SGGeometry
         {
             this.components = new List<Meshable>();
         }
-    
+        public CompositMeshable(IEnumerable<Meshable> mbs)
+        {
+            this.components = new List<Meshable>();
+            if (mbs!=null)
+                AddRange(mbs);
+        }
         public void Add(Meshable m)
         {
-            merge(m);
-            components.Add(m);
+            if (m != null)
+            {
+                merge(m);
+                components.Add(m);
+            }
+            
         }
-        public void AddRange(Meshable[] ms)
+        public void AddRange(IEnumerable<Meshable> ms)
         {
             foreach (Meshable m in ms)
             {
@@ -506,6 +654,44 @@ namespace SGGeometry
         public Meshable Get(int index)
         {
             return this.components[index];
+        }
+        public override PointsBase Clone()
+        {
+            List<Meshable> mbs = new List<Meshable>();
+            for (int i = 0; i < components.Count; i++)
+            {
+                mbs.Add((Meshable)components[i].Clone());
+            }
+            CompositMeshable mb = new CompositMeshable(mbs);
+            mb.vertices = vertices.Clone() as Vector3[];
+            mb.triangles = triangles.Clone() as int[];
+            return mb;
+        }
+        public override void ReverseTriangle()
+        {
+            base.ReverseTriangle();
+            foreach(Meshable m in components)
+            {
+                m.ReverseTriangle();
+            }
+        }
+        public override Meshable Transform(Matrix4x4 matrix, bool duplicate = false)
+        {
+            List<Meshable> mbs = new List<Meshable>();
+            
+            foreach (Meshable m in components)
+            {
+                mbs.Add(m.Transform(matrix, duplicate));
+            }
+            if (duplicate)
+            {
+                CompositMeshable cmb = new CompositMeshable();
+                cmb.vertices = PointsBase.transform(vertices, matrix);
+                cmb.AddRange(mbs);
+                return cmb;
+            }
+            vertices = PointsBase.transform(vertices, matrix);
+            return null;
         }
         public override Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
         {
@@ -694,7 +880,7 @@ namespace SGGeometry
             this.triangles = new int[] { 0, 1, 2 };
         }
     }
-    public class Polygon : CompositMeshable
+    public class Polygon : Meshable
     {
         Polyline boundary;
         public Polygon() : base()
@@ -744,7 +930,6 @@ namespace SGGeometry
             Form outForm = new Form(pgs.ToArray());
             return outForm;
         }
-       
     }
     public class Form : CompositMeshable
     {
@@ -759,9 +944,17 @@ namespace SGGeometry
             //}
             this.AddRange(polygons);
         }
+        public Form(Meshable[] polygons) : base()
+        {
+            //foreach(Polygon pg in polygons)
+            //{
+            //    if (pg.vertices.Length > 2) this.Add(pg);
+            //}
+            this.AddRange(polygons);
+        }
 
-        
-        
+
+
     }
 
     public class TriangulatorV3

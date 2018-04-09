@@ -55,6 +55,7 @@ namespace SGCore
             {
                 Execute(i);
             }
+            DisplayStep(rules.Count - 1);
             SelectStep(rules.Count - 1);
         }
         public void Execute(int i)
@@ -76,7 +77,6 @@ namespace SGCore
             int index = rules.IndexOf(rule);
             if (index >= 0 && index < rules.Count)
                 ExecuteFrom(index);
-            SelectStep(rules.Count - 1);
         }
         public void ExecuteFrom(int start)
         {
@@ -84,7 +84,9 @@ namespace SGCore
             {
                 Execute(i);
             }
+            DisplayStep(rules.Count - 1);
             SelectStep(rules.Count - 1);
+            
         }
         public SGIO PreExecution(int step)
         {
@@ -188,6 +190,25 @@ namespace SGCore
                 stagedOutputs[step] = tempOut;
             }
         }
+        public void HighlightStepObjectScope(int index)
+        {
+            for (int i = 0; i < stagedOutputs.Count; i++)
+            {
+                SGIO io = stagedOutputs[i];
+                foreach(ShapeObject o in io.shapes)
+                {
+                    o.highlightScope = false;
+                }
+            }
+            foreach (ShapeObject o in stagedOutputs[index].shapes)
+            {
+                o.highlightScope = true;
+            }
+        }
+        public void DisplayStep(int step)
+        {
+            displayStep = step;
+        }
         public void SelectStep(int index)
         {
             if (index < 0 || index >= rules.Count) return;
@@ -205,7 +226,8 @@ namespace SGCore
                     {
                         try
                         {
-                            o.gameObject.SetActive(false);
+                            //o.gameObject.SetActive(false);
+                            o.Show(false);
                         }
                         catch
                         {
@@ -223,8 +245,10 @@ namespace SGCore
             sgio = stagedOutputs[displayStep];
             foreach (ShapeObject o in sgio.shapes)
             {
-                if(o!=null)
-                    o.gameObject.SetActive(true);
+                if (o != null)
+                    //o.gameObject.SetActive(true);
+                    o.Show(true);
+
             }
 
         }

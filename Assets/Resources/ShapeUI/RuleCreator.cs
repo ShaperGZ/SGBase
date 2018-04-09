@@ -30,16 +30,21 @@ public class RuleCreator
         foreach (Type t in ruleTypes)
         {
             string name = UIPrefix + t.Name;
-            Button button = GameObject.Find(name).GetComponent<Button>();
-            button.onClick.AddListener
-                (delegate
-                {
-                    Rule r = Activator.CreateInstance(t) as Rule;
-                    Debug.Log(string.Format("create {0} on click in RuleCreator",r.name));
-                    UserStats.SelectedGrammar.AddRule(r,true);
-                    UserStats.ruleNavigator.AddItem(r.description);
-                }
-                );
+            try
+            {
+                Button button = GameObject.Find(name).GetComponent<Button>();
+                button.onClick.AddListener
+                    (delegate
+                    {
+                        Rule r = Activator.CreateInstance(t) as Rule;
+                        Debug.Log(string.Format("create {0} on click in RuleCreator", r.name));
+                        UserStats.SelectedGrammar.AddRule(r, true);
+                        UserStats.ruleNavigator.AddItem(r.description);
+                    }
+                    );
+            }
+            catch { };
+           
         }
     }
  
@@ -48,6 +53,8 @@ public class RuleCreator
         List<Type> rules = new List<Type>();
         rules.Add(typeof(Rules.Bisect)); //name the UI: Bt_Crt_Bisect
         rules.Add(typeof(Rules.Scale));//name the UI: Bt_Crt_Scale
+        rules.Add(typeof(Rules.DivideTo));
+        rules.Add(typeof(Rules.CreateBox));
         return rules.ToArray();
     }
 
