@@ -199,20 +199,44 @@ public class ShapeObject : MonoBehaviour {
     {
         meshable = imeshable;
         Vector3 vectu;
-        if (direction.HasValue) vectu = direction.Value;
-        else vectu = new Vector3(1, 0, 0);
-        BoundingBox bbox = meshable.GetBoundingBox(vectu);
+        BoundingBox bbox;
+        if (direction.HasValue)
+        {
+            vectu = direction.Value;
+            bbox = meshable.GetBoundingBox(vectu);
+            meshable.bbox = bbox;
+        }
+        else if (meshable.bbox == null)
+        {
+            vectu = new Vector3(1, 0, 0);
+            bbox = meshable.GetBoundingBox(vectu);
+            meshable.bbox = bbox;
+        }
+        else
+        {
+            bbox = meshable.bbox;
+        }
+        ConformToBBox(bbox);
 
-       
-
+    }
+    
+    public void SetMeshable(Meshable imeshable, BoundingBox refBbox)
+    {
+        meshable = imeshable;
+        Vector3 vectu;
+        BoundingBox bbox = meshable.GetBoundingBox(refBbox);
+        
+        ConformToBBox(bbox);
+    }
+    private void ConformToBBox(BoundingBox bbox)
+    {
         transform.position = bbox.vertices[0];
         transform.LookAt(bbox.vertices[3]);
-        Size = bbox.size;
+        transform.localScale = bbox.GetSignedSize();
         
         Mesh mesh = meshable.GetNormalizedMesh(bbox);
+        meshable.bbox = bbox;
         GetComponent<MeshFilter>().mesh = mesh;
-        //print("mesh.verticeCount=" + mesh.vertexCount.ToString());
-
     }
     private void OnDestroy()
     {
@@ -253,8 +277,8 @@ public class ShapeObject : MonoBehaviour {
     public static ShapeObject CreateMeshable(Meshable mb)
     {
         ShapeObject so = ShapeObject.CreateBasic();
-        Vector3 ld = mb.direction;
-        so.SetMeshable(mb, ld);
+        so.SetMeshable(mb, mb.direction);
+        
         return so;
     }
     public void PivotTurn(int num=1)
@@ -267,7 +291,6 @@ public class ShapeObject : MonoBehaviour {
         Vector3 uOffset;
         float euler;
         num = Mathf.Clamp(num, -3, 3);
-        
         
         if (num > 0)//clock wise
         {
@@ -308,20 +331,37 @@ public class ShapeObject : MonoBehaviour {
     }
     public void PivotMirror(int axis)
     {
+        meshable.bbox = BoundingBox.Reflect(meshable.bbox,axis);
+        meshable.ReverseSide();
+        SetMeshable(meshable);
+    }
+    public void PivotMirror2(int axis)
+    {
         Vector3 size = Size;
         Vector3 vect = Vects[axis].normalized;
         Vector3 offset = vect*size[axis];
         Mesh m = GetComponent<MeshFilter>().mesh;
-
-        Matrix4x4 m1 = Matrix4x4.Scale(new Vector3(-1, 1, 1));
+        Vector3 reflection = new Vector3(1, 1, 1);
+        reflection[axis] *= -1;
+        
+        Matrix4x4 m1 = Matrix4x4.Scale(reflection);
         Matrix4x4 m2 = Matrix4x4.Translate(offset);
-        Matrix4x4 m3 = Matrix4x4.Translate(vect);
+        
+        Vector3 scale = transform.localScale;
+        scale[axis] *= -1;
+        transform.localScale = scale;
+        transform.position = m2.MultiplyPoint3x4(transform.position);
+
+        Vector3 uOffset = new Vector3(0, 0, 0);
+        uOffset[axis] = 1;
+        Matrix4x4 m3 = Matrix4x4.Translate(uOffset);
 
         Vector3[] opts = m.vertices.Clone() as Vector3[];
         for (int i = 0; i < opts.Length; i++)
         {
             opts[i] = m1.MultiplyPoint3x4(opts[i]);
             opts[i] = m3.MultiplyPoint3x4(opts[i]);
+
         }
         int[] tris = m.triangles.Clone() as int[];
         for (int i = 0; i < tris.Length; i += 3)
@@ -329,16 +369,14 @@ public class ShapeObject : MonoBehaviour {
             tris[i + 1] = m.triangles[i + 2];
             tris[i + 2] = m.triangles[i + 1];
         }
-        Vector3 scale = transform.localScale;
-        scale[axis] *= -1;
-        transform.localScale = scale;
-        transform.position = m2.MultiplyPoint3x4(transform.position);
-        //so.transform.localScale = scale;
-        //so.transform.position -= magVect;
+        
         m.vertices = opts;
         m.triangles = tris;
         m.RecalculateNormals();
         m.RecalculateBounds();
+
+        meshable.bbox = BoundingBox.CreateFromBox(transform.position, Vects, Size);
+
     }
     public ShapeObject Clone( bool geometryOnly = true)
     {
@@ -349,10 +387,14 @@ public class ShapeObject : MonoBehaviour {
     public void CloneTo(ShapeObject so, bool geometryOnly=true)
     {
         so.transform.position = transform.position;
-        so.transform.rotation = transform.rotation;
+        //so.transform.Rotate(transform.eulerAngles);
+        //so.transform.Rotate(transform.rotation.eulerAngles);
         so.transform.up = transform.up;
         so.transform.localScale = transform.localScale;
-        so.meshable = meshable;
+        //so.transform.localPosition = transform.localPosition;
+        so.transform.localRotation = transform.localRotation;
+        //so.transform.localEulerAngles = transform.localEulerAngles;
+        so.meshable = (Meshable)meshable.Clone();
         so.GetComponent<MeshFilter>().mesh = GetComponent<MeshFilter>().mesh;
         if (!geometryOnly)
         {

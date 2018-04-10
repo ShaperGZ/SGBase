@@ -10,134 +10,120 @@ namespace SGCore
 {
     public class Grammar:Node
     {
-        public int currentStep=-1;
+        public int currentStep = -1;
         public int displayStep = -1;
+        public List<Node> subNodes;
         public List<SGIO> stagedOutputs;
-        public List<Rule> rules;
         public List<ShapeObject> assignedObjects;
-
-        public List<ShapeObject> dubugAvauilables;
-        
 
         public Grammar():base()
         {
             stagedOutputs = new List<SGIO>();
-            rules = new List<Rule>();
+            subNodes = new List<Node>();
             assignedObjects = new List<ShapeObject>();
+            paramGroups = DefaultParam();
         }
-        public void AddRule(Rule r, bool execute = true)
+        public Grammar(string inName, string[] outNames):this()
         {
-            currentStep = rules.Count;
+            inputs.names.Add(inName);
+            outputs.names.AddRange(outNames);
+        }
+        public void AddRule(Node r, bool execute = true)
+        {
+            currentStep = subNodes.Count;
             displayStep = currentStep;
-            rules.Add(r);
+            subNodes.Add(r);
             r.grammar = this;
-            r.step = rules.Count - 1;
+            r.step = subNodes.Count - 1;
             if (execute)
             {
-                Execute(rules.Count-1);
-                SelectStep(rules.Count - 1);
+                Execute(subNodes.Count-1);
+                SelectStep(subNodes.Count - 1);
             }
-            
         }
         public void SubRule(Rule r, bool execute = true)
         {
-            int index = rules.IndexOf(r);
-            rules.Remove(r);
-            if (execute && index > 0 && index < rules.Count)
+            int index = subNodes.IndexOf(r);
+            subNodes.Remove(r);
+            if (execute && index > 0 && index < subNodes.Count)
             {
                 Execute(index);
             }
         }
-        
-        public void Execute()
+
+        public override void Execute()
         {
-            for (int i = 0; i < rules.Count; i++)
+            for (int i = 0; i < subNodes.Count; i++)
             {
+                //Debug.Log(string.Format("{0}: exe step{1}", name, i));
                 Execute(i);
             }
-            DisplayStep(rules.Count - 1);
-            SelectStep(rules.Count - 1);
+            DisplayStep(subNodes.Count - 1);
+            SelectStep(subNodes.Count - 1);
+            outputs = stagedOutputs[stagedOutputs.Count - 1];
         }
-        public void Execute(int i)
+        public virtual void Execute(int i)
         {
             //------------------------------------
             currentStep = i;
             SGIO tobeMerged = PreExecution(i);
-            
-            
-            //Debug.Log("rule inputSHapes.Count=" + rules[i].inputs.shapes.Count);
-            rules[i].step = i;
-            rules[i].Execute();
-            //------------------------------------
 
-            PostExecution(i,tobeMerged);
+            //Debug.Log("rule inputSHapes.Count=" + subNodes[i].inputs.shapes.Count);
+            //Debug.Log(string.Format("{0}:step{1} about to execute {2} ",name,i,subNodes[i].name));
+            subNodes[i].step = i;
+            subNodes[i].Execute();
+            //------------------------------------
+            //Debug.Log("rule outputSHapes.Count=" + subNodes[i].outputs.shapes.Count);
+
+            PostExecution(i, tobeMerged);
         }
-        public void ExecuteFrom(Rule rule)
+        public virtual void ExecuteFrom(Node rule)
         {
-            int index = rules.IndexOf(rule);
-            if (index >= 0 && index < rules.Count)
+            int index = subNodes.IndexOf(rule);
+            if (index >= 0 && index < subNodes.Count)
                 ExecuteFrom(index);
         }
-        public void ExecuteFrom(int start)
+        public virtual void ExecuteFrom(int start)
         {
-            for (int i = start; i < rules.Count; i++)
+            for (int i = start; i < subNodes.Count; i++)
             {
                 Execute(i);
             }
-            DisplayStep(rules.Count - 1);
-            SelectStep(rules.Count - 1);
-            
+            DisplayStep(subNodes.Count - 1);
+            SelectStep(subNodes.Count - 1);
+
         }
-        public SGIO PreExecution(int step)
+        public virtual SGIO PreExecution(int step)
         {
-            List<ShapeObject> availableShapes=new List<ShapeObject>();
-            List<ShapeObject> outShapes=new List<ShapeObject>();
-            SGIO tobeMerged=new SGIO();
-            //string txt = string.Format("PreExe step {0}, stg.Count={1}", step, stagedOutputs.Count);
+            List<ShapeObject> availableShapes = new List<ShapeObject>();
+            List<ShapeObject> outShapes = new List<ShapeObject>();
+            SGIO tobeMerged = new SGIO();
+            string txt = string.Format("PreExe step {0}, stg.Count={1}", step, stagedOutputs.Count);
             //Debug.Log(txt);
 
             //get available shapes
             if (step == 0)
             {
-
+                //Debug.Log(string.Format("step==0, inputShapeCount={0} assignedCount={1}", inputs.shapes.Count , assignedObjects.Count));
                 if (assignedObjects.Count > 0)
                 {
                     foreach (ShapeObject so in assignedObjects) so.gameObject.active = false;
-                    rules[0].inputs.shapes = assignedObjects;
+                    subNodes[0].inputs.shapes = assignedObjects;
                     return tobeMerged;
                 }
-                availableShapes.AddRange(inputs.shapes);
+                subNodes[0].inputs.shapes = inputs.shapes;
+                return tobeMerged;
             }
             else
             {
-                availableShapes.AddRange(stagedOutputs[step-1].shapes);
+                availableShapes.AddRange(stagedOutputs[step - 1].shapes);
             }
 
-            //turnoff all available shapes
-            //foreach (ShapeObject so in availableShapes) so.gameObject.active = false;
-
-            //select shapes from available shapes base on required names 
-            ////List<ShapeObject> toBeDeleted = new List<ShapeObject>();
             foreach (ShapeObject o in availableShapes)
             {
                 try
                 {
-                    //bool contains = false;
-                    //foreach(string n in rules[step].inputs.names)
-                    //{
-                    //    string oname = o.name.ToString();
-                    //    //string msg = step+ " >>>>>Compare" + n + " vs " + oname;
-                    //    //msg += string.Format("\n {0}.type={1} count={2}", n, n.GetType(),n.Length);
-                    //    //msg += string.Format("\n {0}.type={1} count={2}", oname, oname.GetType(),oname.Length);
-                    //    //Debug.Log(msg);
-                    //    if (n.ToString() == oname)
-                    //    {
-                    //        contains = true;
-                    //        break;
-                    //    }
-                    //}
-                    ////if(contains)
-                    if(rules[step].inputs.names.Contains(o.name))
+                    if (subNodes[step].inputs.names.Contains(o.name))
                     {
                         outShapes.Add(o);
                     }
@@ -150,37 +136,30 @@ namespace SGCore
                             tobeMerged.names.Add(o.name);
                         tobeMerged.shapes.Add(o);
                     }
-                    
+
                 }
                 catch
                 {
                     //toBeDeleted.Add(o);
-                    Debug.Log("TBD found at "+step + "ShapeObject="+o);
+                    Debug.Log("TBD found at " + step + "ShapeObject=" + o);
                 }
-                
+
             }
             ////foreach(ShapeObject o in toBeDeleted)
             ////{
             ////    availableShapes.Remove(o);
             ////}
-            rules[step].inputs.shapes = outShapes;
-
-            String strs = "";
-            foreach(ShapeObject so in availableShapes)
-            {
-                strs += "\n"+ so.Format();
-            }
-            //Debug.Log(step + "availables:" + strs);
+            subNodes[step].inputs.shapes = outShapes;
 
             return tobeMerged;
 
         }
-        public void PostExecution(int step, SGIO tobeMerged)
+        public virtual void PostExecution(int step, SGIO tobeMerged)
         {
-            
 
-            SGIO tempOut=new SGIO();
-            tempOut = SGIO.Merge(rules[step].outputs, tobeMerged);
+
+            SGIO tempOut = new SGIO();
+            tempOut = SGIO.Merge(subNodes[step].outputs, tobeMerged);
             if (step >= stagedOutputs.Count)
             {
                 stagedOutputs.Add(tempOut);
@@ -195,7 +174,7 @@ namespace SGCore
             for (int i = 0; i < stagedOutputs.Count; i++)
             {
                 SGIO io = stagedOutputs[i];
-                foreach(ShapeObject o in io.shapes)
+                foreach (ShapeObject o in io.shapes)
                 {
                     o.highlightScope = false;
                 }
@@ -211,7 +190,7 @@ namespace SGCore
         }
         public void SelectStep(int index)
         {
-            if (index < 0 || index >= rules.Count) return;
+            if (index < 0 || index >= subNodes.Count) return;
             currentStep = index;
             displayStep = index;
             SGIO sgio;
@@ -241,7 +220,7 @@ namespace SGCore
                     }
                 }
             }
-            
+
             sgio = stagedOutputs[displayStep];
             foreach (ShapeObject o in sgio.shapes)
             {
@@ -253,20 +232,21 @@ namespace SGCore
 
         }
 
+
         public void SaveXML(string path)
         {
             XmlSerializer xsl = new XmlSerializer(typeof(List<Rule>));
             System.IO.TextWriter tw = new System.IO.StreamWriter(path);
-            xsl.Serialize(tw, rules);
+            xsl.Serialize(tw, subNodes);
             tw.Close();
         }
         public void LoadXML(string path)
         {
             XmlSerializer xsl = new XmlSerializer(typeof(List<Rule>));
             System.IO.TextReader tr = new System.IO.StreamReader(path);
-            rules=(List<Rule>)xsl.Deserialize(tr);
+            subNodes=(List<Node>)xsl.Deserialize(tr);
             tr.Close();
-            foreach(Rule r in rules)
+            foreach(Rule r in subNodes)
             {
                 Debug.Log(r.description);
             }
@@ -278,7 +258,7 @@ namespace SGCore
         {
             if(UserStats.SelectedGrammar == this || UserStats.ruleNavigator != null)
             {
-                foreach (Rule r in rules)
+                foreach (Rule r in subNodes)
                 {
                     UserStats.ruleNavigator.AddItem(r.description);
                 }
@@ -288,7 +268,7 @@ namespace SGCore
         {
             string text = "";
             List<string> txts=new List<string>();
-            foreach(Rule r in rules)
+            foreach(Rule r in subNodes)
             {
                 text += "\n" + r.ToSentence();
                 txts.Add( "\n" + r.ToSentence());
@@ -332,8 +312,10 @@ namespace SGCore
                 }
             }
             stagedOutputs.Clear();
-            rules.Clear();
+            subNodes.Clear();
         }
+
+
     }
 }
 

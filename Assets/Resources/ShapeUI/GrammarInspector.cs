@@ -42,7 +42,7 @@ public class GrammarInspector : MonoBehaviour {
         text += grammar.name.ToString();
         text += string.Format(" R{0}/{1} | N{2}O{3} -> N{4}O{5}",
             grammar.currentStep,
-            grammar.rules.Count,
+            grammar.subNodes.Count,
             grammar.inputs.names.Count,
             grammar.inputs.shapes.Count,
             grammar.outputs.names.Count,
@@ -52,9 +52,9 @@ public class GrammarInspector : MonoBehaviour {
 
 
         text = "";
-        for (int i = 0; i < grammar.rules.Count; i++)
+        for (int i = 0; i < grammar.subNodes.Count; i++)
         {
-            text += grammar.rules[i].description;
+            text += grammar.subNodes[i].description;
             text += "\n";
         }
 

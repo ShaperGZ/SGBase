@@ -32,6 +32,7 @@ public class TestGrammarUI : MonoBehaviour {
         return pts;
     }
 
+
     public static void Rule1(Grammar g1)
     {
         g1.AddRule(new Rules.CreateBox("A", new Vector3(), new Vector3(60, 30, 18), new Vector3()), false);
@@ -53,6 +54,27 @@ public class TestGrammarUI : MonoBehaviour {
         g1.AddRule(new Rules.Scale("D", "D", 1.5f, 1), false);
     }
 
+    public static void Rule3(Grammar g1)
+    {
+        Debug.Log(">>>>>>>>>>> FLAG 1");
+        g1.AddRule(new Rules.PivotMirror("A", "A", 0),false);
+        Debug.Log(">>>>>>>>>>> FLAG 2");
+        //g1.AddRule(new Rules.BisectMirror("A", new string[] { "B", "B" }, 0.5f, 0), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.2f, 0), false);
+        //g1.AddRule(new Rules.Scale("C", "D", 1.2f, 1), false);
+    }
+    public static void Rule4(Grammar g1)
+    {
+        g1.AddRule(new Rules.PivotMirror("A", "A", 0), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.6f, 0), false);
+        //g1.AddRule(new Rules.PivotMirror("C", "A", 0), false);
+        //g1.AddRule(new Rules.Bisect("A", new string[] { "A", "C" }, 0.6f, 0), false);
+        //g1.AddRule(new Rules.BisectMirror("A", new string[] { "A", "A" }, 0.5f, 0), false);
+        //g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.2f, 2), false);
+        //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
+
+    }
+
     void Start () {
         Vector3[] pts = initShape1();
         Polyline pl = new Polyline(pts);
@@ -64,12 +86,13 @@ public class TestGrammarUI : MonoBehaviour {
         ShapeObject init = ShapeObject.CreateMeshable(f);
         init.name = "init";
 
+
         g1 = new Grammar();
-        Rule1(g1);
-        //g1.assignedObjects.Add(init);
-        //Rule2(g1);
+        g1.name = "g1";
+        g1.assignedObjects.Add(init);
+        Rule3(g1);
         g1.Execute();
-        
+
 
         //relate UI elements
         stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
@@ -104,7 +127,7 @@ public class TestGrammarUI : MonoBehaviour {
         //UserStats.UI_RuleList.onSelectCallbacks += SelectRule;
         UserStats.ruleNavigator.Clear();
 
-        foreach (Rule r in g1.rules)
+        foreach (Node r in g1.subNodes)
         {
             UserStats.ruleNavigator.AddItem(r.description);
         }

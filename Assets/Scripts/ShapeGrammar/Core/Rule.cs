@@ -9,13 +9,8 @@ using SGGeometry;
 
 namespace SGCore
 {
-
     public class Rule : Node
-    {
-        public Grammar grammar;
-        public int step=-1;
-        public OrderedDictionary paramGroups;
-        
+    { 
         public List<Meshable> outMeshables;
         public new string description {
             get
@@ -29,6 +24,14 @@ namespace SGCore
                 return txt;
             }
         }
+        public new string name
+        {
+            get
+            {
+                return this.GetType().ToString();
+            }
+        }
+
         public Rule()
         {
             inputs.names = new List<string>();
@@ -46,7 +49,7 @@ namespace SGCore
             inputs.names = new List<string>(new string[] { inName });
             outputs.names = new List<string>(outNames);
         }
-        public virtual void Execute()
+        public override void Execute()
         {
             //operate on meshables and update existing shapeobjects
             outMeshables.Clear();
@@ -58,16 +61,8 @@ namespace SGCore
                     List<Meshable> outs = ExecuteShape(inputs.shapes[i]);
                     outMeshables.AddRange(outs.ToArray());
                     //Debug.Log("meshable COunt=" + outMeshables.Count);
-
                 }
             }
-            else
-            {
-                List<Meshable> outs = ExecuteShape(null);
-                outMeshables.AddRange(outs.ToArray());
-            }
-            
-
             UpdateOutputShapes();
         }
         public void AssignNames(List<Meshable> sos)
@@ -78,9 +73,9 @@ namespace SGCore
                 sos[i].name = outputs.names[nameIndex];
             }
         }
-        public void AssignNames(Meshable[] mbs)
+        public void AssignNames(List<ShapeObject> mbs)
         {
-            for (int i = 0; i < mbs.Length; i++)
+            for (int i = 0; i < mbs.Count; i++)
             {
                 int nameIndex = i % outputs.names.Count;
                 mbs[i].name = outputs.names[nameIndex];
@@ -90,10 +85,7 @@ namespace SGCore
         {
             return null;
         }
-        public virtual OrderedDictionary DefaultParam()
-        {
-            return new OrderedDictionary();
-        }
+
         public void UpdateOutputShapes()
         {
             //List<string> newNames = new List<string>();
@@ -106,7 +98,6 @@ namespace SGCore
                 for (int i = 0; i < dif; i++)
                 {
                     int index = outputs.shapes.Count - 1;
-                    Debug.Log("DELETING ---->" + outputs.shapes[index].Format());
                     GameObject.Destroy(outputs.shapes[index].gameObject);
                     outputs.shapes.RemoveAt(index);
                 }
@@ -120,7 +111,8 @@ namespace SGCore
                 Meshable mb = outMeshables[i];
                 if (i < shapeCount)
                 {
-                    outputs.shapes[i].SetMeshable(mb,mb.direction);
+                    //outputs.shapes[i].SetMeshable(mb);
+                    outputs.shapes[i].SetMeshable(mb,mb.bbox);
                     outputs.shapes[i].name = mb.name;
                     outputs.shapes[i].parentRule = this;
                     outputs.shapes[i].step = step;
@@ -137,14 +129,7 @@ namespace SGCore
             //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
 
         }
-        public new string name
-        {
-            get
-            {
-                return this.GetType().ToString();
-            }
-        }
-
+        
 
         public string ToSentence()
         {
@@ -178,6 +163,7 @@ namespace SGCore
             return txt;
 
         }
+
         public static Rule CreateFromSentence(string txt)
         {
             Debug.Log("creating " + txt);
@@ -231,8 +217,6 @@ namespace SGCore
 
                 paramOD.Add(pKey, pg);
             }
-            
-
             
             //Debug.Log(confirmStr);
             string[] pair = className.Split('.');

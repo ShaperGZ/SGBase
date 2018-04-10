@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
 namespace SGGeometry
 {
     //Base classes for geometries
-    
     public class GLRender
     {
         public static Material lineMat;
@@ -129,7 +129,188 @@ namespace SGGeometry
         public Vector3[] vertices;
         public BoundingBox()
         {
+        }
+        public Vector3 GetSignedSize()
+        {
+            Vector3 s = size;
+            if (Vector3.Cross(vects[0], vects[2]).y > 0)
+                s[0] *= -1;
+            return s;
+        }
+        public BoundingBox Clone()
+        {
+            BoundingBox bbox = new BoundingBox();
+            bbox.position = position*1;
+            bbox.vects = vects.ToArray<Vector3>();
+            bbox.size = size*1;
+            bbox.vertices= vertices.ToArray();
+            return bbox;
+        }
+        public string Format()
+        {
+            string t = "";
+            t = string.Format("pos:{0} vect0:{1} size:{2}", position, vects[0], size);
+            t += string.Format("signed scale={0}", GetSignedSize());
+            return t;
+        }
+        public static BoundingBox Reflect(BoundingBox bbox, int axis)
+        {
+            //Debug.Log(counter + " run Reflect");
+            //DebugSpheres(bbox,Color.blue, 10f);
 
+            Vector3[] pts = bbox.vertices.Clone() as Vector3[];
+            Vector3 reflection = new Vector3(1, 1, 1);
+            reflection[axis] *= -1;
+            Vector3 from = bbox.vects[0];
+            Matrix4x4 mr1 = Matrix4x4.Rotate(Quaternion.FromToRotation(from,new Vector3(1,0,0)));
+            Matrix4x4 mMrr = Matrix4x4.Scale(reflection);
+            Matrix4x4 mr2 = Matrix4x4.Rotate(Quaternion.FromToRotation(new Vector3(1, 0, 0),from));
+
+            for (int i = 0; i < pts.Length; i++)
+            {
+                pts[i] -= bbox.position;
+                pts[i] = mr1.MultiplyPoint3x4(pts[i]);
+                pts[i] = mMrr.MultiplyPoint3x4(pts[i]);
+                pts[i] = mr2.MultiplyPoint3x4(pts[i]);
+                pts[i] += bbox.position;
+                pts[i] += bbox.vects[axis]* bbox.size[axis];
+            }
+            BoundingBox outbox = new BoundingBox();
+            outbox.vertices = pts;
+            outbox.SetVectsAndSizeFromVertices();
+            //DebugSpheres(outbox, Color.red, 10f);
+            return outbox;
+        }
+        public static void DebugSpheres(BoundingBox bbox, Color c, float d)
+        {
+            GameObject og;
+            og = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            og.GetComponent<MeshRenderer>().material.color = c;
+            og.transform.localScale = new Vector3(d * 2, d * 2, d * 2);
+            og.transform.position = bbox.vertices[0];
+            
+            foreach (Vector3 v in bbox.vertices)
+            {
+                GameObject o;
+                o = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                o.GetComponent<MeshRenderer>().material.color = c;
+                o.transform.localScale = new Vector3(d,d,d);
+                o.transform.position = v;
+                o.transform.parent = og.transform;
+            }
+            
+        }
+        public void SetVectsAndSizeFromVertices()
+        {
+            position = vertices[0];
+            vects = new Vector3[3]
+            {
+                (vertices[1]-vertices[0]).normalized,
+                (vertices[4]-vertices[0]).normalized,
+                (vertices[3]-vertices[0]).normalized
+            };
+            size = new Vector3
+            (
+                Vector3.Distance(vertices[0], vertices[1]),
+                Vector3.Distance(vertices[0], vertices[4]),
+                Vector3.Distance(vertices[0], vertices[3])
+            );
+        }
+        public static BoundingBox CreateFromBox(Vector3 pos, Vector3[] vects, Vector3 size)
+        {
+            Vector3[] pts = new Vector3[8];
+            Vector3[] magVs = new Vector3[3];
+
+            //Vector3 reflection = new Vector3(1, 1, 1);
+
+
+            for (int i=0;i<3;i++)
+            {
+                magVs[i] = vects[i] * size[i];
+            }
+            pts[0] = pos;
+            pts[1] = pos + magVs[0];
+            pts[2] = pts[1] + magVs[2];
+            pts[3] = pos + magVs[2];
+
+            for(int i=0;i<4;i++)
+            {
+                pts[i] += magVs[1];
+            }
+
+            BoundingBox bbox = new BoundingBox();
+            bbox.position = pos;
+            bbox.vects = vects;
+            bbox.size = size;
+            return bbox;
+        }
+        public static BoundingBox CreateFromPoints(Vector3[] pts, Vector3[] vects, Vector3 reflection)
+        {
+            BoundingBox bbox = new BoundingBox();
+            reflection.Normalize();
+
+            Plane[] plnMins = new Plane[3];
+            Plane[] plnMaxs = new Plane[3];
+            Vector3[] ptMins = new Vector3[3];
+            Vector3[] ptMaxs = new Vector3[3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                plnMins[i] = new Plane(-vects[i], pts[0]);
+                plnMaxs[i] = new Plane(vects[i], pts[0]);
+                ptMins[i] = pts[0];
+                ptMaxs[i] = pts[0];
+            }
+            for (int i = 0; i < pts.Length; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (plnMins[j].GetSide(pts[i]))
+                    {
+                        plnMins[j] = new Plane(-vects[j], pts[i]);
+                        ptMins[j] = pts[i];
+                    }
+                    if (plnMaxs[j].GetSide(pts[i]))
+                    {
+                        plnMaxs[j] = new Plane(vects[j], pts[i]);
+                        ptMaxs[j] = pts[i];
+                    }
+
+                }
+            }
+
+            Vector3[] horPts = new Vector3[4];
+            horPts[0] = plnMins[2].ClosestPointOnPlane(ptMins[0]);
+            horPts[1] = plnMins[2].ClosestPointOnPlane(ptMaxs[0]);
+            horPts[3] = plnMaxs[2].ClosestPointOnPlane(ptMins[0]);
+            horPts[2] = plnMaxs[2].ClosestPointOnPlane(ptMaxs[0]);
+
+            Vector3[] outPts = new Vector3[8];
+            for (int i = 0; i < 4; i++)
+            {
+                outPts[i] = plnMins[1].ClosestPointOnPlane(horPts[i]);
+                outPts[i + 4] = plnMaxs[1].ClosestPointOnPlane(horPts[i]);
+            }
+
+            bbox.position = outPts[0];
+            bbox.vects = vects;
+            bbox.size = new Vector3(
+                Vector3.Distance(outPts[0], outPts[1]),
+                Vector3.Distance(outPts[0], outPts[4]),
+                Vector3.Distance(outPts[0], outPts[3])
+                );
+            //bbox.size = new Vector3(
+            //    Vector3.Distance(outPts[0], outPts[1]) * reflection[0],
+            //    Vector3.Distance(outPts[0], outPts[4]) * reflection[1],
+            //    Vector3.Distance(outPts[0], outPts[3]) * reflection[2]
+            //    );
+            bbox.vertices = outPts;
+            return bbox;
+        }
+        public static BoundingBox CreateFromPoints(Vector3[] pts, BoundingBox refBbox)
+        {
+            Vector3[] vects = refBbox.vects;
+            return CreateFromPoints(pts, vects, refBbox.size);
         }
         public static BoundingBox CreateFromPoints(Vector3[] pts, Vector3? direction=null)
         {
@@ -196,6 +377,7 @@ namespace SGGeometry
             bbox.vertices = outPts;
             return bbox;
         }
+       
     }
     public class GeometryBase
     {
@@ -241,6 +423,7 @@ namespace SGGeometry
     }
     public class PointsBase: GeometryBase
     {
+        public BoundingBox bbox;
         public Vector3[] vertices;
         public PointsBase()
         {
@@ -258,6 +441,8 @@ namespace SGGeometry
         public virtual PointsBase Clone()
         {
             PointsBase pb = new PointsBase();
+            if (bbox != null)
+                pb.bbox = bbox.Clone();
             pb.vertices = vertices.Clone() as Vector3[];
             return pb;
         }
@@ -347,6 +532,10 @@ namespace SGGeometry
         {
             return BoundingBox.CreateFromPoints(vertices, direction);
         }
+        public BoundingBox GetBoundingBox(BoundingBox bbox)
+        {
+            return BoundingBox.CreateFromPoints(vertices, bbox);
+        }
     }
     public class TrianglesBase : PointsBase
     {
@@ -360,7 +549,6 @@ namespace SGGeometry
     public class Meshable : TrianglesBase
     {
         public List<Polyline> displayLines = new List<Polyline>();
-
         public Vector3 direction=new Vector3(1,0,0);
         public Meshable()
         {
@@ -381,6 +569,8 @@ namespace SGGeometry
             Meshable mb = new Meshable();
             mb.vertices = vertices.Clone() as Vector3[];
             mb.triangles = triangles.Clone() as int[];
+            if (bbox != null)
+                mb.bbox = bbox.Clone();
             return mb;
         }
         public virtual Meshable Transform(Matrix4x4 matrix, bool duplicate = false)
@@ -426,7 +616,10 @@ namespace SGGeometry
             }
             triangles = ntris;
         }
-
+        public virtual void ReverseSide()
+        {
+            ReverseTriangle();
+        }
         public Polygon[] GridByMag(float w, float h)
         {
             if (vertices.Length != 4) return null;
@@ -537,7 +730,7 @@ namespace SGGeometry
         }
         public virtual Meshable[] SplitByPlane(Plane pln, out Polyline nakedEdge)
         {
-            Debug.Log("spliting meshable");
+            //Debug.Log("spliting meshable");
             int nullP = 0;
             foreach (Vector3 p in vertices)
             {
@@ -584,7 +777,7 @@ namespace SGGeometry
             if (right.Count > 2) pgs[1] = new Polygon(right.ToArray());
             else pgs[1] = null;
 
-            Debug.Log(string.Format("leg={0} right={1}", left.Count, right.Count));
+            //Debug.Log(string.Format("leg={0} right={1}", left.Count, right.Count));
 
 
             if (nakedPts.Count > 1)
@@ -598,21 +791,32 @@ namespace SGGeometry
         {
             //Vector3 org = bbox.position;
             Vector3 org = bbox.position;
-            Quaternion q = Quaternion.FromToRotation(bbox.vects[0], new Vector3(1, 0, 0));
-            Matrix4x4 matrix = Matrix4x4.Rotate(q);
-            Vector3 scale = bbox.size;
+            Vector3 to = new Vector3(1, 0, 0);
+            Vector3 signedSize= bbox.GetSignedSize();
+            if (signedSize[0] < 0) to[0] *= -1;
+
+            Quaternion q = Quaternion.FromToRotation(bbox.vects[0], to);
+            Matrix4x4 mRotate = Matrix4x4.Rotate(q);
+            
+            //Vector3 scale = bbox.size;
+            Vector3 scale = bbox.GetSignedSize();
             for(int i = 0; i < 3; i++)
             {
                 if (scale[i] == 0) scale[i] = 1;
                 scale[i] = 1 / scale[i];
             }
-;           Mesh m = GetMeshForm();
+            Matrix4x4 mScale = Matrix4x4.Scale(scale);
+            Mesh m = GetMeshForm();
             Vector3[] verts = m.vertices;
             for (int i = 0; i < verts.Length; i++)
             {
+                
                 verts[i] -= org;
-                verts[i] = matrix * verts[i];
-                verts[i].Scale(scale);
+                verts[i] = mRotate.MultiplyPoint3x4( verts[i]);
+                verts[i] = mScale.MultiplyPoint3x4(verts[i]);
+                //verts[i].Scale(scale);
+                
+                
                 //verts[i] += new Vector3(0.5f, 0, 0.5f);
             }
             m.vertices = verts;
@@ -665,6 +869,8 @@ namespace SGGeometry
             CompositMeshable mb = new CompositMeshable(mbs);
             mb.vertices = vertices.Clone() as Vector3[];
             mb.triangles = triangles.Clone() as int[];
+            if (bbox != null)
+                mb.bbox = bbox.Clone();
             return mb;
         }
         public override void ReverseTriangle()
@@ -673,6 +879,14 @@ namespace SGGeometry
             foreach(Meshable m in components)
             {
                 m.ReverseTriangle();
+            }
+        }
+        public override void ReverseSide()
+        {
+            base.ReverseTriangle();
+            foreach (Meshable m in components)
+            {
+                m.ReverseSide();
             }
         }
         public override Meshable Transform(Matrix4x4 matrix, bool duplicate = false)
@@ -858,7 +1072,16 @@ namespace SGGeometry
             }
             return lns;
         }
-
+        public override PointsBase Clone()
+        {
+            Polyline poly = new Polyline();
+            poly.vertices = vertices.Clone() as Vector3[];
+            poly.closed = closed;
+            poly.color = color;
+            if(bbox!=null)
+                poly.bbox = bbox.Clone();
+            return poly;
+        }
     }
     public class Face : Meshable
     {
@@ -906,11 +1129,26 @@ namespace SGGeometry
                 triangles = new int[] { 0, 1, 2 };
             }
             this.vertices = pts;
-        } 
+        }
+        public override void ReverseSide()
+        {
+            System.Array.Reverse(vertices);
+        }
+        public override PointsBase Clone()
+        {
+            Polygon pg = new Polygon();
+            pg.vertices = vertices.Clone() as Vector3[];
+            pg.triangles = triangles.Clone() as int[];
+            if (boundary != null)
+                pg.boundary = (Polyline)boundary.Clone();
+            return pg;
+        }
         public Form Extrude(Vector3 magUp)
         {
             List<Polygon> pgs = new List<Polygon>();
-            Polygon bot = new Polygon(vertices);
+            Vector3[] Rvertices = vertices.Clone() as Vector3[];
+            System.Array.Reverse(Rvertices);
+            Polygon bot = new Polygon(Rvertices);
             bot.ReverseTriangle();
             pgs.Add(bot);
             Vector3[] ptsTop = new Vector3[vertices.Length];
@@ -928,10 +1166,11 @@ namespace SGGeometry
                 Polygon pg = new Polygon(pts);
                 pgs.Add(pg);
             }
-            pgs.Add(new Polygon(ptsTop.Reverse().ToArray()));
+            pgs.Add(new Polygon(ptsTop));
             Form outForm = new Form(pgs.ToArray());
             return outForm;
         }
+
     }
     public class Form : CompositMeshable
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 
 namespace SGCore
@@ -8,30 +9,37 @@ namespace SGCore
     {
         public SGIO inputs;
         public SGIO outputs;
-        public List<Node> upstreams;
+        public List<Node> upStreams;
         public List<Node> downStreams;
+        public Grammar grammar;
         public string name="unnamedNode";
         public string description = "";
         public bool invalidated = false;
+        public OrderedDictionary paramGroups;
+        public int step;
+        
 
         public Node()
         {
             inputs = new SGIO();
             outputs = new SGIO();
-            upstreams = new List<Node>();
+            upStreams = new List<Node>();
             downStreams = new List<Node>();
         }
+
+        public virtual void Execute() { }
+
 
         public void ConnectDownStream(Node node)
         {
             downStreams.Add(node);
-            node.upstreams.Add(this);
+            node.upStreams.Add(this);
 
         }
         public void DisconnectDownStream(Node node)
         {
             downStreams.Remove(node);
-            node.upstreams.Remove(this);
+            node.upStreams.Remove(this);
         }
 
         public void Invalidate()
@@ -44,6 +52,10 @@ namespace SGCore
                     n.Invalidate();
                 }
             }
+        }
+        public virtual OrderedDictionary DefaultParam()
+        {
+            return new OrderedDictionary();
         }
 
 

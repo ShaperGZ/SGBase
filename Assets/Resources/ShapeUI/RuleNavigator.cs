@@ -103,7 +103,7 @@ public class RuleNavigator : MonoBehaviour {
         Grammar g = UserStats.SelectedGrammar;
         g.SelectStep(i);
         //g.HighlightStepObjectScope(i);
-        ruleParamEditor.GenerateUI(g.rules[i]);
+        ruleParamEditor.GenerateUI((Rule)g.subNodes[i]);
         ruleParamEditor.ruleNavigator = this;
         printStructure();
     }
@@ -115,16 +115,16 @@ public class RuleNavigator : MonoBehaviour {
         txt += "Grammar.currentStep=" + g.currentStep.ToString();
         for (int i = 0; i < g.stagedOutputs.Count; i++)
         {
-            if (i < g.rules.Count)
+            if (i < g.subNodes.Count)
             {
-                txt += "\nRule #" + i.ToString() + g.rules[i].description;
+                txt += "\nRule #" + i.ToString() + g.subNodes[i].description;
             }
             else
             {
-                txt += "\nRule #" + i.ToString() +">="+ g.rules.Count;
+                txt += "\nRule #" + i.ToString() +">="+ g.subNodes.Count;
             }
             txt += "\n   Input: ";
-            foreach (ShapeObject o in g.rules[i].inputs.shapes)
+            foreach (ShapeObject o in g.subNodes[i].inputs.shapes)
             {
                 if (o != null)
                     txt += o.Format() + ",";
@@ -132,7 +132,7 @@ public class RuleNavigator : MonoBehaviour {
                     txt += "null,";
             }
             txt += "\n   Output: ";
-            foreach (ShapeObject o in g.rules[i].outputs.shapes)
+            foreach (ShapeObject o in g.subNodes[i].outputs.shapes)
             {
                 if(o!=null)
                     txt += o.Format() + ",";
@@ -164,12 +164,12 @@ public class RuleNavigator : MonoBehaviour {
     public void UpdateButtonDescriptions()
     {
         Grammar g = UserStats.SelectedGrammar;
-        for (int i =0;i<g.rules.Count; i++)
+        for (int i =0;i<g.subNodes.Count; i++)
         {
             if (i < items.Count)
-                items[i].transform.Find("Text").GetComponent<Text>().text = g.rules[i].description;
+                items[i].transform.Find("Text").GetComponent<Text>().text = g.subNodes[i].description;
             else
-                AddItem(g.rules[i].description);
+                AddItem(g.subNodes[i].description);
         }
     }
 }

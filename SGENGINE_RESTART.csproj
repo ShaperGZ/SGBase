@@ -378,11 +378,13 @@
     <Compile Include="Assets\Scripts\ShapeGrammar\Geometry\BaseTypes.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\HighlightMouseOver.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\Rules\BasicRules.cs" />
+    <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\DynamicInspector.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestGrammar.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestGrammarUI.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestPivot.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestShapeObject.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestSplit.cs" />
+    <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestTransform.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UserStats.cs" />
     <Compile Include="Assets\test.cs" />
   </ItemGroup>

@@ -31,7 +31,7 @@ namespace Rules
             {
                 if (temp[i] != null)
                 {
-                    temp[i].direction = mb.direction;
+                    temp[i].bbox =BoundingBox.CreateFromPoints(temp[i].vertices,mb.bbox);
                     outs.Add(temp[i]);
                 }
             }
@@ -39,6 +39,7 @@ namespace Rules
         }
         public override List<Meshable> ExecuteShape(ShapeObject so)
         {
+            //Debug.Log("so=", so);
             float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
             List<Meshable> outs = new List<Meshable>();
@@ -49,17 +50,9 @@ namespace Rules
             Plane pln = new Plane(normal,org);
 
             outs = SplitByPlane(so.meshable, pln);
+            Vector3 direct = so.Vects[0];
             
-            //outMeshables.AddRange(outs.ToArray());
-
-            string txt = "post executing bisect: outMeshables.Count=" + outMeshables.Count;
-            foreach (Meshable s in outMeshables)
-            {
-                txt += "mb(" + s.vertices.Length + "),";
-            }
-            //Debug.Log(txt);
             AssignNames(outs);
-            //AssignNames(outMeshables.ToArray());
             return outs;
             
         }
@@ -74,6 +67,45 @@ namespace Rules
             dict.Add("Position",pg2);
             pg2.Add(new Parameter(0.4f));
             
+            return dict;
+        }
+    }
+    public class BisectMirror : Grammar
+    {
+        public BisectMirror():base()
+        {
+            SetRules();
+            name = "BisectMirror";
+        }
+        public BisectMirror(string inName, string[] outNames, float d, int axis) : base(inName, outNames)
+        {
+            ((ParameterGroup)paramGroups["Position"]).parameters[0].value = d;
+            ((ParameterGroup)paramGroups["Axis"]).parameters[0].value = axis;
+            name = "BisectMirror";
+            SetRules();
+        }
+        void SetRules()
+        {
+
+            string on1 = outputs.names[0];
+            string onM = outputs.names[1] + "toBeMirrored";
+            string on2 = outputs.names[1];
+            float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
+            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
+            AddRule(new Bisect(inputs.names[0], new string[] { on1, onM }, d, axis),false);
+            AddRule(new PivotMirror(onM, on2, axis),false);
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+
+            dict.Add("Axis", pg1);
+            pg1.Add(new Parameter(0, 0, 2, 1));
+            dict.Add("Position", pg2);
+            pg2.Add(new Parameter(0.4f));
+
             return dict;
         }
     }
@@ -153,6 +185,15 @@ namespace Rules
                 else
                     touts = Rules.Bisect.SplitByPlane(touts[1], pln);
                 outs.Add(touts[0]);
+                //------set bbox---------------------------
+                for (int i = 0; i < outs.Count; i++)
+                {
+                    if (outs[i] != null)
+                    {
+                        outs[i].bbox = BoundingBox.CreateFromPoints(outs[i].vertices, so.meshable.bbox);
+                        outs.Add(outs[i]);
+                    }
+                }
                 //Debug.Log(counter + " tout.COunt=" + touts.Count);
                 counter++;
             }
@@ -259,7 +300,8 @@ namespace Rules
             //get the splited meshables
             Meshable mb = so.meshable;
             Meshable scaledMb = mb.Scale(scale, vects, origin, true);
-            scaledMb.direction = mb.direction;
+            //TODO: just scale the bbox
+            scaledMb.bbox = BoundingBox.CreateFromPoints(scaledMb.vertices, so.meshable.bbox);
             //outMeshables.Add(scaledMb);
             List<Meshable> outs = new List<Meshable>();
             outs.Add(scaledMb);
@@ -345,9 +387,60 @@ namespace Rules
             }
             Form f = new Form(outs.ToArray());
             return new List<Meshable>{ f };
-        }
-    }
 
+        }
+        
+    }
+   
+    public class PivotMirror : Rule
+    {
+        public PivotMirror()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+        }
+        public PivotMirror(string inName, string OutName, float axis) : base(inName, new string[] { OutName })
+        {
+            paramGroups = DefaultParam();
+            ((ParameterGroup)paramGroups["Axis"]).parameters[0].value = axis;
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            pg1.Add(new Parameter(0, 0, 2, 1));
+            dict.Add("Axis", pg1);
+            return dict;
+        }
+        public override void Execute()
+        {
+            //remove extra or add new
+            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
+            int diff = outputs.shapes.Count - inputs.shapes.Count;
+            int absDiff = Mathf.Abs(diff);
+            for (int i = 0; i < absDiff; i++)
+            {
+                if (diff > 0)//remove extra
+                {
+                    int index = outputs.shapes.Count - i;
+                    GameObject.Destroy(outputs.shapes[index].gameObject);
+                    outputs.shapes.RemoveAt(index);
+                }
+                else//add new
+                {
+                    outputs.shapes.Add(ShapeObject.CreateBasic());
+                }
+            }
+
+            //update each output
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                inputs.shapes[i].CloneTo(outputs.shapes[i]);
+                outputs.shapes[i].PivotMirror(axis);
+            }
+            AssignNames(outputs.shapes);
+        }//end execute
+    }
     public class CreateBox : Rule
     {
         public CreateBox() : base()
