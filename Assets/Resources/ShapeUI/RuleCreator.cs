@@ -7,57 +7,83 @@ using SGCore;
 using SGGeometry;
 using Rules;
 
-public class RuleCreator
+namespace SGGUI
 {
-    public string UIPrefix = "Bt_Crt_";
-    public Type[] ruleTypes;
-    public Grammar grammar;
-
-    public RuleCreator()
+    public class RuleCreator: IGrammarOperator
     {
-        ruleTypes = GetRuleTypes();
-        AssociateUI();
-    }
-
-    //UserStats will initialize an instance of RuleCreator
-    public void CreateToolBar()
-    {
-        //it generates the tool bar
-    }
-    public void AssociateUI()
-    {
-        //if the UI is already created, associate each creation buttons
-        foreach (Type t in ruleTypes)
+        public string UIPrefix = "Bt_Crt_";
+        public Type[] ruleTypes;
+        Grammar grammar;
+        
+        public RuleCreator()
         {
-            string name = UIPrefix + t.Name;
-            try
-            {
-                Button button = GameObject.Find(name).GetComponent<Button>();
-                button.onClick.AddListener
-                    (delegate
-                    {
-                        Rule r = Activator.CreateInstance(t) as Rule;
-                        Debug.Log(string.Format("create {0} on click in RuleCreator", r.name));
-                        UserStats.SelectedGrammar.AddRule(r, true);
-                        UserStats.ruleNavigator.AddItem(r.description);
-                    }
-                    );
-            }
-            catch { };
-           
+            ruleTypes = GetRuleTypes();
+            AssociateUI();
         }
-    }
- 
-    public Type[] GetRuleTypes()
-    {
-        List<Type> rules = new List<Type>();
-        rules.Add(typeof(Rules.Bisect)); //name the UI: Bt_Crt_Bisect
-        rules.Add(typeof(Rules.Scale));//name the UI: Bt_Crt_Scale
-        rules.Add(typeof(Rules.DivideTo));
-        rules.Add(typeof(Rules.CreateBox));
-        return rules.ToArray();
-    }
+        public void SetGrammar(Grammar g)
+        {
+            if (g == null) UnSetGrammar();
+            grammar = g;
+            AssociateUI();
+        }
+        public void UnSetGrammar()
+        {
+            foreach (Type t in ruleTypes)
+            {
+                string name = UIPrefix + t.Name;
+                try
+                {
+                    Button button = GameObject.Find(name).GetComponent<Button>();
+                    button.onClick.RemoveAllListeners();
+                }
+                catch { };
 
+            }
+        }
+
+        //UserStats will initialize an instance of RuleCreator
+        public void CreateToolBar()
+        {
+            //it generates the tool bar
+        }
+        public void AssociateUI()
+        {
+            //if the UI is already created, associate each creation buttons
+            foreach (Type t in ruleTypes)
+            {
+                string name = UIPrefix + t.Name;
+                try
+                {
+                    Button button = GameObject.Find(name).GetComponent<Button>();
+                    button.onClick.AddListener
+                        (delegate
+                        {
+                            Rule r = Activator.CreateInstance(t) as Rule;
+                            //Debug.Log(string.Format("create {0} on click in RuleCreator", r.name));
+                            grammar.AddRule(r, true);
+                            UserStats.ruleNavigator.AddItem(r.description);
+                        }
+                        );
+                   
+                }
+                catch { };
+
+            }
+        }
+
+        public Type[] GetRuleTypes()
+        {
+            List<Type> rules = new List<Type>();
+            rules.Add(typeof(Rules.Bisect)); //name the UI: Bt_Crt_Bisect
+            rules.Add(typeof(Rules.Scale));//name the UI: Bt_Crt_Scale
+            rules.Add(typeof(Rules.DivideTo));
+            rules.Add(typeof(Rules.CreateBox));
+            return rules.ToArray();
+        }
+
+    }
 }
+
+
    
 

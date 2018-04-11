@@ -3,12 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SGCore;
+using SGGUI;
 
 public class UserStats : MonoBehaviour {
 
 
     
     private static Grammar _selectedGrammar;
+    public static Grammar SelectedGrammar
+    {
+        get { return _selectedGrammar; }
+        set
+        {
+            if (value != null)
+                assignGrammar(value);
+            else
+                unAssignGrammar();
+        }
+    }
+    public static void assignGrammar(Grammar g)
+    {
+        _selectedGrammar = g;
+        if (ruleCreator != null)
+        {
+            ruleCreator.SetGrammar(g);
+            ruleNavigator.SetGrammar(g);
+        }
+    }
+    public static void unAssignGrammar()
+    {
+        ruleCreator.SetGrammar(null);
+        ruleNavigator.SetGrammar(null);
+    }
+
+
     private static ShapeObject _selectedShape;
 
     public static ShapeObject selectedShape
@@ -35,17 +63,17 @@ public class UserStats : MonoBehaviour {
         }
     }
     public static RuleCreator ruleCreator;
-    public static Grammar SelectedGrammar
+    
+    public static RuleNavigator _ruleNavigator;
+    public static RuleNavigator ruleNavigator
     {
-        get { return _selectedGrammar; }
-        set
+        get
         {
-            _selectedGrammar = value;
-            if (ruleCreator != null) ruleCreator.grammar = _selectedGrammar;
-            //TODO: appoint all grammar association here
+            if (_ruleNavigator == null)
+                _ruleNavigator = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
+            return _ruleNavigator;
         }
     }
-    public static RuleNavigator ruleNavigator;
     public static Text ShapeInspectText;
 
     public static Dictionary<string,Color> colors = new Dictionary<string, Color>();

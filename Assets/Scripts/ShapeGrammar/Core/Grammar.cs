@@ -8,18 +8,18 @@ using System.Xml.Serialization;
 
 namespace SGCore
 {
-    public class Grammar:Node
+    public class Grammar:GraphNode
     {
         public int currentStep = -1;
         public int displayStep = -1;
-        public List<Node> subNodes;
+        public List<GraphNode> subNodes;
         public List<SGIO> stagedOutputs;
         public List<ShapeObject> assignedObjects;
 
         public Grammar():base()
         {
             stagedOutputs = new List<SGIO>();
-            subNodes = new List<Node>();
+            subNodes = new List<GraphNode>();
             assignedObjects = new List<ShapeObject>();
             paramGroups = DefaultParam();
         }
@@ -28,7 +28,7 @@ namespace SGCore
             inputs.names.Add(inName);
             outputs.names.AddRange(outNames);
         }
-        public void AddRule(Node r, bool execute = true)
+        public void AddRule(GraphNode r, bool execute = true)
         {
             currentStep = subNodes.Count;
             displayStep = currentStep;
@@ -51,16 +51,29 @@ namespace SGCore
             }
         }
 
+
+
         public override void Execute()
         {
-            for (int i = 0; i < subNodes.Count; i++)
+            ExecuteFrom(0);
+        }
+        public virtual void ExecuteFrom(GraphNode rule)
+        {
+            int index = subNodes.IndexOf(rule);
+            if (index >= 0 && index < subNodes.Count)
+                ExecuteFrom(index);
+        }
+        public virtual void ExecuteFrom(int start)
+        {
+            for (int i = start; i < subNodes.Count; i++)
             {
-                //Debug.Log(string.Format("{0}: exe step{1}", name, i));
+                Debug.Log("--------------executing (" + i + ")-----");
                 Execute(i);
             }
             DisplayStep(subNodes.Count - 1);
             SelectStep(subNodes.Count - 1);
             outputs = stagedOutputs[stagedOutputs.Count - 1];
+
         }
         public virtual void Execute(int i)
         {
@@ -77,22 +90,8 @@ namespace SGCore
 
             PostExecution(i, tobeMerged);
         }
-        public virtual void ExecuteFrom(Node rule)
-        {
-            int index = subNodes.IndexOf(rule);
-            if (index >= 0 && index < subNodes.Count)
-                ExecuteFrom(index);
-        }
-        public virtual void ExecuteFrom(int start)
-        {
-            for (int i = start; i < subNodes.Count; i++)
-            {
-                Execute(i);
-            }
-            DisplayStep(subNodes.Count - 1);
-            SelectStep(subNodes.Count - 1);
-
-        }
+        
+        
         public virtual SGIO PreExecution(int step)
         {
             List<ShapeObject> availableShapes = new List<ShapeObject>();
@@ -244,7 +243,7 @@ namespace SGCore
         {
             XmlSerializer xsl = new XmlSerializer(typeof(List<Rule>));
             System.IO.TextReader tr = new System.IO.StreamReader(path);
-            subNodes=(List<Node>)xsl.Deserialize(tr);
+            subNodes=(List<GraphNode>)xsl.Deserialize(tr);
             tr.Close();
             foreach(Rule r in subNodes)
             {
@@ -293,8 +292,10 @@ namespace SGCore
             }
             
             if (execute) Execute();
+            Debug.Log(">>>>>>>> FLAG 3");
             if(UserStats.ruleNavigator != null &&UserStats.SelectedGrammar == this)
             {
+                Debug.Log(">>>>>>>> FLAG 4");
                 UserStats.ruleNavigator.UpdateButtonDescriptions();
             }
         }

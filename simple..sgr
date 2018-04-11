@@ -1,0 +1,3 @@
+
+Rules.PivotMirror A -> A, | Axis(0-0-2-1,) 
+Rules.Bisect A -> D,C, | Axis(0-0-2-1,) Position(0-0.2-1-0.01,) 

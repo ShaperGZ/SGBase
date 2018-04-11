@@ -779,7 +779,6 @@ namespace SGGeometry
 
             //Debug.Log(string.Format("leg={0} right={1}", left.Count, right.Count));
 
-
             if (nakedPts.Count > 1)
             {
                 nakedEdge = new Polyline(nakedPts.ToArray());

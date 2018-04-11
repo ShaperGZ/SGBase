@@ -365,6 +365,7 @@
     <Compile Include="Assets\Resources\ShapeUI\RuleCreator.cs" />
     <Compile Include="Assets\Resources\ShapeUI\RuleNavigator.cs" />
     <Compile Include="Assets\Resources\ShapeUI\RuleParamEditor.cs" />
+    <Compile Include="Assets\Resources\ShapeUI\SGUIBase.cs" />
     <Compile Include="Assets\Resources\ShapeUI\TextWheeler.cs" />
     <Compile Include="Assets\Resources\ShapeUI\ToggleActive.cs" />
     <Compile Include="Assets\Resources\ShapeUI\UICreator.cs" />
@@ -379,6 +380,7 @@
     <Compile Include="Assets\Scripts\ShapeGrammar\HighlightMouseOver.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\Rules\BasicRules.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\DynamicInspector.cs" />
+    <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\InspectMeshVertices.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestGrammar.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestGrammarUI.cs" />
     <Compile Include="Assets\Scripts\ShapeGrammar\UnitTests\TestPivot.cs" />

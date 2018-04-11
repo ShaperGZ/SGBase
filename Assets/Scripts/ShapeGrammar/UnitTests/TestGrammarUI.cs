@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using SGCore;
 using SGGeometry;
+using SGGUI;
 using System.Linq;
 using UnityEngine.UI;
+
 
 public class TestGrammarUI : MonoBehaviour {
     Grammar g1;
@@ -56,11 +58,8 @@ public class TestGrammarUI : MonoBehaviour {
 
     public static void Rule3(Grammar g1)
     {
-        Debug.Log(">>>>>>>>>>> FLAG 1");
-        g1.AddRule(new Rules.PivotMirror("A", "A", 0),false);
-        Debug.Log(">>>>>>>>>>> FLAG 2");
-        //g1.AddRule(new Rules.BisectMirror("A", new string[] { "B", "B" }, 0.5f, 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.2f, 0), false);
+        g1.AddRule(new Rules.BisectMirror("A", new string[] { "B", "B" }, 0.5f, 0), false);
+        g1.AddRule(new Rules.Bisect("B", new string[] { "D", "C" }, 0.2f, 0), false);
         //g1.AddRule(new Rules.Scale("C", "D", 1.2f, 1), false);
     }
     public static void Rule4(Grammar g1)
@@ -83,7 +82,7 @@ public class TestGrammarUI : MonoBehaviour {
 
 
         f.direction = PointsBase.LongestDirection(pts).Value;
-        ShapeObject init = ShapeObject.CreateMeshable(f);
+        ShapeObject init = ShapeObject.CreateMeshable(f,f.direction);
         init.name = "init";
 
 
@@ -92,7 +91,7 @@ public class TestGrammarUI : MonoBehaviour {
         g1.assignedObjects.Add(init);
         Rule3(g1);
         g1.Execute();
-
+        //g1.Execute();
 
         //relate UI elements
         stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
@@ -105,32 +104,7 @@ public class TestGrammarUI : MonoBehaviour {
         //ruleParamEditor.GenerateUI(g1.rules[1]);
 
         UserStats.SelectedGrammar = g1;
-        UserStats.ruleNavigator = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
-
-        //Assign rule navigator actions
-        UserStats.ruleNavigator.onSaveClick += delegate {
-            UserStats.SelectedGrammar.Save(@"FirstRule.sgr");
-
-        };
-        UserStats.ruleNavigator.onLoadClick += delegate {
-            UserStats.SelectedGrammar.Clear();
-
-            Grammar g = new Grammar();
-            g.assignedObjects = UserStats.SelectedGrammar.assignedObjects;
-            UserStats.SelectedGrammar = g;
-            g.Load(@"FirstRule.sgr");
-            g.Execute();
-
-        };
-
-
-        //UserStats.UI_RuleList.onSelectCallbacks += SelectRule;
-        UserStats.ruleNavigator.Clear();
-
-        foreach (Node r in g1.subNodes)
-        {
-            UserStats.ruleNavigator.AddItem(r.description);
-        }
+  
     }
     
     void Update () {

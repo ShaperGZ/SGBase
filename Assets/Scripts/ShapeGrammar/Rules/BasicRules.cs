@@ -27,10 +27,12 @@ namespace Rules
             //get the splited meshables
             Meshable[] temp = new Meshable[0];
             temp = mb.SplitByPlane(pln);
+
             for (int i = 0; i < temp.Length; i++)
             {
                 if (temp[i] != null)
                 {
+                    Debug.Log("---------------------->creating boundong box");
                     temp[i].bbox =BoundingBox.CreateFromPoints(temp[i].vertices,mb.bbox);
                     outs.Add(temp[i]);
                 }
@@ -39,15 +41,20 @@ namespace Rules
         }
         public override List<Meshable> ExecuteShape(ShapeObject so)
         {
-            //Debug.Log("so=", so);
+            /////////////////
+            //get parameters
+            /////////////////
             float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
             List<Meshable> outs = new List<Meshable>();
+            /////////////////
             //get split plane
+            /////////////////
             Vector3 normal = so.Vects[axis];
             Vector3 v = normal * so.Size[axis] * d;
             Vector3 org = so.transform.position + v;
             Plane pln = new Plane(normal,org);
+
 
             outs = SplitByPlane(so.meshable, pln);
             Vector3 direct = so.Vects[0];
@@ -94,6 +101,13 @@ namespace Rules
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
             AddRule(new Bisect(inputs.names[0], new string[] { on1, onM }, d, axis),false);
             AddRule(new PivotMirror(onM, on2, axis),false);
+        }
+        public override void Execute()
+        {
+            //update params before execution
+            ((ParameterGroup)subNodes[0].paramGroups["Position"]).parameters[0].value = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
+            ((ParameterGroup)subNodes[1].paramGroups["Axis"]).parameters[0].value = ((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
+            base.Execute();
         }
         public override OrderedDictionary DefaultParam()
         {
@@ -158,14 +172,21 @@ namespace Rules
         {
             Debug.Log("executing so");
             List<Meshable> outs = new List<Meshable>();
+            ////////////////
             //get paramters
-            //float[] ds = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
+            ////////////////
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
             float max = so.Size[axis];
+
+            ///////////////////////////
+            //sitribute division points
+            ///////////////////////////
             List<float> divs = GetDivs(((ParameterGroup)paramGroups["Position"]).parameters, max);
-            int counter = 0;
+
+            //tout is the remaining part in division
             List<Meshable> touts = new List<Meshable>();
             Vector3 org = so.transform.position;
+            int counter = 0;
             while (counter==0 || touts.Count > 1)
             {
                 if (counter >= divs.Count)
@@ -280,11 +301,8 @@ namespace Rules
         }
         public Scale(string inName, string outName, float d, int axis) : base(inName, new string[] { outName })
         {
-            
             ((ParameterGroup)paramGroups["Position"]).parameters[0].value = d;
             ((ParameterGroup)paramGroups["Axis"]).parameters[0].value = axis;
-
-
         }
         public override List<Meshable> ExecuteShape(ShapeObject so)
         {
@@ -325,10 +343,8 @@ namespace Rules
             dict["Position"] = pg2;
             pg2.Add(new Parameter(2f, 0.2f, 10f, 0.01f));
             
-
             return dict;
         }
-        
     }
     public class DivideSurface : Rule
     {
@@ -342,7 +358,6 @@ namespace Rules
             paramGroups = DefaultParam();
             ((ParameterGroup)paramGroups["dim width"]).parameters[0].value = w;
             ((ParameterGroup)paramGroups["dim height"]).parameters[0].value = h;
-
         }
 
         public override OrderedDictionary DefaultParam()

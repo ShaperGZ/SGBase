@@ -208,12 +208,14 @@ public class ShapeObject : MonoBehaviour {
         }
         else if (meshable.bbox == null)
         {
+            Debug.Log("bounding box not found !!!");
             vectu = new Vector3(1, 0, 0);
             bbox = meshable.GetBoundingBox(vectu);
             meshable.bbox = bbox;
         }
         else
         {
+            Debug.Log("assigning existing bounding box");
             bbox = meshable.bbox;
         }
         ConformToBBox(bbox);
@@ -274,10 +276,10 @@ public class ShapeObject : MonoBehaviour {
         so.SetMeshable(ext, ld);
         return so;
     }
-    public static ShapeObject CreateMeshable(Meshable mb)
+    public static ShapeObject CreateMeshable(Meshable mb, Vector3? direction=null)
     {
         ShapeObject so = ShapeObject.CreateBasic();
-        so.SetMeshable(mb, mb.direction);
+        so.SetMeshable(mb,direction);
         
         return so;
     }

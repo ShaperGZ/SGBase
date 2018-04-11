@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace SGCore
 {
-    public class Node
+    public class GraphNode
     {
         public SGIO inputs;
         public SGIO outputs;
-        public List<Node> upStreams;
-        public List<Node> downStreams;
+        public List<GraphNode> upStreams;
+        public List<GraphNode> downStreams;
         public Grammar grammar;
         public string name="unnamedNode";
         public string description = "";
@@ -19,24 +19,33 @@ namespace SGCore
         public int step;
         
 
-        public Node()
+        public GraphNode()
         {
             inputs = new SGIO();
             outputs = new SGIO();
-            upStreams = new List<Node>();
-            downStreams = new List<Node>();
+            upStreams = new List<GraphNode>();
+            downStreams = new List<GraphNode>();
         }
 
         public virtual void Execute() { }
+        public virtual string GetDescription()
+        {
+            string inName = "";
+            if (inputs.names != null && inputs.names.Count > 0) inName = inputs.names[0];
 
+            string txt = "";
+            txt += name + " | " + inName + "-->";
+            foreach (string n in outputs.names) txt += n + ',';
+            return txt;
+        }
 
-        public void ConnectDownStream(Node node)
+        public void ConnectDownStream(GraphNode node)
         {
             downStreams.Add(node);
             node.upStreams.Add(this);
 
         }
-        public void DisconnectDownStream(Node node)
+        public void DisconnectDownStream(GraphNode node)
         {
             downStreams.Remove(node);
             node.upStreams.Remove(this);
@@ -47,7 +56,7 @@ namespace SGCore
             invalidated = true;
             if (downStreams.Count > 0)
             {
-                foreach(Node n in downStreams)
+                foreach(GraphNode n in downStreams)
                 {
                     n.Invalidate();
                 }

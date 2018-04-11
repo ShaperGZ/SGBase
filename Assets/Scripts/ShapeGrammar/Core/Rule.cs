@@ -9,7 +9,7 @@ using SGGeometry;
 
 namespace SGCore
 {
-    public class Rule : Node
+    public class Rule : GraphNode
     { 
         public List<Meshable> outMeshables;
         public new string description {
@@ -49,12 +49,16 @@ namespace SGCore
             inputs.names = new List<string>(new string[] { inName });
             outputs.names = new List<string>(outNames);
         }
+  
         public override void Execute()
         {
             //operate on meshables and update existing shapeobjects
             outMeshables.Clear();
+
             if (inputs.shapes.Count > 0)
             {
+                Debug.Log(step+" meshable has bbox=" + (inputs.shapes[0].meshable.bbox != null));
+                
                 for (int i = 0; i < inputs.shapes.Count; i++)
                 {
                     //Debug.Log("processing:" + inputs.shapes[i].Format());
@@ -111,8 +115,8 @@ namespace SGCore
                 Meshable mb = outMeshables[i];
                 if (i < shapeCount)
                 {
-                    //outputs.shapes[i].SetMeshable(mb);
-                    outputs.shapes[i].SetMeshable(mb,mb.bbox);
+                    outputs.shapes[i].SetMeshable(mb);
+                    //outputs.shapes[i].SetMeshable(mb,mb.bbox);
                     outputs.shapes[i].name = mb.name;
                     outputs.shapes[i].parentRule = this;
                     outputs.shapes[i].step = step;

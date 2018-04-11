@@ -35,9 +35,9 @@ namespace SGCore
     {
         public string name;
         public List<Parameter> parameters;
-        public Node rule;
+        public GraphNode rule;
         public bool expandable = false;
-        public Node grammar { get { return rule.grammar; } }
+        public GraphNode grammar { get { return rule.grammar; } }
         public ParameterGroup()
         {
             parameters = new List<Parameter>();
