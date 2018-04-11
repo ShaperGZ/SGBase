@@ -64,8 +64,10 @@ public class TestGrammarUI : MonoBehaviour {
     }
     public static void Rule4(Grammar g1)
     {
-        g1.AddRule(new Rules.PivotMirror("A", "A", 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.6f, 0), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "A", "A" }, 0.6f, 0), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "A" }, 0.6f, 0), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "A", "A" }, 0.6f, 0), false);
+        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "A" }, 0.6f, 0), false);
         //g1.AddRule(new Rules.PivotMirror("C", "A", 0), false);
         //g1.AddRule(new Rules.Bisect("A", new string[] { "A", "C" }, 0.6f, 0), false);
         //g1.AddRule(new Rules.BisectMirror("A", new string[] { "A", "A" }, 0.5f, 0), false);
@@ -80,8 +82,10 @@ public class TestGrammarUI : MonoBehaviour {
         Polygon pg = new Polygon(pts);
         Form f = pg.Extrude(new Vector3(0, 20, 0));
 
-
+        
         f.direction = PointsBase.LongestDirection(pts).Value;
+        pg.direction = f.direction;
+        //ShapeObject init = ShapeObject.CreateMeshable(f,f.direction);
         ShapeObject init = ShapeObject.CreateMeshable(f,f.direction);
         init.name = "init";
 
@@ -89,15 +93,17 @@ public class TestGrammarUI : MonoBehaviour {
         g1 = new Grammar();
         g1.name = "g1";
         g1.assignedObjects.Add(init);
-        Rule3(g1);
-        g1.Execute();
+        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.2f, 0), false);
+        //g1.AddRule(new Rules.PivotMirror("A", "A", 0), false);
+        //Rule4(g1);
         //g1.Execute();
+        g1.Execute();
 
         //relate UI elements
         stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
-        GrammarInspector gi = GameObject.Find("GrammarInspector").GetComponent<GrammarInspector>();
-        gi.Load();
-        gi.SetGrammar(g1);
+        //GrammarInspector gi = GameObject.Find("GrammarInspector").GetComponent<GrammarInspector>();
+        //gi.Load();
+        //gi.SetGrammar(g1);
 
         ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
         

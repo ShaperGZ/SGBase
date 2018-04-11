@@ -783,7 +783,11 @@ namespace SGGeometry
             {
                 nakedEdge = new Polyline(nakedPts.ToArray());
             }
-            else nakedEdge = new Polyline();
+            else
+            {
+                Debug.LogWarning("no naked edge found!");
+                nakedEdge = new Polyline();
+            }
             return pgs;
         }
         public Mesh GetNormalizedMesh(BoundingBox bbox)
@@ -936,7 +940,11 @@ namespace SGGeometry
             foreach (Meshable pg in components)
             {
                 //TODO: debug why there are empty components generated
-                if (pg.vertices == null || pg.vertices.Length < 3) continue;
+                if (pg.vertices == null || pg.vertices.Length < 3)
+                {
+                    Debug.LogWarning("empty components generated as CompositMeshable split");
+                    continue;
+                }
 
                 Polyline edge;
                 Meshable[] sides = pg.SplitByPlane(blade, out edge);
@@ -946,11 +954,14 @@ namespace SGGeometry
                 if (sides[0] != null) rights.Add((Polygon)sides[0]);
                 if (sides[1] != null) lefts.Add((Polygon)sides[1]);
             }
+
             //Debug.Log("nakeEdgeCount=" + nakedEdges.Count.ToString());
             if (nakedEdges.Count > 2)
             {
                 Vector3[] capPts = GetCapVerts(nakedEdges, blade);
-                Polygon leftCap = new Polygon(capPts.Reverse().ToArray());
+                Vector3[] RcapPts = capPts.Clone() as Vector3[];
+                System.Array.Reverse(RcapPts);
+                Polygon leftCap = new Polygon(RcapPts);
                 Polygon rightCap = new Polygon(capPts);
                 rights.Add(rightCap);
                 lefts.Add(leftCap);
@@ -1121,11 +1132,13 @@ namespace SGGeometry
             }
             else if(pts.Length == 4)
             {
+                //triangles = new int[] { 0, 1, 2, 0, 2, 3 };
                 triangles = new int[] { 0, 2, 1, 0, 3, 2 };
             }
             else if(pts.Length ==3)
             {
-                triangles = new int[] { 0, 1, 2 };
+                triangles = new int[] { 0, 2, 1 };
+                //triangles = new int[] { 0, 2, 1 };
             }
             this.vertices = pts;
         }
@@ -1138,6 +1151,8 @@ namespace SGGeometry
             Polygon pg = new Polygon();
             pg.vertices = vertices.Clone() as Vector3[];
             pg.triangles = triangles.Clone() as int[];
+            if (bbox != null)
+                pg.bbox = bbox;
             if (boundary != null)
                 pg.boundary = (Polyline)boundary.Clone();
             return pg;
@@ -1145,10 +1160,9 @@ namespace SGGeometry
         public Form Extrude(Vector3 magUp)
         {
             List<Polygon> pgs = new List<Polygon>();
-            Vector3[] Rvertices = vertices.Clone() as Vector3[];
-            System.Array.Reverse(Rvertices);
-            Polygon bot = new Polygon(Rvertices);
-            bot.ReverseTriangle();
+            Polygon bot = new Polygon(vertices.Clone() as Vector3[]);
+            bot.ReverseSide();
+
             pgs.Add(bot);
             Vector3[] ptsTop = new Vector3[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
@@ -1499,72 +1513,7 @@ namespace SGGeometry
             
     }
 
-    public class Rider
-    {
-        public virtual void updateObject() { }
-        public virtual void Destroy() { }
-    }
-    public class SingleObjectRider : Rider
-    {
-        public GameObject gameObject;
-        string name = "unnamed<singleObjectRider>";
-        public SingleObjectRider()
-        {
-            gameObject = new GameObject(this.name);
-        }
-    }
-    public class MultiObjectRider : Rider
-    {
-        public List<GameObject> gameObjects;
-        string name = "unnamed<multiObjectRider>";
-        public MultiObjectRider()
-        {
-            gameObjects = new List<GameObject>();
-        }
-        public MultiObjectRider(List<GameObject> objs)
-        {
-            this.gameObjects = objs;
-        }
-        public virtual void updateObject() { }
-    }
-    public class MultiLineRider : MultiObjectRider
-    {
-        float width = 0.1f;
-        Color color = Color.black;
-        List<SGGeometry.PointsBase> lines;
-
-        public MultiLineRider() : base()
-        {
-            lines = new List<SGGeometry.PointsBase>();
-        }
-            
-        public MultiLineRider(SGGeometry.PointsBase[] inLines) : base()
-        {
-            lines = new List<SGGeometry.PointsBase>(inLines);
-            foreach (SGGeometry.PointsBase line in lines)
-            {
-                this.AddLine(line);
-            }
-        }
-        public void AddLine(SGGeometry.PointsBase line)
-        {
-            GameObject obj = OldCreator.CreateLineObject(line,true);
-            this.gameObjects.Add(obj);
-        }
-        public override void updateObject()
-        {
-            for(int i =0;i<this.gameObjects.Count;i++)
-            {
-                GameObject obj = this.gameObjects[i];
-                LineRenderer lr = obj.GetComponent<LineRenderer>() as LineRenderer;
-                lr.startWidth = this.width;
-                lr.startColor = this.color;
-                lr.SetPositions(this.lines[i].vertices);
-            } 
-        }
-            
-            
-    }
+    
 }
 
 namespace MeshFactory

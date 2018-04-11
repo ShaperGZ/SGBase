@@ -32,7 +32,7 @@ namespace Rules
             {
                 if (temp[i] != null)
                 {
-                    Debug.Log("---------------------->creating boundong box");
+                    //Debug.Log("---------------------->creating boundong box");
                     temp[i].bbox =BoundingBox.CreateFromPoints(temp[i].vertices,mb.bbox);
                     outs.Add(temp[i]);
                 }
@@ -450,7 +450,9 @@ namespace Rules
             //update each output
             for (int i = 0; i < inputs.shapes.Count; i++)
             {
+                Debug.Log("cloning shapeobject, has bbox="+(inputs.shapes[i].meshable.bbox!=null));
                 inputs.shapes[i].CloneTo(outputs.shapes[i]);
+                Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
                 outputs.shapes[i].PivotMirror(axis);
             }
             AssignNames(outputs.shapes);

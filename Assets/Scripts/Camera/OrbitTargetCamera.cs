@@ -5,7 +5,6 @@ using UnityEngine;
 public class OrbitTargetCamera : MonoBehaviour {
     public Vector3 target_pos;
     public float camera_mag;
-    float rotation_step = 1f;
     float zoom_factor = 0.1f;
     Camera _camera;
 

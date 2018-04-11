@@ -14,13 +14,12 @@ namespace SGGUI
 
         // Use this for initialization
         // Transform btTransform;
-        RectTransform btAddTransform;
-        RectTransform btSubTransform;
         RectTransform pnContent;
         List<GameObject> items = new List<GameObject>();
         Transform btHolder;
         Text selectedIndexText;
         Text stageIOText;
+        Text grammarTitleText;
         public int selectedIndex = -1;
         public OnSelect onSelectCallbacks;
         public OnClick onAddClick;
@@ -46,11 +45,8 @@ namespace SGGUI
         public void Load()
         {
             btHolder = transform.Find("BtHolder") as Transform;
-            btAddTransform = transform.Find("BtHolder/BtAdd") as RectTransform;
-            btSubTransform = transform.Find("BtHolder/BtSub") as RectTransform;
             pnContent = transform.Find("ContentPanel") as RectTransform;
-            btAddTransform.GetComponent<Button>().onClick.AddListener(delegate { onAddClick(); });
-            btSubTransform.GetComponent<Button>().onClick.AddListener(delegate { onSubClick(); });
+            grammarTitleText = GameObject.Find("GrammarInspector/Panel/Bt_Title/TitleText").GetComponent<Text>();
 
             GameObject.Find("BtHolder/BtSaveRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onSaveClick(); });
             GameObject.Find("BtHolder/BtLoadRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onLoadClick(); });
@@ -68,6 +64,22 @@ namespace SGGUI
         // Update is called once per frame
         void Update()
         {
+
+        }
+        public void UpdateGrammarTitleDescription()
+        {
+            if (grammar == null) return;
+            string text = "";
+            text += grammar.name.ToString();
+            text += string.Format(" R{0}/{1} | N{2}O{3} -> N{4}O{5}",
+                grammar.currentStep,
+                grammar.subNodes.Count,
+                grammar.inputs.names.Count,
+                grammar.inputs.shapes.Count,
+                grammar.outputs.names.Count,
+                grammar.outputs.shapes.Count
+                );
+            grammarTitleText.text = text;
 
         }
         public void SetGrammar(Grammar g)
@@ -144,6 +156,7 @@ namespace SGGUI
             ruleParamEditor.GenerateUI(g.subNodes[i]);
             ruleParamEditor.ruleNavigator = this;
             printStructure();
+            UpdateGrammarTitleDescription();
         }
         public void printStructure()
         {
