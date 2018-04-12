@@ -29,6 +29,8 @@ public class ShapeObject : MonoBehaviour {
             return new Vector3[] { x, y, z };
         }
     }
+    public System.Guid guid;
+    public string sguid;
     public Meshable meshable;
     public Rule parentRule;
     public int step;
@@ -51,12 +53,21 @@ public class ShapeObject : MonoBehaviour {
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
     private BoxCollider boxCollider;
+
+    private void Awake()
+    {
+        //guid = System.Guid.NewGuid();
+        //sguid = ShortGuid();
+    }
+
     // Use this for initialization
     void Start () {
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
         boxCollider = GetComponent<BoxCollider>();
-	}
+        guid = System.Guid.NewGuid();
+        sguid = ShortGuid();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -75,7 +86,16 @@ public class ShapeObject : MonoBehaviour {
 
         return txt;
     }
-    
+    public string ShortGuid()
+    {
+        string l = guid.ToString();
+        int[] indices = new int[] { 0, 1, 2, 3, 10, 11, 12, 13 };
+        string s="";
+        s += l.Substring(0, 4) + l.Substring(10, 4);
+        return s;
+
+
+    }
     public void Show(bool flag)
     {
         gameObject.SetActive(flag);
@@ -111,6 +131,7 @@ public class ShapeObject : MonoBehaviour {
             catch { }
         }
     }
+
     private void OnPostRender()
     {
         //not working

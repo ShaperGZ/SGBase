@@ -4,11 +4,38 @@ using UnityEngine;
 using UnityEngine.UI;
 using SGCore;
 using SGGUI;
+using System;
 
 public class UserStats : MonoBehaviour {
 
+    static Text _selectedShapeText;
+    static Text selectedShapeText
+    {
+        get
+        {
+            if (_selectedShapeText == null)
+            {
+                _selectedShapeText = GameObject.Find("shapeSelectedText").GetComponent<Text>();
+            }
+            return _selectedShapeText;
+        }
+    }
+    private static ShapeObject _selectedShape;
+    public static ShapeObject SelectedShape
+    {
+        get { return _selectedShape; }
+        set
+        {
+            SetSelectedShape(value);
+        }
+    }
 
-    
+    private static void SetSelectedShape(ShapeObject so)
+    {
+        _selectedShape = so;
+        selectedShapeText.text = so.sguid;
+    }
+
     private static Grammar _selectedGrammar;
     public static Grammar SelectedGrammar
     {
@@ -36,8 +63,7 @@ public class UserStats : MonoBehaviour {
         ruleNavigator.SetGrammar(null);
     }
 
-
-    private static ShapeObject _selectedShape;
+    
 
     public static ShapeObject selectedShape
     {
@@ -96,7 +122,13 @@ public class UserStats : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            if (SelectedGrammar.grammar != null)
+            {
+                SelectedGrammar = SelectedGrammar.grammar;
+            }
+        }
 	}
 
     void AssociateGUI()

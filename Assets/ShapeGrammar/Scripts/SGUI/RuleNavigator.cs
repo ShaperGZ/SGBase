@@ -26,6 +26,7 @@ namespace SGGUI
         public OnClick onSubClick;
         public OnClick onSaveClick;
         public OnClick onLoadClick;
+        public OnClick OnGrammarTitleClick;
 
         string recentPath = "\\";
 
@@ -46,7 +47,7 @@ namespace SGGUI
         {
             btHolder = transform.Find("BtHolder") as Transform;
             pnContent = transform.Find("ContentPanel") as RectTransform;
-            grammarTitleText = GameObject.Find("GrammarInspector/Panel/Bt_Title/TitleText").GetComponent<Text>();
+            grammarTitleText = GameObject.Find("GrammarInspector/Panel/Bt_GrammarTitle/TitleText").GetComponent<Text>();
 
             GameObject.Find("BtHolder/BtSaveRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onSaveClick(); });
             GameObject.Find("BtHolder/BtLoadRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onLoadClick(); });
@@ -55,7 +56,7 @@ namespace SGGUI
                     UserStats.SelectedGrammar.Clear();
                     this.Clear();
                 });
-
+            GameObject.Find("Bt_GrammarTitle").GetComponent<Button>().onClick.AddListener(delegate { OnGrammarTitleClick(); });
             selectedIndexText = transform.Find("BtHolder/SelectIndex").GetComponent<Text>() as Text;
             stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
             ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
@@ -89,12 +90,19 @@ namespace SGGUI
 
             grammar = g;
             onSaveClick += delegate {
-                recentPath = Crosstales.FB.FileBrowser.SaveFile("save grammar", recentPath, "UnNamedGrammar", ".sgr");
+                recentPath = Crosstales.FB.FileBrowser.SaveFile("save grammar", recentPath, "UnNamedGrammar", "sgr");
+                if (recentPath == "" || recentPath == null) return;
                 grammar.Save(recentPath);
             };
             onLoadClick += delegate {
-                recentPath = Crosstales.FB.FileBrowser.OpenSingleFile("load grammar", recentPath, ".sgr");
+                recentPath = Crosstales.FB.FileBrowser.OpenSingleFile("load grammar", recentPath, "sgr");
+                if (recentPath == "" || recentPath == null) return;
                 grammar.Load(recentPath, true);
+            };
+            OnGrammarTitleClick += delegate
+            {
+                ruleParamEditor.GenerateUI(g);
+                ruleParamEditor.ruleNavigator = this;
             };
 
             //add buttons

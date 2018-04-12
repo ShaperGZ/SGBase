@@ -1,0 +1,65 @@
+[33mcommit 9e39ae6f837909b0d0e50062252078ac993950eb[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Wed Apr 11 22:13:19 2018 +0800
+
+    fixing wrong polygon direction
+
+[33mcommit 404b94ad088ee1a439367c0ea5a54627aacf2062[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Wed Apr 11 15:45:33 2018 +0800
+
+    working rules/grammar next:flip correction
+
+[33mcommit 58a2c5d702e4a47cda2d2b8e21f550a2c855cc3b[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Tue Apr 10 21:20:40 2018 +0800
+
+    changed to bbox based, fixing rule bbox
+
+[33mcommit f5adb866fc72311c3ef454470ebb794b9b7fd2d2[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Mon Apr 9 21:21:02 2018 +0800
+
+    added pivot mirror and turn
+
+[33mcommit 145c4ee45a6b669a6fd689134c0f030f49645e43[m
+Author: holonking <317200789@qq.com>
+Date:   Mon Apr 9 12:41:22 2018 +0800
+
+    added Divide, WIP TestPivot.cs
+
+[33mcommit 9350d4178e3fe7e5d092ea5d13991d6806d8ee02[m
+Author: holonking <317200789@qq.com>
+Date:   Thu Apr 5 22:57:01 2018 +0800
+
+    has save and load
+
+[33mcommit 07601e6f121b5b115b6fdb171711ef51fa0774df[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Wed Apr 4 20:13:07 2018 +0800
+
+    WIP load grammar
+
+[33mcommit cc43a67fc4baa528bcdb4f099a1321e88dfcce27[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Tue Apr 3 21:34:38 2018 +0800
+
+    fixed split bug polymorphism
+
+[33mcommit 61f8236da025e2f599c47238402fcd2a16fb0142[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Tue Apr 3 18:53:32 2018 +0800
+
+    WIP split cap not Shown, scale bug
+
+[33mcommit eb664ba57505a757efe193e488d687efc02b1cbe[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Mon Apr 2 21:45:16 2018 +0800
+
+    nightly commit WIP ruleNavigator
+
+[33mcommit d0c54a13f92fe00a7c8e6176d4e2a6732125fa37[m
+Author: Li Si <lisi@LWKGZ.COM.CN>
+Date:   Mon Apr 2 17:30:18 2018 +0800
+
+    SGBase first Commit, WIP Rule UI

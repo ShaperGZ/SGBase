@@ -55,6 +55,7 @@ namespace SGGUI
                 try
                 {
                     Button button = GameObject.Find(name).GetComponent<Button>();
+                    button.onClick.RemoveAllListeners();
                     button.onClick.AddListener
                         (delegate
                         {

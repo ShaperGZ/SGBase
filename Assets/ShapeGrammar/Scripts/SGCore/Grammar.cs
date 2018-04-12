@@ -51,7 +51,21 @@ namespace SGCore
             }
         }
 
-
+        public void ExtractParam(int i, string key)
+        {
+            Rule rule = (Rule)subNodes[i];
+            try
+            {
+                object paramGroup = rule.paramGroups[key];
+                string extName = ((ParameterGroup)paramGroup).extractName;
+                paramGroups[extName] = paramGroup;
+            }
+            catch 
+            {
+                Debug.LogWarning("either no param or no extractName");
+            }
+        }
+       
 
         public override void Execute()
         {
@@ -314,6 +328,17 @@ namespace SGCore
             }
             stagedOutputs.Clear();
             subNodes.Clear();
+
+            if (assignedObjects.Count > 0)
+            {
+                foreach (ShapeObject o in assignedObjects)
+                    o.gameObject.SetActive(true);
+            }
+            if (inputs.shapes != null)
+            {
+                foreach (ShapeObject o in inputs.shapes)
+                    o.gameObject.SetActive(true);
+            }
         }
 
 

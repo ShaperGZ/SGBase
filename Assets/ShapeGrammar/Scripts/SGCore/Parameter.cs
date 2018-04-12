@@ -34,12 +34,15 @@ namespace SGCore
     public class ParameterGroup
     {
         public string name;
+        public string extractName;
         public List<Parameter> parameters;
         public GraphNode rule;
         public bool expandable = false;
         public GraphNode grammar { get { return rule.grammar; } }
         public ParameterGroup()
         {
+            name = "";
+            extractName = "";
             parameters = new List<Parameter>();
         }
         public void Add(Parameter p)

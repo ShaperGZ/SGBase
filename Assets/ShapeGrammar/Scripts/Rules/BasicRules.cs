@@ -93,20 +93,25 @@ namespace Rules
         }
         void SetRules()
         {
-
             string on1 = outputs.names[0];
             string onM = outputs.names[1] + "toBeMirrored";
             string on2 = outputs.names[1];
+
             float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
-            AddRule(new Bisect(inputs.names[0], new string[] { on1, onM }, d, axis),false);
-            AddRule(new PivotMirror(onM, on2, axis),false);
+            Rule rule1 = new Bisect(inputs.names[0], new string[] { on1, onM }, d, axis);
+            Rule rule2 = new PivotMirror(onM, on2, axis);
+            AddRule(rule1, false);
+            AddRule(rule2, false);
+
+            rule1.paramGroups["Position"] = paramGroups["Position"];
+            rule2.paramGroups["Axis"] = paramGroups["Axis"];
         }
         public override void Execute()
         {
             //update params before execution
-            ((ParameterGroup)subNodes[0].paramGroups["Position"]).parameters[0].value = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
-            ((ParameterGroup)subNodes[1].paramGroups["Axis"]).parameters[0].value = ((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
+            //((ParameterGroup)subNodes[0].paramGroups["Position"]).parameters[0].value = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
+            //((ParameterGroup)subNodes[1].paramGroups["Axis"]).parameters[0].value = ((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
             base.Execute();
         }
         public override OrderedDictionary DefaultParam()

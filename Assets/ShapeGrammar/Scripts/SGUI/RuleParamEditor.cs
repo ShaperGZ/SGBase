@@ -9,7 +9,7 @@ namespace SGGUI {
     public class RuleParamEditor : MonoBehaviour
     {
         public float width = 30;
-        public float height = 20;
+        public float height = 15;
         public RectTransform ParameterGroupPrefab;
         public InputField inputFieldPrefab;
         public Slider sliderPrefab;
@@ -63,13 +63,13 @@ namespace SGGUI {
             Vector2 size = ((RectTransform)ipfNameIn.transform).sizeDelta;
             size.x = 100;
             ((RectTransform)ipfNameIn.transform).sizeDelta = size;
-            ((RectTransform)ipfNameIn.transform).anchoredPosition = new Vector2(0, h * 2);
+            ((RectTransform)ipfNameIn.transform).anchoredPosition = new Vector2(0, 0);
 
             InputField ipfNameOut = Instantiate(inputFieldPrefab, transform);
             ipfNameOut.text = JoinNames(r.outputs.names);
             ipfNameOut.onValueChanged.AddListener(delegate { OnNamesChanged(ipfNameOut, r, false); });
             ((RectTransform)ipfNameOut.transform).sizeDelta = size;
-            ((RectTransform)ipfNameOut.transform).anchoredPosition = new Vector2(0, h);
+            ((RectTransform)ipfNameOut.transform).anchoredPosition = new Vector2(0, -h);
             inputFields.Add(ipfNameIn);
             inputFields.Add(ipfNameOut);
 
@@ -89,12 +89,24 @@ namespace SGGUI {
 
         public void AddParameterGroup(GraphNode r, string pgName, ParameterGroup pg, int index)
         {
+            float height = pg.parameters.Count * h;
 
             float h2 = h * 2;
+
+            float locY;
             RectTransform pgui = Instantiate(ParameterGroupPrefab, transform).transform as RectTransform;
-            pgui.anchoredPosition = new Vector2(0, index * h2 - h2);
+            if (ParameterGroups.Count > 0)
+            {
+                RectTransform lastpgui = ParameterGroups[ParameterGroups.Count - 1];
+                locY = lastpgui.anchoredPosition.y - lastpgui.sizeDelta.y;
+            }
+            else
+            {
+                locY = h2*-1;
+            }
+            pgui.anchoredPosition = new Vector2(0, locY);
             Vector3 size = pgui.sizeDelta;
-            size.y = pg.parameters.Count * h + (h * 3);
+            size.y = pg.parameters.Count * h + h;
             pgui.sizeDelta = size;
             pgui.transform.Find("Title").GetComponent<Text>().text = pgName;
             ParameterGroups.Add(pgui);
@@ -106,7 +118,7 @@ namespace SGGUI {
                 //GameObject o = new GameObject();
                 InputField ipf = Instantiate(inputFieldPrefab, pgui);
                 RectTransform ipftrans = ipf.transform as RectTransform;
-                ipftrans.anchoredPosition = new Vector2(30, -h * i - h2);
+                ipftrans.anchoredPosition = new Vector2(0, -h * i -h);
                 ipf.text = p.value.ToString();
                 Slider sld = Instantiate(sliderPrefab, pgui);
                 sld.value = p.value;
@@ -116,7 +128,7 @@ namespace SGGUI {
 
                 sld.onValueChanged.AddListener(delegate { OnSliderValueChanged(sld, ipf, p, r); });
                 RectTransform sldtrans = sld.transform as RectTransform;
-                sldtrans.anchoredPosition = new Vector2(60, -h * i - 10);
+                sldtrans.anchoredPosition = new Vector2(30, -h * i - (h/2));
 
                 inputFields.Add(ipf);
                 sliders.Add(sld);
