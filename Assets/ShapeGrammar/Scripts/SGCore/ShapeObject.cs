@@ -35,13 +35,22 @@ public class ShapeObject : MonoBehaviour {
     public Rule parentRule;
     public int step;
 
+    public Dictionary<int, Material> materialsByMode;
+    public Material matDefault;
+    public Material matRuleMode;
+    public Material matNameMode;
+    public Material matVisualMode;
+    public Material matProgramMode;
+    
+
     public static Material DefaultMat
     {
         get
         {
             if(_defaultMat == null)
             {
-                _defaultMat = Resources.Load("Mat0") as Material;
+                _defaultMat = MaterialManager.GB.Default;
+                //_defaultMat = Resources.Load("Mat0") as Material;
             }
             return _defaultMat;
         }
@@ -62,13 +71,31 @@ public class ShapeObject : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        materialsByMode = new Dictionary<int, Material>();
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
+        SetDefaultMaterials();
         boxCollider = GetComponent<BoxCollider>();
         guid = System.Guid.NewGuid();
         sguid = ShortGuid();
+        UserStats.CreateShape(this);
     }
 	
+    void SetDefaultMaterials()
+    {
+        materialsByMode[DisplayMode.NORMAL]= MaterialManager.GB.Default;
+        materialsByMode[DisplayMode.NAMES] = MaterialManager.GB.NameDifferentiate;
+        materialsByMode[DisplayMode.RULE] = MaterialManager.GB.RuleEditing;
+        materialsByMode[DisplayMode.VISUAL] = MaterialManager.GB.Wall0;
+    }
+    public void SetMaterial(int mode)
+    {
+        meshRenderer.material = materialsByMode[mode];
+    }
+    public void SetMaterial(Material m)
+    {
+        meshRenderer.material = m;
+    }
 	// Update is called once per frame
 	void Update () {
 		
@@ -104,6 +131,24 @@ public class ShapeObject : MonoBehaviour {
         //if(boxCollider == null) boxCollider = GetComponent<BoxCollider>();
         //boxCollider.enabled = flag;
     }
+    public void SetDisplayMode(int mode)
+    {
+        switch (mode)
+        {
+            case DisplayMode.NORMAL:
+                meshRenderer.material = matNameMode;
+                break;
+            case DisplayMode.RULE:
+                meshRenderer.material = matRuleMode;
+                break;
+            case DisplayMode.VISUAL:
+                meshRenderer.material = matVisualMode;
+                break;
+            default:
+                Debug.LogWarning("the given mode is not implimented, mode=" + mode);
+                break;
+        }
+    }
     private void OnRenderObject()
     {
         //GLDrawScope(Color.black);
@@ -132,16 +177,7 @@ public class ShapeObject : MonoBehaviour {
         }
     }
 
-    private void OnPostRender()
-    {
-        //not working
-        GLDrawScope(Color.red);
-        if (highlightScope)
-        {
 
-            GLDrawScope(Color.red);
-        }
-    }
 
     Vector3[] makeBoxPoints()
     {
@@ -263,6 +299,7 @@ public class ShapeObject : MonoBehaviour {
     }
     private void OnDestroy()
     {
+        UserStats.DestroyShape(guid);
         Debug.LogWarning("SHAPE OBJECT DESTROY WARNING:" + Format());
     }
     public static ShapeObject CreateBasic()
@@ -274,7 +311,7 @@ public class ShapeObject : MonoBehaviour {
         BoxCollider bc= o.AddComponent<BoxCollider>();
         bc.center = new Vector3(0.5f, 0.5f, 0.5f);
         o.AddComponent<HighlightMouseOver>();
-        so.meshRenderer.material = DefaultMat;
+        //so.meshRenderer.material = DefaultMat;
         return so;
     }
     public static ShapeObject CreatePolygon(Vector3[] pts)

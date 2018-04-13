@@ -351,7 +351,9 @@
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
     <Compile Include="Assets\Scripts\Camera\OrbitTargetCamera.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\DisplayManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Grammar.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\MaterialManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Node.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Parameter.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Rule.cs" />
@@ -377,6 +379,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestSplit.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestTransform.cs" />
     <Compile Include="Assets\ShapeGrammar\UserStats.cs" />
+    <Compile Include="Assets\Simple Vector Icons\Sample\IconPreview.cs" />
     <Compile Include="Assets\test.cs" />
   </ItemGroup>
   <ItemGroup>

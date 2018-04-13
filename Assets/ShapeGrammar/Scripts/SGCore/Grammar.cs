@@ -15,9 +15,13 @@ namespace SGCore
         public List<GraphNode> subNodes;
         public List<SGIO> stagedOutputs;
         public List<ShapeObject> assignedObjects;
+        public Guid guid;
+        
 
         public Grammar():base()
         {
+            guid = Guid.NewGuid();
+            UserStats.CreateGrammar(this);
             stagedOutputs = new List<SGIO>();
             subNodes = new List<GraphNode>();
             assignedObjects = new List<ShapeObject>();
@@ -65,7 +69,19 @@ namespace SGCore
                 Debug.LogWarning("either no param or no extractName");
             }
         }
-       
+        public void ExtractParam(ParameterGroup pg)
+        {
+            try
+            {
+                string extName = pg.extractName;
+                paramGroups[extName] = pg;
+            }
+            catch
+            {
+                Debug.LogWarning("either no param or no extractName");
+            }
+        }
+
 
         public override void Execute()
         {

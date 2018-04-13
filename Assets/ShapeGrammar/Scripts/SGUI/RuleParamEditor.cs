@@ -73,7 +73,7 @@ namespace SGGUI {
             inputFields.Add(ipfNameIn);
             inputFields.Add(ipfNameOut);
 
-
+            
 
             //IDictionaryEnumerator em = r.paramGroups.GetEnumerator();
             int i = 0;
@@ -85,6 +85,46 @@ namespace SGGUI {
                 i++;
             }
 
+        }
+        public void ExtractParamGroup(GraphNode r, ParameterGroup pg, InputField ipf)
+        {
+            string extractName = ipf.text;
+            string orgExtractName = pg.extractName;
+            pg.extractName = extractName;
+            if (extractName != null && r.grammar != null)
+            {
+                GraphNode g = r.grammar;
+                g.paramGroups[extractName] = pg;
+
+            }
+            if (extractName == null && r.grammar != null && orgExtractName != null)
+            {
+                GraphNode g = r.grammar;
+                if (g.paramGroups.Contains(orgExtractName))
+                {
+                    g.paramGroups.Remove(orgExtractName);
+                }
+            }
+        }
+        public void ExtractParamGroup(GraphNode r, string key, string extractName=null)
+        {
+            object pg = r.paramGroups[key];
+            string orgExtractName = ((ParameterGroup)pg).extractName;
+            ((ParameterGroup)pg).extractName = extractName;
+            if (extractName != null && r.grammar!=null)
+            {
+                GraphNode g = r.grammar;
+                g.paramGroups[extractName]= pg;
+                
+            }
+            if(extractName == null && r.grammar != null && orgExtractName!=null)
+            {
+                GraphNode g = r.grammar;
+                if (g.paramGroups.Contains(orgExtractName))
+                {
+                    g.paramGroups.Remove(orgExtractName);
+                }
+            }
         }
 
         public void AddParameterGroup(GraphNode r, string pgName, ParameterGroup pg, int index)
@@ -108,7 +148,22 @@ namespace SGGUI {
             Vector3 size = pgui.sizeDelta;
             size.y = pg.parameters.Count * h + h;
             pgui.sizeDelta = size;
+
+            //dispaly name of the param group
             pgui.transform.Find("Title").GetComponent<Text>().text = pgName;
+            //assign parameter extraction callback
+            
+            string key = pg.name;
+            string extracName = pg.extractName;
+            InputField extractNameIpf = pgui.transform.Find("InputField").GetComponent<InputField>();
+            if (pg.extractName != null && pg.extractName != "")
+                extractNameIpf.text = pg.extractName;
+            extractNameIpf.onEndEdit.AddListener(
+                delegate 
+                {
+                    ExtractParamGroup(r, pg, extractNameIpf);
+                });
+
             ParameterGroups.Add(pgui);
 
             for (int i = 0; i < pg.parameters.Count; i++)
@@ -125,7 +180,7 @@ namespace SGGUI {
                 sld.minValue = p.min;
                 sld.maxValue = p.max;
                 if (p.step == 1) sld.wholeNumbers = true;
-
+                ipf.onEndEdit.AddListener(delegate { OnIpfChanged(ipf, sld, p, r);});
                 sld.onValueChanged.AddListener(delegate { OnSliderValueChanged(sld, ipf, p, r); });
                 RectTransform sldtrans = sld.transform as RectTransform;
                 sldtrans.anchoredPosition = new Vector2(30, -h * i - (h/2));
@@ -151,12 +206,28 @@ namespace SGGUI {
             ruleNavigator.UpdateButtonDescriptions();
         }
 
-
+        void OnIpfChanged(InputField ipf, Slider sld, Parameter p, GraphNode r)
+        {
+            float val = float.Parse(ipf.text);
+            if (val < p.min) sld.minValue = val * 0.2f;
+            else sld.minValue = p.min;
+            if (val > p.max) sld.maxValue = val * 5;
+            else sld.maxValue = p.max;
+            sld.value = val;
+            if (r.grammar != null)
+                r.grammar.ExecuteFrom(r);
+            else
+                r.Execute();
+        }
+        
         void OnSliderValueChanged(Slider sld, InputField ipf, Parameter p, GraphNode r)
         {
             ipf.text = sld.value.ToString();
             p.value = sld.value;
-            r.grammar.ExecuteFrom(r);
+            if (r.grammar != null)
+                r.grammar.ExecuteFrom(r);
+            else
+                r.Execute();
         }
 
         string JoinNames(IEnumerable<string> names)

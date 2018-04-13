@@ -17,7 +17,12 @@ namespace SGCore
         public bool invalidated = false;
         public OrderedDictionary paramGroups;
         public int step;
-        
+        public bool _active;
+        public bool active { get { return _active; } }
+        public void SetActive(bool flag)
+        {
+            _active = flag;
+        }
 
         public GraphNode()
         {

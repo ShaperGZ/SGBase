@@ -63,7 +63,38 @@ public class UserStats : MonoBehaviour {
         ruleNavigator.SetGrammar(null);
     }
 
-    
+    public static Dictionary<Guid, ShapeObject> existingShapes = new Dictionary<Guid, ShapeObject>();
+    public static Dictionary<Guid, Grammar> existingGrammar = new Dictionary<Guid, Grammar>();
+    public static void CreateShape(ShapeObject so)
+    {
+        updateSystemInspectText();
+        existingShapes.Add(so.guid, so);
+    }
+    public static void DestroyShape(Guid id)
+    {
+        updateSystemInspectText();
+        existingShapes.Remove(id);
+    }
+    public static void CreateGrammar(Grammar g)
+    {
+        updateSystemInspectText();
+        existingGrammar.Add(g.guid, g);
+    }
+    public static void DestroyGrammar(Guid id)
+    {
+        updateSystemInspectText();
+        existingGrammar.Remove(id);
+    }
+    public static void updateSystemInspectText()
+    {
+        string txt = "";
+        txt = string.Format("Shapes({0}) Grammars({1})",
+            existingShapes.Values.Count,
+            existingGrammar.Values.Count
+            );
+        systemInspectText.text = txt;
+    }
+
 
     public static ShapeObject selectedShape
     {
@@ -101,6 +132,28 @@ public class UserStats : MonoBehaviour {
         }
     }
     public static Text ShapeInspectText;
+    public static Text _systemInspectText;
+    public static Text systemInspectText
+    {
+        get
+        {
+            if (_systemInspectText == null)
+                _systemInspectText = GameObject.Find("SystemInspectText").GetComponent<Text>();
+            return _systemInspectText;
+        }
+    }
+
+    public static DisplayManager _displayManager;
+    public static DisplayManager displayManager
+    {
+        get
+        {
+            if (_displayManager == null)
+                _displayManager = new DisplayManager();
+            return _displayManager;
+        }
+    }
+    
 
     public static Dictionary<string,Color> colors = new Dictionary<string, Color>();
 
@@ -158,4 +211,6 @@ public class UserStats : MonoBehaviour {
             }
         }
     }
+
+
 }

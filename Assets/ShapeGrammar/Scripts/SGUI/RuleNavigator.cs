@@ -45,6 +45,7 @@ namespace SGGUI
         }
         public void Load()
         {
+            Grammar g = UserStats.SelectedGrammar;
             btHolder = transform.Find("BtHolder") as Transform;
             pnContent = transform.Find("ContentPanel") as RectTransform;
             grammarTitleText = GameObject.Find("GrammarInspector/Panel/Bt_GrammarTitle/TitleText").GetComponent<Text>();
@@ -53,10 +54,13 @@ namespace SGGUI
             GameObject.Find("BtHolder/BtLoadRuleSet").GetComponent<Button>().onClick.AddListener(delegate { onLoadClick(); });
             GameObject.Find("BtHolder/BtClearGrammar").GetComponent<Button>().onClick.AddListener(
                 delegate {
-                    UserStats.SelectedGrammar.Clear();
+                    g.Clear();
                     this.Clear();
                 });
             GameObject.Find("Bt_GrammarTitle").GetComponent<Button>().onClick.AddListener(delegate { OnGrammarTitleClick(); });
+            GameObject.Find("BtDeactivateGrammar").GetComponent<Button>().onClick.AddListener(delegate { g.SetActive(!g.active); });
+
+
             selectedIndexText = transform.Find("BtHolder/SelectIndex").GetComponent<Text>() as Text;
             stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
             ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
