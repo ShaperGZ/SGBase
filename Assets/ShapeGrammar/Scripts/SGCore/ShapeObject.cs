@@ -33,6 +33,7 @@ public class ShapeObject : MonoBehaviour {
     public string sguid;
     public Meshable meshable;
     public Rule parentRule;
+    public Grammar grammar;
     public int step;
 
     public Dictionary<int, Material> materialsByMode;
@@ -62,6 +63,7 @@ public class ShapeObject : MonoBehaviour {
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
     private BoxCollider boxCollider;
+    public bool stale = false;
 
     private void Awake()
     {
@@ -80,13 +82,32 @@ public class ShapeObject : MonoBehaviour {
         sguid = ShortGuid();
         UserStats.CreateShape(this);
     }
-	
+	public void SetGrammar(Grammar g, bool execute=false)
+    {
+        if(grammar != null)
+        {
+            grammar.Clear();
+        }
+        if (g == null) return;
+
+        grammar = g;
+        g.assignedObjects.Clear();
+        g.assignedObjects.Add(this);
+
+        //g.inputs.shapes = new List<ShapeObject>();
+        //g.inputs.shapes.Add(this);
+        if (execute)
+        {
+            g.Execute();
+        }
+    }
     void SetDefaultMaterials()
     {
         materialsByMode[DisplayMode.NORMAL]= MaterialManager.GB.Default;
         materialsByMode[DisplayMode.NAMES] = MaterialManager.GB.NameDifferentiate;
         materialsByMode[DisplayMode.RULE] = MaterialManager.GB.RuleEditing;
         materialsByMode[DisplayMode.VISUAL] = MaterialManager.GB.Wall0;
+        meshRenderer.material = materialsByMode[DisplayMode.NORMAL];
     }
     public void SetMaterial(int mode)
     {
@@ -125,11 +146,10 @@ public class ShapeObject : MonoBehaviour {
     }
     public void Show(bool flag)
     {
+        //if(grammar==null)
         gameObject.SetActive(flag);
-        //if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
-        //meshRenderer.enabled = flag;
-        //if(boxCollider == null) boxCollider = GetComponent<BoxCollider>();
-        //boxCollider.enabled = flag;
+        if(flag)
+            Invalidate();
     }
     public void SetDisplayMode(int mode)
     {
@@ -276,7 +296,7 @@ public class ShapeObject : MonoBehaviour {
             bbox = meshable.bbox;
         }
         ConformToBBox(bbox);
-
+        stale = true;
     }
     
     public void SetMeshable(Meshable imeshable, BoundingBox refBbox)
@@ -286,6 +306,7 @@ public class ShapeObject : MonoBehaviour {
         BoundingBox bbox = meshable.GetBoundingBox(refBbox);
         
         ConformToBBox(bbox);
+        stale = true;
     }
     private void ConformToBBox(BoundingBox bbox)
     {
@@ -297,10 +318,24 @@ public class ShapeObject : MonoBehaviour {
         meshable.bbox = bbox;
         GetComponent<MeshFilter>().mesh = mesh;
     }
+    public void Invalidate()
+    {
+        if (!stale) return;
+        if (grammar != null)
+        {
+            //Show(false);
+            grammar.Execute();
+        }
+        stale = false;
+    }
     private void OnDestroy()
     {
         UserStats.DestroyShape(guid);
-        Debug.LogWarning("SHAPE OBJECT DESTROY WARNING:" + Format());
+        if (grammar != null)
+        {
+            grammar.Clear(true);
+        }
+        //Debug.LogWarning("SHAPE OBJECT DESTROY WARNING:" + Format());
     }
     public static ShapeObject CreateBasic()
     {

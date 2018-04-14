@@ -116,10 +116,11 @@ namespace SGCore
                 if (i < shapeCount)
                 {
                     outputs.shapes[i].SetMeshable(mb);
-                    //outputs.shapes[i].SetMeshable(mb,mb.bbox);
                     outputs.shapes[i].name = mb.name;
                     outputs.shapes[i].parentRule = this;
                     outputs.shapes[i].step = step;
+                    outputs.shapes[i].Invalidate();
+                   
                 }//end if 
                 else
                 {

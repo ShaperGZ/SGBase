@@ -8,6 +8,7 @@ using System;
 
 public class UserStats : MonoBehaviour {
 
+    public static string directoryRules;
     static Text _selectedShapeText;
     static Text selectedShapeText
     {
@@ -92,7 +93,8 @@ public class UserStats : MonoBehaviour {
             existingShapes.Values.Count,
             existingGrammar.Values.Count
             );
-        systemInspectText.text = txt;
+        if(systemInspectText!=null)
+            systemInspectText.text = txt;
     }
 
 
@@ -120,14 +122,13 @@ public class UserStats : MonoBehaviour {
         }
     }
     public static RuleCreator ruleCreator;
-    
-    public static RuleNavigator _ruleNavigator;
-    public static RuleNavigator ruleNavigator
+    public static Navigator _ruleNavigator;
+    public static Navigator ruleNavigator
     {
         get
         {
             if (_ruleNavigator == null)
-                _ruleNavigator = GameObject.Find("ExpandableListPanel").GetComponent<RuleNavigator>();
+                _ruleNavigator = GameObject.Find("CanvasMain").GetComponent<Navigator>();
             return _ruleNavigator;
         }
     }
@@ -137,8 +138,13 @@ public class UserStats : MonoBehaviour {
     {
         get
         {
-            if (_systemInspectText == null)
-                _systemInspectText = GameObject.Find("SystemInspectText").GetComponent<Text>();
+            try
+            {
+                if (_systemInspectText == null)
+                    _systemInspectText = GameObject.Find("SystemInspectText").GetComponent<Text>();
+            }
+            catch { }
+            
             return _systemInspectText;
         }
     }
@@ -157,6 +163,8 @@ public class UserStats : MonoBehaviour {
 
     public static Dictionary<string,Color> colors = new Dictionary<string, Color>();
 
+    public string direcotyRules;
+
     //materials
     Material selectMat;
 
@@ -165,11 +173,12 @@ public class UserStats : MonoBehaviour {
         AssociateGUI();
         GetColors();
         ruleCreator = new RuleCreator();
+        UserStats.directoryRules = this.direcotyRules;
     }
 
     // Use this for initialization
     void Start () {
-        
+       
         
 	}
 	

@@ -16,7 +16,7 @@ namespace SGGUI {
         public List<InputField> inputFields;
         public List<RectTransform> ParameterGroups;
         public List<Slider> sliders;
-        public RuleNavigator ruleNavigator;
+        public Navigator ruleNavigator;
 
         float h = 25;
 

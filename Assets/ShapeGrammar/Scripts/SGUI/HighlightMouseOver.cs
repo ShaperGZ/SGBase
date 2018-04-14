@@ -109,6 +109,7 @@ public class HighlightMouseOver : MonoBehaviour {
 
         if (so.parentRule == null || so.parentRule.grammar == null) return;
         UserStats.SelectedGrammar = so.parentRule.grammar;
+        UserStats.displayManager.setRuleMode();
         commonNameObjects.Clear();
 
     }

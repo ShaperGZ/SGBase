@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OrbitTargetCamera : MonoBehaviour {
     public Vector3 target_pos;
@@ -22,7 +23,7 @@ public class OrbitTargetCamera : MonoBehaviour {
 
     private void Awake()
     {
-        
+        this.runInEditMode = true;
     }
 
     // Use this for initialization

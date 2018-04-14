@@ -107,11 +107,11 @@ public class TestGrammarUI : MonoBehaviour {
 
 
 
-        g1 = new Grammar();
-        g1.name = "g1";
-        g1.assignedObjects.Add(init1);
-        Rule3(g1);
-        g1.Execute();
+        //g1 = new Grammar();
+        //g1.name = "g1";
+        //g1.assignedObjects.Add(init1);
+        //Rule3(g1);
+        //g1.Execute();
 
         Grammar g2 = new Grammar();
         g2.name = "g2";
@@ -129,7 +129,7 @@ public class TestGrammarUI : MonoBehaviour {
         
         //ruleParamEditor.GenerateUI(g1.rules[1]);
 
-        UserStats.SelectedGrammar = g1;
+        //UserStats.SelectedGrammar = g1;
   
     }
     

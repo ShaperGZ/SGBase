@@ -62,7 +62,7 @@ namespace SGGUI
                             Rule r = Activator.CreateInstance(t) as Rule;
                             //Debug.Log(string.Format("create {0} on click in RuleCreator", r.name));
                             grammar.AddRule(r, true);
-                            UserStats.ruleNavigator.AddItem(r.description);
+                            UserStats.ruleNavigator.AddRuleListItem(r.description);
                         }
                         );
                    

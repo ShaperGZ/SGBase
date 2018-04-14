@@ -352,6 +352,7 @@
     <Compile Include="Assets\Scripts\Camera\OrbitTargetCamera.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\DisplayManager.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\DisplayMode.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Grammar.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\MaterialManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Node.cs" />
@@ -362,8 +363,8 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\SGSGGeometry\BaseTypes.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\GrammarInspector.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\HighlightMouseOver.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\Navigator.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\RuleCreator.cs" />
-    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\RuleNavigator.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\RuleParamEditor.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\SGUIBase.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\TextWheeler.cs" />

@@ -85,6 +85,11 @@ namespace SGCore
 
         public override void Execute()
         {
+            if (assignedObjects != null)
+                foreach (ShapeObject s in assignedObjects) s.Show(false);
+            if (inputs.shapes != null)
+                foreach (ShapeObject s in inputs.shapes) s.Show(false);
+
             ExecuteFrom(0);
         }
         public virtual void ExecuteFrom(GraphNode rule)
@@ -219,17 +224,22 @@ namespace SGCore
         }
         public void SelectStep(int index)
         {
-            if (index < 0 || index >= subNodes.Count) return;
+            //when index is -1, show the original input shape
+            if (index < -1 || index >= subNodes.Count) return;
             currentStep = index;
             displayStep = index;
             SGIO sgio;
             //TODO: add this to grammar
             if (stagedOutputs.Count > 0)
             {
+                if (assignedObjects != null)
+                    foreach (ShapeObject s in assignedObjects) s.Show(false);
+                if (inputs.shapes != null)
+                    foreach (ShapeObject s in inputs.shapes) s.Show(false);
+
                 for (int i = 0; i < stagedOutputs.Count; i++)
                 {
                     sgio = stagedOutputs[i];
-                    List<ShapeObject> tobeRemoved = new List<ShapeObject>();
                     foreach (ShapeObject o in sgio.shapes)
                     {
                         try
@@ -239,28 +249,34 @@ namespace SGCore
                         }
                         catch
                         {
-                            tobeRemoved.Add(o);
+                            Debug.LogWarning("FOund null so!");
                         }
 
                     }
-                    foreach (ShapeObject o in tobeRemoved)
-                    {
-                        //sgio.shapes.Remove(o);
-                    }
                 }
             }
-
-            sgio = stagedOutputs[displayStep];
-            foreach (ShapeObject o in sgio.shapes)
+            if (index >= 0)
             {
-                if (o != null)
-                    //o.gameObject.SetActive(true);
-                    o.Show(true);
+                sgio = stagedOutputs[displayStep];
+                foreach (ShapeObject o in sgio.shapes)
+                {
+                    if (o != null)
+                        //o.gameObject.SetActive(true);
+                        o.Show(true);
 
+                }
             }
+            else
+            {
+                if(assignedObjects !=null)
+                    foreach (ShapeObject s in assignedObjects) s.Show(true);
+                if (inputs.shapes != null)
+                    foreach (ShapeObject s in inputs.shapes) s.Show(true);
+            }
+            
 
         }
-
+       
 
         public void SaveXML(string path)
         {
@@ -289,7 +305,7 @@ namespace SGCore
             {
                 foreach (Rule r in subNodes)
                 {
-                    UserStats.ruleNavigator.AddItem(r.description);
+                    UserStats.ruleNavigator.AddRuleListItem(r.description);
                 }
             }
         }
@@ -329,7 +345,7 @@ namespace SGCore
                 UserStats.ruleNavigator.UpdateButtonDescriptions();
             }
         }
-        public void Clear()
+        public void Clear(bool callByDestroy=false)
         {
             foreach(SGIO sgio in stagedOutputs)
             {
@@ -344,17 +360,23 @@ namespace SGCore
             }
             stagedOutputs.Clear();
             subNodes.Clear();
-
-            if (assignedObjects.Count > 0)
+            if(!callByDestroy)
             {
-                foreach (ShapeObject o in assignedObjects)
-                    o.gameObject.SetActive(true);
+                if (assignedObjects.Count > 0)
+                {
+                    foreach (ShapeObject o in assignedObjects)
+                        if (o != null && o.gameObject != null)
+                            o.gameObject.SetActive(true);
+                }
+                if (inputs.shapes != null)
+                {
+                    foreach (ShapeObject o in inputs.shapes)
+                    {
+                        if (o != null && o.gameObject != null) o.gameObject.SetActive(true);
+                    }
+                }
             }
-            if (inputs.shapes != null)
-            {
-                foreach (ShapeObject o in inputs.shapes)
-                    o.gameObject.SetActive(true);
-            }
+            
         }
 
 
