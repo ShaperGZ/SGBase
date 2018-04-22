@@ -225,7 +225,7 @@ namespace SGCore
             
             //Debug.Log(confirmStr);
             string[] pair = className.Split('.');
-            foreach (Type t in UserStats.ruleCreator.ruleTypes)
+            foreach (Type t in SceneManager.ruleCreator.ruleTypes)
             {
                 //Debug.Log("type:" + t.ToString()+"class:" + className);
                 if (t.Name == className.Split('.')[1])

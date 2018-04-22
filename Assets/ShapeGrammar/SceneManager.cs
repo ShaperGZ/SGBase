@@ -6,7 +6,20 @@ using SGCore;
 using SGGUI;
 using System;
 
-public class UserStats : MonoBehaviour {
+public class SceneManager : MonoBehaviour {
+
+    public static Tool _tool=new Tool();
+    public static Tool tool
+    {
+        get
+        {
+            return _tool;
+        }
+        set
+        {
+            _tool = value;
+        }
+    }
 
     public static string directoryRules;
     static Text _selectedShapeText;
@@ -173,17 +186,20 @@ public class UserStats : MonoBehaviour {
         AssociateGUI();
         GetColors();
         ruleCreator = new RuleCreator();
-        UserStats.directoryRules = this.direcotyRules;
+        SceneManager.directoryRules = this.direcotyRules;
     }
 
     // Use this for initialization
     void Start () {
-       
+        tool = new Tool();
         
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        tool.Update();
+        
+
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
             if (SelectedGrammar.grammar != null)
@@ -192,6 +208,11 @@ public class UserStats : MonoBehaviour {
             }
         }
 	}
+
+    private void OnRenderObject()
+    {
+        tool.OnRenderObject();
+    }
 
     void AssociateGUI()
     {

@@ -31,8 +31,8 @@ public class HighlightMouseOver : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         meshRenderer=GetComponent<MeshRenderer>();
-        selectColor = UserStats.colors["blue"];
-        selectColor2 = UserStats.colors["blue3"];
+        selectColor = SceneManager.colors["blue"];
+        selectColor2 = SceneManager.colors["blue3"];
         so = GetComponent<ShapeObject>();
     }
 	
@@ -53,16 +53,16 @@ public class HighlightMouseOver : MonoBehaviour {
         guidText.text = so.sguid;
 
         if (so.parentRule == null) return;
-        if (UserStats.SelectedGrammar != so.parentRule.grammar) return;
+        if (SceneManager.SelectedGrammar != so.parentRule.grammar) return;
         
 
         colors = new Dictionary<ShapeObject, Color>();
         commonNameObjects.Clear();
-        int step = UserStats.SelectedGrammar.displayStep;
+        int step = SceneManager.SelectedGrammar.displayStep;
         if (step < 0) return;
         Color c= meshRenderer.material.color;
         orgColor = new Color(c.r,c.g,c.b);
-        foreach (ShapeObject s in UserStats.SelectedGrammar.stagedOutputs[step].shapes)
+        foreach (ShapeObject s in SceneManager.SelectedGrammar.stagedOutputs[step].shapes)
         {
             try
             {
@@ -82,34 +82,40 @@ public class HighlightMouseOver : MonoBehaviour {
         meshRenderer.material = MaterialManager.GB.RuleSelect;
         //orgColor = meshRenderer.material.color;
         //meshRenderer.material.color = selectColor;
-        UserStats.ShapeInspectText.text = GetComponent<ShapeObject>().Format();
+        SceneManager.ShapeInspectText.text = GetComponent<ShapeObject>().Format();
     }
     private void OnMouseExit()
     {
         if (!so) return;
         if (!orgColor.HasValue) return;
         if (so.parentRule == null) return;
-        if (UserStats.SelectedGrammar != so.parentRule.grammar) return;
+        if (SceneManager.SelectedGrammar != so.parentRule.grammar) return;
 
 
         foreach (ShapeObject so in commonNameObjects)
         {
             //Material m = so.GetComponent<MeshRenderer>().material;
             //m.color = colors[so];
-            if (so.parentRule.grammar == UserStats.SelectedGrammar)
+            if (so.parentRule.grammar == SceneManager.SelectedGrammar)
                 so.SetMaterial(MaterialManager.GB.RuleEditing);
             else
-                so.SetMaterial(UserStats.displayManager.currMode);
+                so.SetMaterial(SceneManager.displayManager.currMode);
         }
         meshRenderer.material.color = orgColor.Value;
     }
     private void OnMouseDown()
     {
-        UserStats.SelectedShape = so;
+        SceneManager.SelectedShape = so;
 
-        if (so.parentRule == null || so.parentRule.grammar == null) return;
-        UserStats.SelectedGrammar = so.parentRule.grammar;
-        UserStats.displayManager.setRuleMode();
+        if (so.parentRule == null || so.parentRule.grammar == null)
+        {
+            //SceneManager.ruleNavigator.SetGrammar(null);
+            SceneManager.SelectedGrammar = null;
+            return;
+        }
+
+        SceneManager.SelectedGrammar = so.parentRule.grammar;
+        SceneManager.displayManager.setRuleMode();
         commonNameObjects.Clear();
 
     }

@@ -21,7 +21,7 @@ namespace SGCore
         public Grammar():base()
         {
             guid = Guid.NewGuid();
-            UserStats.CreateGrammar(this);
+            SceneManager.CreateGrammar(this);
             stagedOutputs = new List<SGIO>();
             subNodes = new List<GraphNode>();
             assignedObjects = new List<ShapeObject>();
@@ -301,17 +301,43 @@ namespace SGCore
         }
         public void updateRuleNavigator()
         {
-            if(UserStats.SelectedGrammar == this || UserStats.ruleNavigator != null)
+            if(SceneManager.SelectedGrammar == this || SceneManager.ruleNavigator != null)
             {
                 foreach (Rule r in subNodes)
                 {
-                    UserStats.ruleNavigator.AddRuleListItem(r.description);
+                    SceneManager.ruleNavigator.AddRuleListItem(r.description);
                 }
             }
         }
         public void Save(string path)
         {
+            //TODO: how to record exported params
+            //Rules.Bisect A -> B,C, | Axis(0-0-2-1,) Position(0-0.4-1-0.01,)
+
+            //test code to export params
+            //#EXPORTPARAM
+            //#EXPORTPARAM,1,"position"
+            //maker,rule index, paramGroup Name
+            string extractTxt = "";
+            for(int i = 0; i < subNodes.Count; i++)
+            {
+                GraphNode rule =subNodes[i];
+                Debug.Log("rule.paramGroups.keyCount=" + rule.paramGroups.Keys.Count);
+                foreach(string key in rule.paramGroups.Keys)
+                {
+                    ParameterGroup pg = (ParameterGroup)rule.paramGroups[key];
+                    if (pg.extractName != null && pg.extractName != ""  && this.paramGroups.Contains(pg.extractName))
+                    {
+                        string txt = string.Format("\n#EXPORTPARAM,{0},{1}",i, key);
+                        extractTxt += txt;
+                    }
+                }
+            }
+
+            //belowing working code to save grammar
+            //start writing
             string text = "";
+            text += extractTxt;
             List<string> txts=new List<string>();
             foreach(Rule r in subNodes)
             {
@@ -321,28 +347,57 @@ namespace SGCore
             //System.IO.File.WriteAllLines(path, txts.ToArray());
             System.IO.File.WriteAllText(path, text);
         }
+        public static void CreateFromFile(string path, bool execute = true)
+        {
+            Grammar g = new Grammar();
+            g.Load(path, execute);
+        }
         public void Load(string path, bool execute = true)
         {
             Clear();
             string texts=System.IO.File.ReadAllText(path);
             string[] lines = System.IO.File.ReadAllLines(path);
+            List<string> extractLines = new List<string>();
             foreach (string s in lines)
             {
                 if (s.Length < 4) continue;
                 //Debug.Log(s);
-                Rule r = Rule.CreateFromSentence(s);
-                if (r!=null)
+                if (s != "")
                 {
-                    AddRule(r, false);
-                }
+                    if(s.Substring(0, 12) == "#EXPORTPARAM")
+                    {
+                        extractLines.Add(s);
+                    }
+                    else
+                    {
+                        Rule r = Rule.CreateFromSentence(s);
+                        if (r != null)
+                        {
+                            AddRule(r, false);
+                        }
+                    }
+                }                
             }
             
-            if (execute) Execute();
-            Debug.Log(">>>>>>>> FLAG 3");
-            if(UserStats.ruleNavigator != null &&UserStats.SelectedGrammar == this)
+            //export param
+            foreach(string s in extractLines)
             {
-                Debug.Log(">>>>>>>> FLAG 4");
-                UserStats.ruleNavigator.UpdateButtonDescriptions();
+                //#EXPORTPARAM,1,position
+                string[] trunks = s.Split(',');
+                int index = int.Parse(trunks[1]);
+                string key = trunks[2];
+                object pg = subNodes[index].paramGroups[key];
+                string extractName = ((ParameterGroup)pg).extractName;
+                paramGroups.Add(extractName, pg);
+
+            }
+
+            if (execute) Execute();
+            //Debug.Log(">>>>>>>> FLAG 3");
+            if(SceneManager.ruleNavigator != null && SceneManager.SelectedGrammar == this)
+            {
+                //Debug.Log(">>>>>>>> FLAG 4");
+                SceneManager.ruleNavigator.UpdateButtonDescriptions();
             }
         }
         public void Clear(bool callByDestroy=false)
@@ -360,7 +415,8 @@ namespace SGCore
             }
             stagedOutputs.Clear();
             subNodes.Clear();
-            if(!callByDestroy)
+            paramGroups.Clear();
+            if (!callByDestroy)
             {
                 if (assignedObjects.Count > 0)
                 {
@@ -375,6 +431,7 @@ namespace SGCore
                         if (o != null && o.gameObject != null) o.gameObject.SetActive(true);
                     }
                 }
+                
             }
             
         }

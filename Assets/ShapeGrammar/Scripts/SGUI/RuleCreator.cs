@@ -41,7 +41,7 @@ namespace SGGUI
             }
         }
 
-        //UserStats will initialize an instance of RuleCreator
+        //SceneManager will initialize an instance of RuleCreator
         public void CreateToolBar()
         {
             //it generates the tool bar
@@ -62,7 +62,7 @@ namespace SGGUI
                             Rule r = Activator.CreateInstance(t) as Rule;
                             //Debug.Log(string.Format("create {0} on click in RuleCreator", r.name));
                             grammar.AddRule(r, true);
-                            UserStats.ruleNavigator.AddRuleListItem(r.description);
+                            SceneManager.ruleNavigator.AddRuleListItem(r.description);
                         }
                         );
                    

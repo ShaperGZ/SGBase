@@ -91,8 +91,8 @@ public class TestGrammarUI : MonoBehaviour {
         
         Polygon pg1 = new Polygon(pts1);
         Polygon pg2 = new Polygon(pts2);
-        Form f1 = pg1.Extrude(new Vector3(0, 40, 0));
-        Form f2 = pg2.Extrude(new Vector3(0, 30, 0));
+        Form f1 = pg1.ExtrudeToForm(new Vector3(0, 40, 0));
+        Form f2 = pg2.ExtrudeToForm(new Vector3(0, 30, 0));
 
         
         f1.direction = PointsBase.LongestDirection(pts1).Value;
@@ -129,7 +129,7 @@ public class TestGrammarUI : MonoBehaviour {
         
         //ruleParamEditor.GenerateUI(g1.rules[1]);
 
-        //UserStats.SelectedGrammar = g1;
+        //SceneManager.SelectedGrammar = g1;
   
     }
     

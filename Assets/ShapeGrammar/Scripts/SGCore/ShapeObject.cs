@@ -6,7 +6,7 @@ using SGCore;
 
 
 public class ShapeObject : MonoBehaviour {
-    public Vector3 Size
+    public virtual Vector3 Size
     {
         get
         {
@@ -65,6 +65,10 @@ public class ShapeObject : MonoBehaviour {
     private BoxCollider boxCollider;
     public bool stale = false;
 
+    public virtual void Clear()
+    {
+
+    }
     private void Awake()
     {
         //guid = System.Guid.NewGuid();
@@ -80,7 +84,7 @@ public class ShapeObject : MonoBehaviour {
         boxCollider = GetComponent<BoxCollider>();
         guid = System.Guid.NewGuid();
         sguid = ShortGuid();
-        UserStats.CreateShape(this);
+        SceneManager.CreateShape(this);
     }
 	public void SetGrammar(Grammar g, bool execute=false)
     {
@@ -107,7 +111,8 @@ public class ShapeObject : MonoBehaviour {
         materialsByMode[DisplayMode.NAMES] = MaterialManager.GB.NameDifferentiate;
         materialsByMode[DisplayMode.RULE] = MaterialManager.GB.RuleEditing;
         materialsByMode[DisplayMode.VISUAL] = MaterialManager.GB.Wall0;
-        meshRenderer.material = materialsByMode[DisplayMode.NORMAL];
+        if(meshRenderer!=null)
+            meshRenderer.material = materialsByMode[DisplayMode.NORMAL];
     }
     public void SetMaterial(int mode)
     {
@@ -121,7 +126,7 @@ public class ShapeObject : MonoBehaviour {
 	void Update () {
 		
 	}
-
+    
     public string Format()
     {
         string txt = "";
@@ -219,10 +224,10 @@ public class ShapeObject : MonoBehaviour {
         return opts;
 
     }
-    void GLDrawScope(Color color)
+    protected void GLDrawScope(Color color)
     {
         //Color color = Color.black;
-        Material mat = UserStats.LineMat;
+        Material mat = SceneManager.LineMat;
         mat.SetPass(0);
         Vector3[] pts = makeBoxPoints();
         GL.Begin(GL.LINES);
@@ -330,7 +335,7 @@ public class ShapeObject : MonoBehaviour {
     }
     private void OnDestroy()
     {
-        UserStats.DestroyShape(guid);
+        SceneManager.DestroyShape(guid);
         if (grammar != null)
         {
             grammar.Clear(true);
@@ -362,7 +367,7 @@ public class ShapeObject : MonoBehaviour {
     {
         Vector3 magUp = new Vector3(0, d, 0);
         Polygon pg = new Polygon(pts);
-        Form ext = pg.Extrude(magUp);
+        Form ext = pg.ExtrudeToForm(magUp);
 
         ShapeObject so = ShapeObject.CreateBasic();
         Vector3? ld = PointsBase.LongestDirection(pts);

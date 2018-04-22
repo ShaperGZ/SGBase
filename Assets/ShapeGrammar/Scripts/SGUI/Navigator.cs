@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SGCore;
+using System;
 
 namespace SGGUI
 {
@@ -26,6 +27,8 @@ namespace SGGUI
         public Button clearButton;
         public Button titleButton;
         public Button deactivateButton;
+        public Button btSaveScene;
+        public Button btLoadScene;
 
         public Button btGrammarList;
         public GameObject grammarList;
@@ -50,14 +53,14 @@ namespace SGGUI
         private void Awake()
         {
             //Load();
-            Debug.LogWarning("Navigator.Awake()");
+            //Debug.LogWarning("Navigator.Awake()");
 
         }
 
         void Start()
         {
             Load();
-            Debug.LogWarning("Navigator.Start()");
+            //Debug.LogWarning("Navigator.Start()");
             ListAllRules();
             
         }
@@ -68,11 +71,23 @@ namespace SGGUI
             clearButton.onClick.AddListener(OnClearButtonClicked);
             titleButton.onClick.AddListener(OnGrammarTitleClicked);
             deactivateButton.onClick.AddListener(OnDeactivateButtonClicked);
+            btSaveScene.onClick.AddListener(OnSaveSceneClicked);
+            btLoadScene.onClick.AddListener(onLoadSceneClicked);
 
             btGrammarList.onClick.AddListener(OnGrammarListClicked);
             btRuleList.onClick.AddListener(OnRuleListClicked);
 
             ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
+        }
+
+        private void onLoadSceneClicked()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnSaveSceneClicked()
+        {
+            throw new NotImplementedException();
         }
 
         // Update is called once per frame
@@ -132,8 +147,8 @@ namespace SGGUI
             /////////////////////////////
             Vector2 offset = new Vector2(0, 20);
             Vector3 offset3 = new Vector3(0, 20, 0);
-            Debug.LogWarningFormat("rectPanelContent={0}", rectPanelContent);
-            Debug.LogWarningFormat("rectPanelContent.sizeDelta={0}", rectPanelContent.sizeDelta);
+            //Debug.LogWarningFormat("rectPanelContent={0}", rectPanelContent);
+            //Debug.LogWarningFormat("rectPanelContent.sizeDelta={0}", rectPanelContent.sizeDelta);
             rectPanelContent.sizeDelta += offset;
 
             int i = ruleListItems.Count;
@@ -185,7 +200,7 @@ namespace SGGUI
             }
             grammarListButtons.Clear();
 
-            string path = UserStats.directoryRules;
+            string path = SceneManager.directoryRules;
             string[] files = System.IO.Directory.GetFiles(path, "*.sgr");
             for (int i = 0; i < files.Length; i++)
             {
@@ -201,8 +216,8 @@ namespace SGGUI
         public void OnSelectGrammarClicked(string grammarName)
         {
             Debug.Log("onSelect GrammarClicked");
-            if (UserStats.selectedShape == null) return;
-            ShapeObject so = UserStats.selectedShape;
+            if (SceneManager.selectedShape == null) return;
+            ShapeObject so = SceneManager.selectedShape;
             Grammar g = new Grammar();
             //g.assignedObjects.Add(so);
             //so.grammar = g;
@@ -230,6 +245,8 @@ namespace SGGUI
         {
             if (grammar == null) return;
             grammar.Clear();
+            Clear();
+            ruleParamEditor.Clear();
         }
         public void OnDeactivateButtonClicked()
         {
@@ -258,7 +275,7 @@ namespace SGGUI
         public void printStructure()
         {
             //display debug texts
-            Grammar g = UserStats.SelectedGrammar;
+            Grammar g = SceneManager.SelectedGrammar;
             string txt = "";
             txt += "Grammar.currentStep=" + g.currentStep.ToString();
             for (int i = 0; i < g.stagedOutputs.Count; i++)
@@ -324,7 +341,7 @@ namespace SGGUI
 
         public void ListAllRules()
         {
-            string[] files= System.IO.Directory.GetFiles(UserStats.directoryRules, "*.sgr");
+            string[] files= System.IO.Directory.GetFiles(SceneManager.directoryRules, "*.sgr");
             foreach(string s in files)
             {
                 Debug.Log(s);

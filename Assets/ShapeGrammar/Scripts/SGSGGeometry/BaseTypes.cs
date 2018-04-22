@@ -45,7 +45,7 @@ namespace SGGeometry
             lineMat = lineMaterial;
             return lineMaterial;
         }
-        public static void Polyline(Vector3[] pts, bool closed, Material mat, Color color,Transform transform=null)
+        public static void Polyline(Vector3[] pts, bool closed, Material mat, Color color, Transform transform = null)
         {
             mat = confirmMat(mat);
             mat.SetPass(0);
@@ -69,7 +69,27 @@ namespace SGGeometry
             GL.PopMatrix();
             //Debug.Log("on render object");
         }
-        public static void GridPlane(Vector3 position, Vector3 normal,Vector3 vectU,Vector3 vectV, float gridSize = 0.1f, int gridCount = 10)
+        public static void Lines(Vector3[] pts, Color color, Transform transform = null)
+        {
+            Material mat = GetLineMaterial();
+            mat.SetPass(0);
+
+            GL.PushMatrix();
+            if (transform != null)
+            {
+                GL.MultMatrix(transform.localToWorldMatrix);
+            }
+            GL.Begin(GL.LINES);
+            GL.Color(color);
+            foreach (Vector3 v in pts)
+            {
+                GL.Vertex(v);
+            }
+            GL.End();
+            GL.PopMatrix();
+            //Debug.Log("on render object");
+        }
+        public static void GridPlane(Vector3 position, Vector3 normal, Vector3 vectU, Vector3 vectV, float gridSize = 0.1f, int gridCount = 10)
         {
             //make points
 
@@ -82,12 +102,12 @@ namespace SGGeometry
             Vector3 left = position - vectU * max;
             Vector3 bot = position - vectV * max;
 
-            for (int i =0; i < gridCount; i++)
+            for (int i = 0; i < gridCount; i++)
             {
                 pu[i] = left + (vectU * gridSize * i);
                 pv[i] = bot + (vectV * gridSize * i);
             }
-                
+
             Material mat = GetLineMaterial();
             mat.SetPass(0);
             GL.PushMatrix();
@@ -100,12 +120,12 @@ namespace SGGeometry
             foreach (Vector3 v in pu)
             {
                 GL.Vertex(v);
-                GL.Vertex(v+vectV*w);
+                GL.Vertex(v + vectV * w);
             }
             foreach (Vector3 v in pv)
             {
                 GL.Vertex(v);
-                GL.Vertex(v + vectU*w);
+                GL.Vertex(v + vectU * w);
             }
             GL.Color(Color.red);
             GL.Vertex(position);
@@ -115,7 +135,7 @@ namespace SGGeometry
             GL.Vertex(position + vectV * max);
             GL.Color(Color.blue);
             GL.Vertex(position);
-            GL.Vertex(position + normal * max/2);
+            GL.Vertex(position + normal * max / 2);
 
 
             GL.End();
@@ -141,10 +161,10 @@ namespace SGGeometry
         public BoundingBox Clone()
         {
             BoundingBox bbox = new BoundingBox();
-            bbox.position = position*1;
+            bbox.position = position * 1;
             bbox.vects = vects.ToArray<Vector3>();
-            bbox.size = size*1;
-            bbox.vertices= vertices.ToArray();
+            bbox.size = size * 1;
+            bbox.vertices = vertices.ToArray();
             return bbox;
         }
         public string Format()
@@ -163,9 +183,9 @@ namespace SGGeometry
             Vector3 reflection = new Vector3(1, 1, 1);
             reflection[axis] *= -1;
             Vector3 from = bbox.vects[0];
-            Matrix4x4 mr1 = Matrix4x4.Rotate(Quaternion.FromToRotation(from,new Vector3(1,0,0)));
+            Matrix4x4 mr1 = Matrix4x4.Rotate(Quaternion.FromToRotation(from, new Vector3(1, 0, 0)));
             Matrix4x4 mMrr = Matrix4x4.Scale(reflection);
-            Matrix4x4 mr2 = Matrix4x4.Rotate(Quaternion.FromToRotation(new Vector3(1, 0, 0),from));
+            Matrix4x4 mr2 = Matrix4x4.Rotate(Quaternion.FromToRotation(new Vector3(1, 0, 0), from));
 
             for (int i = 0; i < pts.Length; i++)
             {
@@ -174,7 +194,7 @@ namespace SGGeometry
                 pts[i] = mMrr.MultiplyPoint3x4(pts[i]);
                 pts[i] = mr2.MultiplyPoint3x4(pts[i]);
                 pts[i] += bbox.position;
-                pts[i] += bbox.vects[axis]* bbox.size[axis];
+                pts[i] += bbox.vects[axis] * bbox.size[axis];
             }
             BoundingBox outbox = new BoundingBox();
             outbox.vertices = pts;
@@ -189,17 +209,17 @@ namespace SGGeometry
             og.GetComponent<MeshRenderer>().material.color = c;
             og.transform.localScale = new Vector3(d * 2, d * 2, d * 2);
             og.transform.position = bbox.vertices[0];
-            
+
             foreach (Vector3 v in bbox.vertices)
             {
                 GameObject o;
                 o = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 o.GetComponent<MeshRenderer>().material.color = c;
-                o.transform.localScale = new Vector3(d,d,d);
+                o.transform.localScale = new Vector3(d, d, d);
                 o.transform.position = v;
                 o.transform.parent = og.transform;
             }
-            
+
         }
         public void SetVectsAndSizeFromVertices()
         {
@@ -225,7 +245,7 @@ namespace SGGeometry
             //Vector3 reflection = new Vector3(1, 1, 1);
 
 
-            for (int i=0;i<3;i++)
+            for (int i = 0; i < 3; i++)
             {
                 magVs[i] = vects[i] * size[i];
             }
@@ -234,7 +254,7 @@ namespace SGGeometry
             pts[2] = pts[1] + magVs[2];
             pts[3] = pos + magVs[2];
 
-            for(int i=0;i<4;i++)
+            for (int i = 0; i < 4; i++)
             {
                 pts[i] += magVs[1];
             }
@@ -313,15 +333,15 @@ namespace SGGeometry
             Vector3[] vects = refBbox.vects;
             return CreateFromPoints(pts, vects, refBbox.size);
         }
-        public static BoundingBox CreateFromPoints(Vector3[] pts, Vector3? direction=null)
+        public static BoundingBox CreateFromPoints(Vector3[] pts, Vector3? direction = null)
         {
             Vector3 vu;
             if (direction.HasValue) vu = direction.Value;
-            else vu= new Vector3(1, 0, 0);
+            else vu = new Vector3(1, 0, 0);
             BoundingBox bbox = new BoundingBox();
             Vector3[] vects = new Vector3[3];
 
-            vects[0]= vu.normalized;
+            vects[0] = vu.normalized;
             vects[1] = Vector3.up;
             vects[2] = Vector3.Cross(vects[0], vects[1]);
 
@@ -330,16 +350,16 @@ namespace SGGeometry
             Vector3[] ptMins = new Vector3[3];
             Vector3[] ptMaxs = new Vector3[3];
 
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 plnMins[i] = new Plane(-vects[i], pts[0]);
                 plnMaxs[i] = new Plane(vects[i], pts[0]);
                 ptMins[i] = pts[0];
                 ptMaxs[i] = pts[0];
             }
-            for(int i = 0; i < pts.Length; i++)
+            for (int i = 0; i < pts.Length; i++)
             {
-                for(int j = 0; j < 3; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     if (plnMins[j].GetSide(pts[i]))
                     {
@@ -351,7 +371,7 @@ namespace SGGeometry
                         plnMaxs[j] = new Plane(vects[j], pts[i]);
                         ptMaxs[j] = pts[i];
                     }
-                    
+
                 }
             }
 
@@ -362,7 +382,7 @@ namespace SGGeometry
             horPts[2] = plnMaxs[2].ClosestPointOnPlane(ptMaxs[0]);
 
             Vector3[] outPts = new Vector3[8];
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 outPts[i] = plnMins[1].ClosestPointOnPlane(horPts[i]);
                 outPts[i + 4] = plnMaxs[1].ClosestPointOnPlane(horPts[i]);
@@ -378,12 +398,13 @@ namespace SGGeometry
             bbox.vertices = outPts;
             return bbox;
         }
-       
+
     }
     public class GeometryBase
     {
         public Material _lineMatDefault;
-        public string name="unnamedGeometry";
+        public Color color = Color.black;
+        public string name = "unnamedGeometry";
         public Material lineMatDefault
         {
             get
@@ -398,9 +419,10 @@ namespace SGGeometry
             }
         }
 
+        public GeometryBase() { }
         public static Material CreateLineMaterial()
         {
-            Material lineMaterial;            
+            Material lineMaterial;
             // Unity has a built-in shader that is useful for drawing
             // simple colored things.
             Shader shader = Shader.Find("Hidden/Internal-Colored");
@@ -422,7 +444,7 @@ namespace SGGeometry
         public virtual void OnPostRender() { }
 
     }
-    public class PointsBase: GeometryBase
+    public class PointsBase : GeometryBase
     {
         public BoundingBox bbox;
         public Vector3[] vertices;
@@ -460,7 +482,7 @@ namespace SGGeometry
         {
             if (pts.Length < 2) return null;
             Vector3 ld = pts[1] - pts[0];
-            for(int i = 0; i < pts.Length; i++)
+            for (int i = 0; i < pts.Length; i++)
             {
                 int j = i + 1;
                 if (j >= pts.Length) j = 0;
@@ -509,15 +531,15 @@ namespace SGGeometry
                 Vector3 fn = Vector3.Cross((pts[2] - pts[1]).normalized, (pts[0] - pts[1]).normalized);
                 Debug.Log(fn);
                 //get all the offseted rays
-                for (int i =0;i < pts.Length; i++)
+                for (int i = 0; i < pts.Length; i++)
                 {
                     int j = i + 1;
                     if (j >= pts.Length) j = 0;
                     Vector3 vect = (pts[i] - pts[j]).normalized;
                     Vector3 vn = Vector3.Cross(vect, fn);
                     vn = vn * d;
-                    Debug.Log(i+":"+vn);
-                    vns[i]=vn;
+                    Debug.Log(i + ":" + vn);
+                    vns[i] = vn;
                     Ray r = new Ray(pts[i] + vn, vect);
                     rays[i] = r;
                     rawOffsetPts.Add(pts[i] + vn);
@@ -528,7 +550,7 @@ namespace SGGeometry
                 {
                     int j = i - 1;
                     if (j < 0) j = rays.Length - 1;
-                    Plane pln = new Plane(vns[i],rays[i].origin);
+                    Plane pln = new Plane(vns[i], rays[i].origin);
                     float t;
                     pln.Raycast(rays[j], out t);
                     Vector3 xp = rays[j].GetPoint(t);
@@ -548,7 +570,7 @@ namespace SGGeometry
             }
             return pts;
         }
-        public static Vector3[] Scale(Vector3[] pts, Vector3 scale, Vector3[]vects, Vector3 origin)
+        public static Vector3[] Scale(Vector3[] pts, Vector3 scale, Vector3[] vects, Vector3 origin)
         {
             Quaternion q1 = Quaternion.FromToRotation(vects[0], new Vector3(1, 0, 0));
             Quaternion q2 = Quaternion.FromToRotation(new Vector3(1, 0, 0), vects[0]);
@@ -561,7 +583,7 @@ namespace SGGeometry
                 pts[i] = pts[i] - origin;
                 pts[i] = matrix1 * pts[i];
                 //scale
-                for(int j=0;j<3;j++)
+                for (int j = 0; j < 3; j++)
                     pts[i][j] *= scale[j];
                 //pop
                 pts[i] = matrix2 * pts[i];
@@ -616,14 +638,14 @@ namespace SGGeometry
         //    }
         //}
     }
-    
+
     public class Meshable : TrianglesBase
     {
         public List<Polyline> displayLines = new List<Polyline>();
-        public Vector3 direction=new Vector3(1,0,0);
-        public Meshable():base()
+        public Vector3 direction = new Vector3(1, 0, 0);
+        public Meshable() : base()
         {
-            
+
         }
         public Mesh GetMeshForm()
         {
@@ -632,12 +654,12 @@ namespace SGGeometry
             m.triangles = this.triangles;
             //if(normals!=null && normals.Length>0 && normals.Length==vertices.Length)
             //    m.normals = this.normals;
-            
+
             //m.RecalculateNormals();
             //m.RecalculateBounds();
             return m;
         }
-        
+
         public override PointsBase Clone()
         {
             Meshable mb = new Meshable();
@@ -655,16 +677,16 @@ namespace SGGeometry
             if (duplicate)
             {
                 Meshable outmb = new Meshable();
-                outmb.vertices= PointsBase.transform(vertices, matrix);
+                outmb.vertices = PointsBase.transform(vertices, matrix);
                 outmb.triangles = triangles.Clone() as int[];
                 return outmb;
             }
             else
-                vertices= PointsBase.transform(vertices, matrix);
+                vertices = PointsBase.transform(vertices, matrix);
             return null;
 
         }
-        public virtual Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate=true)
+        public virtual Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
         {
             Vector3[] pts = vertices.Clone() as Vector3[];
             pts = PointsBase.Scale(pts, scale, vects, origin);
@@ -685,7 +707,7 @@ namespace SGGeometry
         public virtual void ReverseTriangle()
         {
             int[] ntris = new int[triangles.Length];
-            for (int i = 0; i < triangles.Length; i+=3)
+            for (int i = 0; i < triangles.Length; i += 3)
             {
                 ntris[i] = triangles[i];
                 ntris[i + 1] = triangles[i + 2];
@@ -740,7 +762,7 @@ namespace SGGeometry
                 Vector3[] upts = new Vector3[2];
                 upts[0] = vertices[0] + (mvy * i);
                 upts[1] = upts[0] + mvx;
-                lines[w+i] = new Polyline(upts);
+                lines[w + i] = new Polyline(upts);
             }
             displayLines.AddRange(lines);
             return grid;
@@ -796,7 +818,7 @@ namespace SGGeometry
             {
                 tris[i] = m.triangles[i] + vertCount;
             }
-            
+
             this.vertices = (this.vertices.Concat(m.vertices)).ToArray();
             this.triangles = (this.triangles.Concat(tris)).ToArray();
             //if (m.HasNormal())
@@ -876,15 +898,15 @@ namespace SGGeometry
             //Vector3 org = bbox.position;
             Vector3 org = bbox.position;
             Vector3 to = new Vector3(1, 0, 0);
-            Vector3 signedSize= bbox.GetSignedSize();
+            Vector3 signedSize = bbox.GetSignedSize();
             if (signedSize[0] < 0) to[0] *= -1;
 
             Quaternion q = Quaternion.FromToRotation(bbox.vects[0], to);
             Matrix4x4 mRotate = Matrix4x4.Rotate(q);
-            
+
             //Vector3 scale = bbox.size;
             Vector3 scale = bbox.GetSignedSize();
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 if (scale[i] == 0) scale[i] = 1;
                 scale[i] = 1 / scale[i];
@@ -894,13 +916,13 @@ namespace SGGeometry
             Vector3[] verts = m.vertices;
             for (int i = 0; i < verts.Length; i++)
             {
-                
+
                 verts[i] -= org;
-                verts[i] = mRotate.MultiplyPoint3x4( verts[i]);
+                verts[i] = mRotate.MultiplyPoint3x4(verts[i]);
                 verts[i] = mScale.MultiplyPoint3x4(verts[i]);
                 //verts[i].Scale(scale);
-                
-                
+
+
                 //verts[i] += new Vector3(0.5f, 0, 0.5f);
             }
             m.vertices = verts;
@@ -921,7 +943,7 @@ namespace SGGeometry
         public CompositMeshable(IEnumerable<Meshable> mbs)
         {
             this.components = new List<Meshable>();
-            if (mbs!=null)
+            if (mbs != null)
                 AddRange(mbs);
         }
         public void Add(Meshable m)
@@ -931,7 +953,7 @@ namespace SGGeometry
                 merge(m);
                 components.Add(m);
             }
-            
+
         }
         public void AddRange(IEnumerable<Meshable> ms)
         {
@@ -940,11 +962,41 @@ namespace SGGeometry
                 this.Add(m);
             }
         }
+        public void Clear()
+        {
+            components.Clear();
+            vertices = new Vector3[0];
+            triangles = new int[0];
+        }
+        /// <summary>
+        /// returns Polygon components facing given direction
+        /// </summary>
+        /// <param name="direction">0:s, 1:n, 2:e, 3:w</param>
+        /// <returns></returns>
+        public Polygon[] GetFacing(int direction)
+        {
+            //0:s, 1:n, 2:e, 3:w
+            List<Polygon> possitive = new List<Polygon>();
+            List<Polygon> neggative = new List<Polygon>();
+            Vector3 compare;
+            if (direction <= 1){compare = new Vector3(0, 0, -1);}
+            else { compare = new Vector3(1, 0, 0); }
+            foreach (Meshable mb in components)
+            {
+                Polygon pg = (Polygon)mb;
+                float dot = Vector3.Dot(pg.GetNormal(), compare);
+                if (dot > 0.5) { possitive.Add(pg); }
+                else if (dot < -0.5) { neggative.Add(pg); }
+            }
+
+            if (direction == 0 || direction == 2) return possitive.ToArray();
+            return neggative.ToArray();
+        }
         public Meshable Get(int index)
         {
             return this.components[index];
         }
-        
+
         public override PointsBase Clone()
         {
             List<Meshable> mbs = new List<Meshable>();
@@ -962,7 +1014,7 @@ namespace SGGeometry
         public override void ReverseTriangle()
         {
             base.ReverseTriangle();
-            foreach(Meshable m in components)
+            foreach (Meshable m in components)
             {
                 m.ReverseTriangle();
             }
@@ -981,7 +1033,7 @@ namespace SGGeometry
         public override Meshable Transform(Matrix4x4 matrix, bool duplicate = false)
         {
             List<Meshable> mbs = new List<Meshable>();
-            
+
             foreach (Meshable m in components)
             {
                 mbs.Add(m.Transform(matrix, duplicate));
@@ -1000,7 +1052,7 @@ namespace SGGeometry
         {
             Meshable dup = base.Scale(scale, vects, origin, duplicate);
             List<Meshable> comps = new List<Meshable>();
-            foreach(Meshable m in components)
+            foreach (Meshable m in components)
             {
                 comps.Add(m.Scale(scale, vects, origin, true));
             }
@@ -1123,6 +1175,7 @@ namespace SGGeometry
             return pts.ToArray();
         }
     }
+    
 
     //Geometries
     public class Point : PointsBase { }
@@ -1179,6 +1232,58 @@ namespace SGGeometry
                 poly.bbox = bbox.Clone();
             return poly;
         }
+        public virtual Polyline[] SplitByPlane(Plane pln)
+        {
+            
+            //Debug.Log("spliting meshable");
+            int nullP = 0;
+            foreach (Vector3 p in vertices)
+            {
+                if (p == null) nullP++;
+            }
+            if (nullP > 0)
+                Debug.LogWarningFormat("FOUND NULL POINTS, COUNT={0}", nullP);
+
+            //split polygon by a plane and returns the naked edge
+            Vector3? nkp1 = new Vector3?();
+            Vector3? nkp2 = new Vector3?();
+            List<Vector3> left = new List<Vector3>();
+            List<Vector3> right = new List<Vector3>();
+
+            Vector3 lastP = vertices[vertices.Length - 1];
+            bool lastIsRight = pln.GetSide(lastP);
+            bool isRight;
+            List<Vector3> nakedPts = new List<Vector3>();
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Vector3 p = vertices[i];
+                isRight = pln.GetSide(p);
+
+                if (lastIsRight != isRight)
+                {
+                    Ray r = new Ray(p, lastP - p);
+                    float d;
+                    pln.Raycast(r, out d);
+                    Vector3 xp = r.GetPoint(d);
+                    left.Add(xp);
+                    right.Add(xp);
+                    nakedPts.Add(xp);
+                }
+                if (isRight) right.Add(p);
+                else left.Add(p);
+
+                lastIsRight = isRight;
+                lastP = p;
+            }
+            Polyline[] pls = new Polyline[2];
+            if (left.Count > 2) pls[0] = new Polyline(left.ToArray());
+            else pls[0] = null;
+            if (right.Count > 2) pls[1] = new Polyline(right.ToArray());
+            else pls[1] = null;
+            
+            return pls;
+        }
     }
     public class Face : Meshable
     {
@@ -1230,6 +1335,13 @@ namespace SGGeometry
             this.vertices = pts;
             //CalculateNormals();
         }
+        public Vector3 GetNormal()
+        {
+            Vector3 v1 = vertices[2] - vertices[1];
+            Vector3 v2 = vertices[0] - vertices[1];
+            Vector3 n = Vector3.Cross(v1.normalized, v2.normalized);
+            return n;
+        }
         public override void ReverseSide()
         {
             System.Array.Reverse(vertices);
@@ -1245,7 +1357,7 @@ namespace SGGeometry
                 pg.boundary = (Polyline)boundary.Clone();
             return pg;
         }
-        public Form Extrude(Vector3 magUp)
+        public Form ExtrudeToForm(Vector3 magUp)
         {
             List<Polygon> pgs = new List<Polygon>();
             Polygon bot = new Polygon(vertices.Clone() as Vector3[]);
@@ -1272,6 +1384,7 @@ namespace SGGeometry
             Form outForm = new Form(pgs.ToArray());
             return outForm;
         }
+        
         public Meshable[] Offset(float d, bool join=false)
         {
             List<Meshable> pgs = new List<Meshable>();
@@ -1322,6 +1435,50 @@ namespace SGGeometry
             return pgs.ToArray();
         }
     }
+    
+    public class Extrusion : CompositMeshable
+    {
+        public Polygon polygon;
+        public float height;
+        public Vector3 magUp;
+        public Extrusion():base()
+        {
+            polygon = new Polygon(vertices);
+        }
+        public Extrusion(Vector3[] pts, float h):this()
+        {
+            height = h;
+            polygon = new Polygon(pts);
+            magUp = new Vector3(0, h, 0);
+            Meshable mb = polygon.ExtrudeToForm(magUp);
+            vertices = mb.vertices;
+            triangles = mb.triangles;
+            components = ((CompositMeshable)mb).components;
+        }
+        public override Meshable[] SplitByPlane(Plane pln)
+        {
+            Meshable[] mbs = polygon.SplitByPlane(pln);
+            Meshable[] outMbs = new Meshable[mbs.Length];
+            for (int i = 0; i < mbs.Length; i++)
+            {
+                if (mbs[i] != null)
+                {
+                    outMbs[i] = ((Polygon)mbs[i]).ExtrudeToForm(new Vector3(0, height, 0));
+                }
+                else
+                {
+                    outMbs[i] = null;
+                }
+            }
+            return outMbs;
+        }
+        public void Decompose(int uCount, int vCount,float depth)
+        {
+            //TODO: iomplement decompose
+        }
+        
+    }
+   
     public class Form : CompositMeshable
     {
         public Form() : base()

@@ -36,7 +36,7 @@ namespace SGGUI {
 
         }
 
-        void Clear()
+        public void Clear()
         {
             for (int i = 0; i < inputFields.Count; i++)
             {

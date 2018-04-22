@@ -29,7 +29,7 @@ public class DisplayManager:MonoBehaviour
 
     public void setNormalMode()
     {
-        foreach (ShapeObject o in UserStats.existingShapes.Values)
+        foreach (ShapeObject o in SceneManager.existingShapes.Values)
         {
             o.SetMaterial(DisplayMode.NORMAL);
         }
@@ -37,17 +37,17 @@ public class DisplayManager:MonoBehaviour
     public void setRuleMode()
     {
 
-        if (UserStats.SelectedGrammar == null)
+        if (SceneManager.SelectedGrammar == null)
         {
             setNormalMode();
             return;
         }
-        if (UserStats.existingShapes == null) return;
-        foreach(ShapeObject o in UserStats.existingShapes.Values)
+        if (SceneManager.existingShapes == null) return;
+        foreach(ShapeObject o in SceneManager.existingShapes.Values)
         {
             if (o.parentRule == null) continue;
             if (o.parentRule.grammar == null) continue;
-            if (o.parentRule.grammar == UserStats.SelectedGrammar)
+            if (o.parentRule.grammar == SceneManager.SelectedGrammar)
             {
                 o.SetMaterial(DisplayMode.RULE);
             }

@@ -509,7 +509,7 @@ namespace Rules
             pts[2] = pts[1] + vz;
             pts[3] = pts[0] + vz;
             Polygon pg = new Polygon(pts);
-            Form f = pg.Extrude(vy);
+            Form f = pg.ExtrudeToForm(vy);
             
             List<Meshable> outs = new List<Meshable>();
             outs.Add(f);

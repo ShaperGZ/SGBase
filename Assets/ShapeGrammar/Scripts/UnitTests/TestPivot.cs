@@ -30,7 +30,7 @@ public class TestPivot : MonoBehaviour {
         Vector3[] pts = initShape1();
         Polygon pg = new Polygon(pts);
         ShapeObject pgo = ShapeObject.CreatePolygon(pts);
-        Form f = pg.Extrude(new Vector3(0, 40, 0));
+        Form f = pg.ExtrudeToForm(new Vector3(0, 40, 0));
 
         ShapeObject rf = ShapeObject.CreateMeshable(f);
         rf.name = "rf";

@@ -15,7 +15,7 @@ public class TestSplit : MonoBehaviour {
         pts[3] = new Vector3(103, 0, 25);
         pts[4] = new Vector3(96, 0, 70);
         Polygon pg = new Polygon(pts);
-        Form f = pg.Extrude(new Vector3(0, 30, 0));
+        Form f = pg.ExtrudeToForm(new Vector3(0, 30, 0));
 
         Vector3 nml = pts[4] - pts[0];
         nml.Normalize();

@@ -16,7 +16,7 @@ public class TestGrammar : MonoBehaviour {
         pts[4] = new Vector3(96, 0, 70);
         Polyline pl = new Polyline(pts);
         Polygon pg = new Polygon(pts);
-        Form f = pg.Extrude(new Vector3(0, 30, 0));
+        Form f = pg.ExtrudeToForm(new Vector3(0, 30, 0));
         ShapeObject init = ShapeObject.CreateMeshable(f);
 
         Grammar g1 = new Grammar();
