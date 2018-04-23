@@ -190,8 +190,6 @@ namespace SGCore
         }
         public virtual void PostExecution(int step, SGIO tobeMerged)
         {
-
-
             SGIO tempOut = new SGIO();
             tempOut = SGIO.Merge(subNodes[step].outputs, tobeMerged);
             if (step >= stagedOutputs.Count)
@@ -249,7 +247,7 @@ namespace SGCore
                         }
                         catch
                         {
-                            Debug.LogWarning("FOund null so!");
+                            Debug.LogWarning("Found null so!");
                         }
 
                     }
@@ -262,7 +260,8 @@ namespace SGCore
                 {
                     if (o != null)
                         //o.gameObject.SetActive(true);
-                        o.Show(true);
+                        if (o.grammar==null)
+                            o.Show(true);
 
                 }
             }

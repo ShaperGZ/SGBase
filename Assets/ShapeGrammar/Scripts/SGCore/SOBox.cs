@@ -6,30 +6,8 @@ using SGGeometry;
 
 public class SOBox : ShapeObject {
     BoundingBox boundingBox;
-    Vector3 _size;
-    public override Vector3 Size
-    {
-        get
-        {
-            return _size;
-        }
-        set
-        {
-            _size = value;
-        }
-    }
 
-    public SOBox():base()
-    {
-        boundingBox = new BoundingBox();
-        _size = new Vector3(1, 1, 1);
-    }
-    public SOBox(Vector3 pos, Vector3 size, Vector3 forward):this()
-    {
-        transform.position = pos;
-        transform.LookAt(pos + forward);
-        Size = size;
-    }
+    
     public static SOBox Create(Vector3 pos, Vector3 size, Vector3 forward)
     {
         GameObject o = new GameObject();
@@ -40,7 +18,7 @@ public class SOBox : ShapeObject {
         return so;
         
     }
-
+   
     private void OnRenderObject()
     {
         //GLDrawScope(Color.black);
@@ -50,5 +28,14 @@ public class SOBox : ShapeObject {
 
             GLDrawScope(c);
         }
+    }
+    public override ShapeObject Clone(bool geometryOnly = true)
+    {
+        GameObject o = new GameObject();
+
+        SOBox so = o.AddComponent<SOBox>();
+        so.Size = Size;
+        so.boundingBox = boundingBox;
+        return so;
     }
 }

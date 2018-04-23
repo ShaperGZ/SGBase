@@ -29,6 +29,12 @@ public class ShapeObject : MonoBehaviour {
             return new Vector3[] { x, y, z };
         }
     }
+    public Vector3 Position
+    {
+        get { return transform.position; }
+        set { transform.position = value; }
+    }
+
     public System.Guid guid;
     public string sguid;
     public Meshable meshable;
@@ -478,7 +484,7 @@ public class ShapeObject : MonoBehaviour {
     //    meshable.bbox = BoundingBox.CreateFromBox(transform.position, Vects, Size);
 
     //}
-    public ShapeObject Clone( bool geometryOnly = true)
+    public virtual ShapeObject Clone( bool geometryOnly = true)
     {
         ShapeObject so = ShapeObject.CreateBasic();
         CloneTo(so);

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using SGGeometry;
-
+using SGCore;
 public class TestDecompose : MonoBehaviour
 {
     public GameObject comp;
@@ -23,20 +23,25 @@ public class TestDecompose : MonoBehaviour
         pts[3] = new Vector3(20, 0, 15);
         return pts;
     }
+
     // Use this for initialization
     void Start () {
         Vector3[] pts = initShape2();
-        //ShapeObject so = ShapeObject.CreateExtrusion(pts, 30);
-        //CompositMeshable cmb = (CompositMeshable)so.meshable;
-        //Polygon[] pgs= cmb.GetFacing(0);
+        ShapeObject so = ShapeObject.CreateExtrusion(pts, 30);
 
-        ShapeObject sobox = SOBox.Create(new Vector3(0, 0, 0), new Vector3(30, 20, 60), new Vector3(1, 0, -01));
+        //ShapeObjectM som = ShapeObjectM.CreateSchemeA((CompositMeshable)so.meshable);
+
+        Grammar g1 = new Grammar();
+        g1.assignedObjects.Add(so);
+        SceneManager.assignGrammar(g1);
+        g1.AddRule(new Rules.Scale("A", "A", 1, 0));
+        g1.AddRule(new Rules.Scale("A", "A", 1, 1));
+        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.4f, 0));
+        g1.AddRule(new Rules.Bisect("C", new string[] { "C", "C" }, 0.4f, 2));
+        //g1.AddRule(new Rules.DcpA("A", 6, 3));
         
-        GameObject prefab = comp;
-        //ShapeObjectM som = ShapeObjectM.CreateSchemeA((Form)so.meshable);
-	}
-	
 
+    }
 
 	// Update is called once per frame
 	void Update () {

@@ -70,9 +70,31 @@ public class SceneManager : MonoBehaviour {
             ruleCreator.SetGrammar(g);
             ruleNavigator.SetGrammar(g);
         }
+
+        for (int i = 0; i < g.stagedOutputs.Count; i++)
+        {
+            for (int j = 0; j < g.stagedOutputs[i].shapes.Count; j++)
+            {
+                ShapeObject so = g.stagedOutputs[i].shapes[j];
+                so.SetMaterial(MaterialManager.GB.RuleEditing);
+            }
+        }
     }
     public static void unAssignGrammar()
     {
+        if (_selectedGrammar != null)
+        {
+            Grammar g = _selectedGrammar;
+            for (int i = 0; i < g.stagedOutputs.Count; i++)
+            {
+                for (int j = 0; j < g.stagedOutputs[i].shapes.Count; j++)
+                {
+                    ShapeObject so = g.stagedOutputs[i].shapes[j];
+                    so.SetMaterial(SceneManager.displayManager.currMode);
+                }
+            }
+        }
+        
         ruleCreator.SetGrammar(null);
         ruleNavigator.SetGrammar(null);
     }
@@ -211,7 +233,7 @@ public class SceneManager : MonoBehaviour {
 
     private void OnRenderObject()
     {
-        tool.OnRenderObject();
+        //tool.OnRenderObject();
     }
 
     void AssociateGUI()

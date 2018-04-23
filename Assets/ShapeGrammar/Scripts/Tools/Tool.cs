@@ -52,7 +52,7 @@ public class Tool {
     }
     protected virtual void MouseDown(int button)
     {
-        Debug.Log("mouse down");
+        //Debug.Log("mouse down");
     }
     protected virtual void MouseUp(int button)
     {

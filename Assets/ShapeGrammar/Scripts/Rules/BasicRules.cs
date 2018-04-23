@@ -47,6 +47,7 @@ namespace Rules
             float d = ((ParameterGroup)paramGroups["Position"]).parameters[0].value;
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].value;
             List<Meshable> outs = new List<Meshable>();
+
             /////////////////
             //get split plane
             /////////////////
@@ -537,4 +538,5 @@ namespace Rules
             return dict;
         }
     }
+    
 }
