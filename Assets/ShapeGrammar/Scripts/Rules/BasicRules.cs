@@ -39,6 +39,14 @@ namespace Rules
             }
             return outs;
         }
+        public virtual Plane GetPlane(ShapeObject so, float d, int axis)
+        {
+            Vector3 normal = so.Vects[axis];
+            Vector3 v = normal * so.Size[axis] * d;
+            Vector3 org = so.transform.position + v;
+            Plane pln = new Plane(normal, org);
+            return pln;
+        }
         public override List<Meshable> ExecuteShape(ShapeObject so)
         {
             /////////////////
@@ -51,10 +59,7 @@ namespace Rules
             /////////////////
             //get split plane
             /////////////////
-            Vector3 normal = so.Vects[axis];
-            Vector3 v = normal * so.Size[axis] * d;
-            Vector3 org = so.transform.position + v;
-            Plane pln = new Plane(normal,org);
+            Plane pln = GetPlane(so, d, axis);
 
 
             outs = SplitByPlane(so.meshable, pln);
@@ -76,6 +81,21 @@ namespace Rules
             pg2.Add(new Parameter(0.4f));
             
             return dict;
+        }
+    }
+    public class BisectLength : Bisect
+    {
+        public BisectLength() : base() { }
+        public BisectLength(string inName, string[] outNames, float d, int axis):base(inName,outNames,d,axis)
+        {
+        }
+        public override Plane GetPlane(ShapeObject so, float d, int axis)
+        {
+            Vector3 normal = so.Vects[axis];
+            Vector3 v = normal * d;
+            Vector3 org = so.transform.position + v;
+            Plane pln = new Plane(normal, org);
+            return pln;
         }
     }
     public class BisectMirror : Grammar
@@ -190,6 +210,8 @@ namespace Rules
             List<float> divs = GetDivs(((ParameterGroup)paramGroups["Position"]).parameters, max);
 
             //tout is the remaining part in division
+            //tout will be updated at each iteration
+            //each iteration divides tout, and stops when there are no more left.
             List<Meshable> touts = new List<Meshable>();
             Vector3 org = so.transform.position;
             int counter = 0;
@@ -211,17 +233,9 @@ namespace Rules
                     touts = Rules.Bisect.SplitByPlane(so.meshable, pln);
                 else
                     touts = Rules.Bisect.SplitByPlane(touts[1], pln);
+               
                 outs.Add(touts[0]);
-                //------set bbox---------------------------
-                for (int i = 0; i < outs.Count; i++)
-                {
-                    if (outs[i] != null)
-                    {
-                        outs[i].bbox = BoundingBox.CreateFromPoints(outs[i].vertices, so.meshable.bbox);
-                        outs.Add(outs[i]);
-                    }
-                }
-                //Debug.Log(counter + " tout.COunt=" + touts.Count);
+               
                 counter++;
             }
             
@@ -352,6 +366,80 @@ namespace Rules
             return dict;
         }
     }
+    public class Scale3D : Rule
+    {
+        Plane cutPlane;
+        public Scale3D() : base()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+            paramGroups = DefaultParam();
+        }
+        public Scale3D(string inName, string outName, Vector3 scale, Vector2? randRange=null) : base(inName, new string[] { outName })
+        {
+            ((ParameterGroup)paramGroups["Scale"]).parameters[0].value = scale[0];
+            ((ParameterGroup)paramGroups["Scale"]).parameters[1].value = scale[1];
+            ((ParameterGroup)paramGroups["Scale"]).parameters[2].value = scale[2];
+            this.randRange = randRange;
+
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            float dx = ((ParameterGroup)paramGroups["Scale"]).parameters[0].value;
+            float dy = ((ParameterGroup)paramGroups["Scale"]).parameters[1].value;
+            float dz = ((ParameterGroup)paramGroups["Scale"]).parameters[2].value;
+            
+            //get scale
+            Vector3 scale = new Vector3(dx,dy,dz);
+
+            if (randRange.HasValue)
+            {
+                float min = randRange.Value[0];
+                float max = randRange.Value[1];
+                for (int i = 0; i < 3; i++)
+                {
+                    scale[i] = scale[i] * (1+Random.Range(min, max));
+                }
+            }
+
+            Vector3[] vects = so.Vects;
+            Vector3 origin = so.transform.position;
+
+            //get the splited meshables
+            Meshable mb = so.meshable;
+            Meshable scaledMb = mb.Scale(scale, vects, origin, true);
+            //TODO: just scale the bbox
+            scaledMb.bbox = BoundingBox.CreateFromPoints(scaledMb.vertices, so.meshable.bbox);
+            //outMeshables.Add(scaledMb);
+            List<Meshable> outs = new List<Meshable>();
+            outs.Add(scaledMb);
+            AssignNames(outs);
+            //AssignNames(outMeshables.ToArray());
+            return outs;
+
+            //Rule.Execute() will take care of the outMeshables
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+            outParamGroups.Add(pg1);
+            outParamGroups.Add(pg2);
+
+            dict["Scale"] = pg1;
+            pg1.Add(new Parameter(1f, 0.2f, 10f, 0.01f));
+            pg1.Add(new Parameter(1f, 0.2f, 10f, 0.01f));
+            pg1.Add(new Parameter(1f, 0.2f, 10f, 0.01f));
+
+            return dict;
+        }
+    }
+
+    
+
+    //delete this
     public class DivideSurface : Rule
     {
         public DivideSurface()
@@ -413,6 +501,8 @@ namespace Rules
         
     }
    
+
+    //pivot
     public class PivotMirror : Rule
     {
         public PivotMirror()
@@ -458,12 +548,68 @@ namespace Rules
             {
                 Debug.Log("cloning shapeobject, has bbox="+(inputs.shapes[i].meshable.bbox!=null));
                 inputs.shapes[i].CloneTo(outputs.shapes[i]);
+                //outputs.shapes[i].meshable.bbox = inputs.shapes[i].meshable.bbox;
                 Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
                 outputs.shapes[i].PivotMirror(axis);
             }
             AssignNames(outputs.shapes);
         }//end execute
     }
+    public class PivotTurn : Rule
+    {
+        public PivotTurn()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+        }
+        public PivotTurn(string inName, string OutName, float count) : base(inName, new string[] { OutName })
+        {
+            paramGroups = DefaultParam();
+            ((ParameterGroup)paramGroups["Count"]).parameters[0].value = count;
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            pg1.Add(new Parameter(1, 1, 3, 1));
+            dict.Add("Count", pg1);
+            return dict;
+        }
+        public override void Execute()
+        {
+            //remove extra or add new
+            int count = (int)((ParameterGroup)paramGroups["Count"]).parameters[0].value;
+            int diff = outputs.shapes.Count - inputs.shapes.Count;
+            int absDiff = Mathf.Abs(diff);
+            for (int i = 0; i < absDiff; i++)
+            {
+                if (diff > 0)//remove extra
+                {
+                    int index = outputs.shapes.Count - i;
+                    GameObject.Destroy(outputs.shapes[index].gameObject);
+                    outputs.shapes.RemoveAt(index);
+                }
+                else//add new
+                {
+                    outputs.shapes.Add(ShapeObject.CreateBasic());
+                }
+            }
+
+            //update each output
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                Debug.Log("cloning shapeobject, has bbox=" + (inputs.shapes[i].meshable.bbox != null));
+                inputs.shapes[i].CloneTo(outputs.shapes[i]);
+                //outputs.shapes[i].meshable.bbox = inputs.shapes[i].meshable.bbox;
+                Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
+                outputs.shapes[i].PivotTurn(count);
+            }
+            AssignNames(outputs.shapes);
+        }//end execute
+    }
+
+    //creation
+    
     public class CreateBox : Rule
     {
         public CreateBox() : base()

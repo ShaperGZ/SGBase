@@ -126,7 +126,9 @@ public class ShapeObject : MonoBehaviour {
     }
     public void SetMaterial(Material m)
     {
-        meshRenderer.material = m;
+        if (meshRenderer != null)
+            meshRenderer.material = m;
+        else Debug.Log("MeshRender is Null in " + Format());
     }
 	// Update is called once per frame
 	void Update () {
@@ -369,11 +371,22 @@ public class ShapeObject : MonoBehaviour {
         return so;
 
     }
-    public static ShapeObject CreateExtrusion(Vector3[] pts, float d)
+    public static ShapeObject CreateExtrusionForm(Vector3[] pts, float d)
     {
         Vector3 magUp = new Vector3(0, d, 0);
         Polygon pg = new Polygon(pts);
         Form ext = pg.ExtrudeToForm(magUp);
+
+        ShapeObject so = ShapeObject.CreateBasic();
+        Vector3? ld = PointsBase.LongestDirection(pts);
+        so.SetMeshable(ext, ld);
+        return so;
+    }
+    public static ShapeObject CreateExtrusion(Vector3[] pts, float d)
+    {
+        Vector3 magUp = new Vector3(0, d, 0);
+        Polygon pg = new Polygon(pts);
+        Extrusion ext = pg.Extrude(magUp);
 
         ShapeObject so = ShapeObject.CreateBasic();
         Vector3? ld = PointsBase.LongestDirection(pts);
@@ -437,53 +450,24 @@ public class ShapeObject : MonoBehaviour {
     }
     public void PivotMirror(int axis)
     {
+        print("Meshable.Type=" + meshable.GetType().FullName);
         meshable.bbox = BoundingBox.Reflect(meshable.bbox,axis);
-        meshable.ReverseSide();
+        //meshable.ReverseSide();
+        Debug.Log("---pre Reverse----");
+        foreach (Vector3 item in ((Extrusion)meshable).polygon.vertices)
+        {
+            Debug.Log(item);
+        }
+        
+        //((Extrusion)meshable).Reverse();
+        Debug.Log("---post Reverse-----");
+        foreach (Vector3 item in ((Extrusion)meshable).polygon.vertices)
+        {
+            Debug.Log(item);
+        }
         SetMeshable(meshable);
     }
-    //public void PivotMirror2(int axis)
-    //{
-    //    Vector3 size = Size;
-    //    Vector3 vect = Vects[axis].normalized;
-    //    Vector3 offset = vect*size[axis];
-    //    Mesh m = GetComponent<MeshFilter>().mesh;
-    //    Vector3 reflection = new Vector3(1, 1, 1);
-    //    reflection[axis] *= -1;
-        
-    //    Matrix4x4 m1 = Matrix4x4.Scale(reflection);
-    //    Matrix4x4 m2 = Matrix4x4.Translate(offset);
-        
-    //    Vector3 scale = transform.localScale;
-    //    scale[axis] *= -1;
-    //    transform.localScale = scale;
-    //    transform.position = m2.MultiplyPoint3x4(transform.position);
-
-    //    Vector3 uOffset = new Vector3(0, 0, 0);
-    //    uOffset[axis] = 1;
-    //    Matrix4x4 m3 = Matrix4x4.Translate(uOffset);
-
-    //    Vector3[] opts = m.vertices.Clone() as Vector3[];
-    //    for (int i = 0; i < opts.Length; i++)
-    //    {
-    //        opts[i] = m1.MultiplyPoint3x4(opts[i]);
-    //        opts[i] = m3.MultiplyPoint3x4(opts[i]);
-
-    //    }
-    //    int[] tris = m.triangles.Clone() as int[];
-    //    for (int i = 0; i < tris.Length; i += 3)
-    //    {
-    //        tris[i + 1] = m.triangles[i + 2];
-    //        tris[i + 2] = m.triangles[i + 1];
-    //    }
-        
-    //    m.vertices = opts;
-    //    m.triangles = tris;
-    //    m.RecalculateNormals();
-    //    m.RecalculateBounds();
-
-    //    meshable.bbox = BoundingBox.CreateFromBox(transform.position, Vects, Size);
-
-    //}
+    
     public virtual ShapeObject Clone( bool geometryOnly = true)
     {
         ShapeObject so = ShapeObject.CreateBasic();
@@ -493,15 +477,10 @@ public class ShapeObject : MonoBehaviour {
     public void CloneTo(ShapeObject so, bool geometryOnly=true)
     {
         so.transform.position = transform.position;
-        //so.transform.Rotate(transform.eulerAngles);
-        //so.transform.Rotate(transform.rotation.eulerAngles);
         so.transform.up = transform.up;
         so.transform.localScale = transform.localScale;
-        //so.transform.localPosition = transform.localPosition;
         so.transform.localRotation = transform.localRotation;
-        //so.transform.localEulerAngles = transform.localEulerAngles;
-        Debug.Log("cloning Meshable");
-        so.meshable = (Meshable)meshable.Clone();
+        so.meshable = (Meshable)(meshable.Clone());
         so.GetComponent<MeshFilter>().mesh = GetComponent<MeshFilter>().mesh;
         if (!geometryOnly)
         {

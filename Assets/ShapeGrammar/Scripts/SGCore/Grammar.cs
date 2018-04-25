@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Linq;
 using System.Xml.Serialization;
@@ -21,7 +22,7 @@ namespace SGCore
         public Grammar():base()
         {
             guid = Guid.NewGuid();
-            SceneManager.CreateGrammar(this);
+            SceneManager.AddGrammar(this);
             stagedOutputs = new List<SGIO>();
             subNodes = new List<GraphNode>();
             assignedObjects = new List<ShapeObject>();
@@ -55,13 +56,17 @@ namespace SGCore
             }
         }
 
-        public void ExtractParam(int i, string key)
+        public void ExtractParam(int i, string key, string extractName="")
         {
             Rule rule = (Rule)subNodes[i];
             try
             {
                 object paramGroup = rule.paramGroups[key];
                 string extName = ((ParameterGroup)paramGroup).extractName;
+                if(extractName==null || extractName == "")
+                {
+                    extractName = i.ToString() + "_Ext_" + key;
+                }
                 paramGroups[extName] = paramGroup;
             }
             catch 
@@ -81,7 +86,17 @@ namespace SGCore
                 Debug.LogWarning("either no param or no extractName");
             }
         }
-
+        public void SetSubParamValue(int i, string name, float value)
+        {
+            Rule rule = GetRule(i);
+            ParameterGroup pg = (ParameterGroup)rule.paramGroups[name];
+            pg.parameters[0].value = value;
+        }
+        public void SetParamValue(string name, float value)
+        {
+            ParameterGroup pg = (ParameterGroup)paramGroups[name];
+            pg.parameters[0].value = value;
+        }
 
         public override void Execute()
         {
@@ -109,6 +124,8 @@ namespace SGCore
             SelectStep(subNodes.Count - 1);
             outputs = stagedOutputs[stagedOutputs.Count - 1];
 
+            InvalidateProperties();
+            
         }
         public virtual void Execute(int i)
         {
@@ -125,8 +142,19 @@ namespace SGCore
 
             PostExecution(i, tobeMerged);
         }
-        
-        
+        public void InvalidateProperties()
+        {
+            if (properties != null)
+            {
+                properties.Invalidate();
+                GameObject.Find("BuildingPropText").GetComponent<Text>().text = properties.Format();
+            }
+            else
+            {
+                GameObject.Find("BuildingPropText").GetComponent<Text>().text = "this grammar has no proerties";
+            }
+        }
+
         public virtual SGIO PreExecution(int step)
         {
             List<ShapeObject> availableShapes = new List<ShapeObject>();
@@ -249,7 +277,6 @@ namespace SGCore
                         {
                             Debug.LogWarning("Found null so!");
                         }
-
                     }
                 }
             }
@@ -399,6 +426,14 @@ namespace SGCore
                 SceneManager.ruleNavigator.UpdateButtonDescriptions();
             }
         }
+        public Rule GetRule(int i)
+        {
+            Rule r = (Rule)subNodes[i];
+            return r;
+        }
+       
+        
+
         public void Clear(bool callByDestroy=false)
         {
             foreach(SGIO sgio in stagedOutputs)

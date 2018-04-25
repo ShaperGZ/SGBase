@@ -24,23 +24,68 @@ public class TestDecompose : MonoBehaviour
         return pts;
     }
 
+    public Grammar JsPollock(ShapeObject initSo)
+    {
+        Grammar gs = new Grammar();
+        gs.inputs.shapes.Add(initSo);
+        gs.name = "Site";
+        //gs.AddRule(new Rules.BisectMirror("A", new string[] { "A", "A" }, 0.45f, 1));
+        gs.AddRule(new Rules.DivideTo("A", new string[] { "A", "B" }, 60, 0));
+        gs.AddRule(new Rules.PivotTurn("B", "A", 2));
+        for (int i = 0; i < 3; i++)
+        {
+            int orientation = (i+1) % 2;
+            if (orientation == 1) orientation = 2;
+            gs.AddRule(new Rules.Bisect("A", new string[] { "B", "A" }, 0.4f, orientation));
+            gs.AddRule(new Rules.PivotTurn("B", "A", 2));
+            
+            //gs.AddRule(new Rules.Bisect("A", new string[] { "B", "A" }, 0.4f, 2));
+            //gs.AddRule(new Rules.PivotTurn("B", "A", 2));
+        }
+        gs.AddRule(new Rules.NamesByAreaEdges("A", "Building", 800, 4));
+        gs.AddRule(new Rules.Scale3D("Building", "Building", new Vector3(1, 25, 1), new Vector2(-0.2f, 0.1f)));
+        gs.AddRule(new Rules.DcpA("Building", 6, 3));
+        //gs.AddRule(new Rules.BisectLength("Building", new string[] { "Tower", "Podium"}, 20, 2));
+        //gs.AddRule(new Rules.Scale3D("Tower", "Tower", new Vector3(0.6f, 3, 1)));
+        //gs.AddRule(new Rules.DubTop("Building"));
+
+        return gs;
+    }
+
+    public Grammar GenSite(ShapeObject initSo)
+    {
+        //#3 "position":0.19
+        //#5 "position":0.14
+        Grammar gs = new Grammar();
+        gs.inputs.shapes.Add(initSo);
+        gs.name = "Site";
+        //gs.AddRule(new Rules.BisectMirror("A", new string[] { "A", "A" }, 0.45f, 1));
+        gs.AddRule(new Rules.Bisect("A", new string[] { "A", "C" }, 0.2f, 0));
+        gs.AddRule(new Rules.PivotMirror("C", "A", 0));
+        gs.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.2f, 0));
+        gs.AddRule(new Rules.PivotTurn("C", "C", 1));
+        //gs.AddRule(new Rules.Divide("A", new string[] { "A" }, new float[] { 0.2f, 0.3f, 0.5f }, 0));
+        //gs.AddRule(new Rules.DivideTo("A", new string[] { "B", "C" }, 20f, 0));
+        return gs;
+    }
+
     // Use this for initialization
     void Start () {
-        Vector3[] pts = initShape2();
-        ShapeObject so = ShapeObject.CreateExtrusion(pts, 30);
+        Vector3[] pts = initShape1();
+        //ShapeObject site = ShapeObject.CreatePolygon(pts);
+        ShapeObject site = ShapeObject.CreateExtrusion(pts, 1);
+        Grammar gs = JsPollock(site);
+        gs.SetSubParamValue(2, "Position", 0.19f);
+        gs.SetSubParamValue(4, "Position", 0.14f);
+        gs.Execute();
+
+        gs.ExtractParam(2, "Position","d1");
+        gs.ExtractParam(4, "Position","d2");
 
         //ShapeObjectM som = ShapeObjectM.CreateSchemeA((CompositMeshable)so.meshable);
-
-        Grammar g1 = new Grammar();
-        g1.assignedObjects.Add(so);
-        SceneManager.assignGrammar(g1);
-        g1.AddRule(new Rules.Scale("A", "A", 1, 0));
-        g1.AddRule(new Rules.Scale("A", "A", 1, 1));
-        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.4f, 0));
-        g1.AddRule(new Rules.Bisect("C", new string[] { "C", "C" }, 0.4f, 2));
-        //g1.AddRule(new Rules.DcpA("A", 6, 3));
-        
-
+        Properties buildingA = new BuildingProperties();
+        buildingA.AddGrammar(gs);
+        gs.InvalidateProperties();
     }
 
 	// Update is called once per frame

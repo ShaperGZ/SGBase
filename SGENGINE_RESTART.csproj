@@ -362,10 +362,13 @@
     <Compile Include="Assets\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
     <Compile Include="Assets\Scripts\Camera\OrbitTargetCamera.cs" />
-    <Compile Include="Assets\ShapeGrammar\SceneManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Commands\Command.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\Patterns.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Decompose.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Identifier.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SceneManager.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\BuildingProperties.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\DisplayManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\DisplayMode.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Grammar.cs" />
@@ -397,6 +400,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammarUI.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestOffset.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestPivot.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestProperties.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestShapeObject.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestSplit.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestTransform.cs" />

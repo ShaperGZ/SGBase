@@ -72,9 +72,7 @@ namespace SGGUI {
             ((RectTransform)ipfNameOut.transform).anchoredPosition = new Vector2(0, -h);
             inputFields.Add(ipfNameIn);
             inputFields.Add(ipfNameOut);
-
             
-
             //IDictionaryEnumerator em = r.paramGroups.GetEnumerator();
             int i = 0;
             foreach (DictionaryEntry em in r.paramGroups)
@@ -84,7 +82,6 @@ namespace SGGUI {
                 AddParameterGroup(r, name, pg, i);
                 i++;
             }
-
         }
         public void ExtractParamGroup(GraphNode r, ParameterGroup pg, InputField ipf)
         {
@@ -95,7 +92,7 @@ namespace SGGUI {
             {
                 GraphNode g = r.grammar;
                 g.paramGroups[extractName] = pg;
-
+                
             }
             if (extractName == null && r.grammar != null && orgExtractName != null)
             {
@@ -130,7 +127,6 @@ namespace SGGUI {
         public void AddParameterGroup(GraphNode r, string pgName, ParameterGroup pg, int index)
         {
             float height = pg.parameters.Count * h;
-
             float h2 = h * 2;
 
             float locY;

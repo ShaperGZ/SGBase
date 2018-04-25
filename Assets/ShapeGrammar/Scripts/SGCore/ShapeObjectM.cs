@@ -148,7 +148,7 @@ public class ShapeObjectM : ShapeObject {
         container.transform.position = bbox.position;
         container.transform.LookAt(bbox.vertices[3]);
 
-        Debug.LogFormat("component count={0}", form.components.Count);
+        //Debug.LogFormat("component count={0}", form.components.Count);
         foreach(Meshable m in form.components)
         {
             Polygon pg;
@@ -163,7 +163,7 @@ public class ShapeObjectM : ShapeObject {
             //Polygon pg = (Polygon)m;
             //find and skip horizontal components
             float dot = Vector3.Dot(pg.GetNormal(), Vector3.up);
-            Debug.LogFormat("dot={0}", dot);
+            //Debug.LogFormat("dot={0}", dot);
             //if (dot == 1 || dot != -1) continue;
             if(dot<0.8 && dot > -0.8f)
             {

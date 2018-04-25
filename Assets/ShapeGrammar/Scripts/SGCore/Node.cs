@@ -23,6 +23,7 @@ namespace SGCore
         {
             _active = flag;
         }
+        public Properties properties;
 
         public GraphNode()
         {

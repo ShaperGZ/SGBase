@@ -25,30 +25,20 @@ namespace Rules
         {
             int w = (int)(((ParameterGroup)paramGroups["Width"]).parameters[0].value);
             int h = (int)(((ParameterGroup)paramGroups["Height"]).parameters[0].value);
-            Debug.LogFormat("inputs.shapes.Count={0}", inputs.shapes.Count);
+            //Debug.LogFormat("inputs.shapes.Count={0}", inputs.shapes.Count);
             if (inputs.shapes.Count <= 0) return;
             List<ShapeObject> outSos = new List<ShapeObject>();
             
             for (int i = 0; i < inputs.shapes.Count; i++)
             {
-                //try
-                //{
                 ShapeObject so = inputs.shapes[i].Clone();
                 so.parentRule = inputs.shapes[i].parentRule;
                 outSos.Add(so);
 
-                Debug.LogFormat("mesable type={0}", so.meshable.GetType());
+                //Debug.LogFormat("mesable type={0}", so.meshable.GetType());
 
                 ShapeObjectM som = ShapeObjectM.CreateSchemeA((CompositMeshable)so.meshable);
                 outSos.Add(som);
-                //}
-                //catch
-                //{
-                //    ShapeObject so = inputs.shapes[i];
-                //    Debug.LogFormat("FAILED: mesable type={0}", so.meshable.GetType());
-                //}
-
-
             }
             if (outputs.shapes != null)
                 foreach (ShapeObject o in outputs.shapes)
@@ -70,6 +60,138 @@ namespace Rules
             return dict;
         }
     }
+
+    public class DubTop : Rule
+    {
+        List<ShapeObject> additional = new List<ShapeObject>();
+
+        //top, east-west, south-north
+        public DubTop(string inName, string[] outNames = null)
+        {
+            if (outNames == null)
+            {
+                outNames = new string[] { "faceTop,faceSides" };
+            }
+            inputs.names.Add(inName);
+            outputs.names.AddRange(outNames);
+        }
+        public override void Execute()
+        {
+            outMeshables.Clear();
+            
+
+            List<Meshable> tops = new List<Meshable>();
+            List<Meshable> sides = new List<Meshable>();
+            foreach (ShapeObject so in inputs.shapes)
+            {
+                if (so.meshable.GetType() == typeof(SGGeometry.Extrusion))
+                {
+                    Extrusion ext = (Extrusion)(so.meshable);
+                    int last = ext.components.Count - 1;
+
+                    tops.Add(ext.components[last]);
+                }
+            }
+            //delete extra ouputs
+            int dif = outputs.shapes.Count - (tops.Count+inputs.shapes.Count);
+            removeOutputsByCount(dif);
+
+            //assign outputs
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                Meshable m = inputs.shapes[i].meshable;
+                if (i < outputs.shapes.Count)
+                {
+                    outputs.shapes[i].SetMeshable(m);
+                }
+                else
+                {
+                    ShapeObject o = ShapeObject.CreateMeshable(m);
+                    o.parentRule = this;
+                    o.step = step;
+                    o.name = outputs.names[0];
+                    outputs.shapes.Add(o);
+                }
+
+            }
+
+
+            for (int i = 0; i < tops.Count; i++)
+            {
+                int index = i + inputs.shapes.Count;
+                Meshable m = tops[i];
+                if (index < outputs.shapes.Count)
+                {
+                    outputs.shapes[index].SetMeshable(m);
+                }
+                else
+                {
+                    ShapeObject o = ShapeObject.CreateMeshable(m);
+                    o.parentRule = this;
+                    o.step = step;
+                    o.name = outputs.names[0];
+                    outputs.shapes.Add(o);
+                }
+
+            }
+        }
+    }
+
+    public class DcpFace2:Rule
+    {
+        //top, east-west, south-north
+        public DcpFace2(string inName, string[] outNames = null)
+        {
+            if (outNames == null)
+            {
+                outNames = new string[] { "faceTop,faceSides" };
+            }
+            inputs.names.Add(inName);
+            outputs.names.AddRange(outNames);
+
+        }
+        public override void Execute()
+        {
+            outMeshables.Clear();
+            List<Meshable> tops = new List<Meshable>();
+            List<Meshable> sides = new List<Meshable>();
+            foreach(ShapeObject so in inputs.shapes)
+            {
+                if (so.meshable.GetType() == typeof(SGGeometry.Extrusion))
+                {
+                    Extrusion ext = (Extrusion)(so.meshable);
+                    int last = ext.components.Count-1;
+                    
+                    tops.Add(ext.components[last]);
+                }
+            }
+            
+            //delete extra ouputs
+            int dif = outputs.shapes.Count - tops.Count;
+            removeOutputsByCount(dif);
+
+            //assign outputs
+            for (int i = 0; i < tops.Count; i++)
+            {
+                Meshable m = tops[i];
+                if (i < outputs.shapes.Count)
+                {
+                    outputs.shapes[i].SetMeshable(m);
+                }
+                else
+                {
+                    ShapeObject o = ShapeObject.CreateMeshable(m);
+                    o.parentRule = this;
+                    o.step = step;
+                    o.name = outputs.names[0];
+                    outputs.shapes.Add(o);
+                }
+               
+            }
+        }
+    }
+
+    
 }
 
 

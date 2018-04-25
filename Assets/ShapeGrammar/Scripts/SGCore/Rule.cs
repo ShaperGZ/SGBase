@@ -10,7 +10,8 @@ using SGGeometry;
 namespace SGCore
 {
     public class Rule : GraphNode
-    { 
+    {
+        public Vector2? randRange;
         public List<Meshable> outMeshables;
         public new string description {
             get
@@ -57,7 +58,7 @@ namespace SGCore
 
             if (inputs.shapes.Count > 0)
             {
-                Debug.Log(step+" meshable has bbox=" + (inputs.shapes[0].meshable.bbox != null));
+                //Debug.Log(step+" meshable has bbox=" + (inputs.shapes[0].meshable.bbox != null));
                 
                 for (int i = 0; i < inputs.shapes.Count; i++)
                 {
@@ -89,17 +90,12 @@ namespace SGCore
         {
             return null;
         }
-
-        public void UpdateOutputShapes()
+        public void removeOutputsByCount(int num)
         {
-            //List<string> newNames = new List<string>();
-            //destroy extra shapes
-            //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
-            int dif = outputs.shapes.Count - outMeshables.Count;
-            if ( dif >0 )
+            if (num > 0)
             {
                 //Debug.Log("dif >0 ouputs.shapesCount="+outputs.shapes.Count);
-                for (int i = 0; i < dif; i++)
+                for (int i = 0; i < num; i++)
                 {
                     int index = outputs.shapes.Count - 1;
                     GameObject.Destroy(outputs.shapes[index].gameObject);
@@ -107,6 +103,14 @@ namespace SGCore
                 }
                 //Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
             }
+        }
+        public void UpdateOutputShapes()
+        {
+            //List<string> newNames = new List<string>();
+            //destroy extra shapes
+            //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
+            int dif = outputs.shapes.Count - outMeshables.Count;
+            removeOutputsByCount(dif);
 
             //update output shapes
             int shapeCount = outputs.shapes.Count;
