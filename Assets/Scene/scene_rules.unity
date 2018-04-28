@@ -303,8 +303,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 371907866}
   m_HandleRect: {fileID: 371907865}
   m_Direction: 2
-  m_Value: 0.9999996
-  m_Size: 0.54166657
+  m_Value: 0.99999934
+  m_Size: 0.5416666
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1673,7 +1673,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000060487422, y: 0.00006070919}
+  m_AnchoredPosition: {x: -0.00006603418, y: 0.00006070919}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &388361124
@@ -4173,6 +4173,7 @@ GameObject:
   - component: {fileID: 1085425063}
   - component: {fileID: 1085425064}
   - component: {fileID: 1085425067}
+  - component: {fileID: 1085425070}
   m_Layer: 0
   m_Name: ScriptLoder
   m_TagString: Untagged
@@ -4315,7 +4316,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1085425056}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bd134a96f0adc84db7d3feb89104b68, type: 3}
   m_Name: 
@@ -4345,12 +4346,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df36cb0945a94c40aa5f999a59eba9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sequence: 
-  kAddRule_Bisect: 98
-  kAddRule_Scale: 115
-  kAddRule_DivideTo: 100
-  kAddRule_DcpA: 97
-  ifp: {fileID: 0}
+--- !u!114 &1085425070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1085425056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cae575b3e1d4dc48b142b947dad049b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1088367199
 GameObject:
   m_ObjectHideFlags: 0
@@ -6143,8 +6149,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 916456717}
   m_HandleRect: {fileID: 916456716}
   m_Direction: 0
-  m_Value: 0.33333334
-  m_Size: 0.99999976
+  m_Value: 0.25
+  m_Size: 0.99999964
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

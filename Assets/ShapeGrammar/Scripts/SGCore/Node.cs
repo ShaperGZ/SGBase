@@ -12,7 +12,7 @@ namespace SGCore
         public List<GraphNode> upStreams;
         public List<GraphNode> downStreams;
         public Grammar grammar;
-        public string name="unnamedNode";
+        public string name = "unnamedNode";
         public string description = "";
         public bool invalidated = false;
         public OrderedDictionary paramGroups;
@@ -62,7 +62,7 @@ namespace SGCore
             invalidated = true;
             if (downStreams.Count > 0)
             {
-                foreach(GraphNode n in downStreams)
+                foreach (GraphNode n in downStreams)
                 {
                     n.Invalidate();
                 }
@@ -72,7 +72,39 @@ namespace SGCore
         {
             return new OrderedDictionary();
         }
-
-
+        public virtual void AddParam(string key, float val, float min, float max, float step)
+        {
+            if (paramGroups == null)
+                paramGroups = new OrderedDictionary();
+            if (paramGroups.Contains(key))
+                ((ParameterGroup)paramGroups[key]).Add(new Parameter(val, min, max, step));
+        }
+        public virtual void SetParam(string key, int index, float val, float? min = null, float? max = null, float? step = null)
+        {
+            ParameterGroup pg = (ParameterGroup)paramGroups[key];
+            Parameter pm = pg.parameters[index];
+            pm.value = val;
+            if (min.HasValue)
+                pm.min = min.Value;
+            if (max.HasValue)
+                pm.max = max.Value;
+            if (step.HasValue)
+                pm.step = step.Value;
+        }
+        public virtual Parameter GetParam(string key, int index)
+        {
+            ParameterGroup pg = (ParameterGroup)paramGroups[key];
+            Parameter pm = pg.parameters[index];
+            return pm;
+        }
+        public virtual float GetParamVal(string key, int index)
+        {
+            return GetParam(key, index).value;
+        }
+        public virtual ParameterGroup GetParamGroup(string key)
+        {
+            ParameterGroup pg = (ParameterGroup)paramGroups[key];
+            return pg;
+        }
     }
 }
