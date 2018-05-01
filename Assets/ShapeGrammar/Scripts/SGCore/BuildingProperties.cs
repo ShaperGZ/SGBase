@@ -58,7 +58,7 @@ namespace SGCore
         {
             get
             {
-                Debug.Log("accessing BuildingProperties get");
+                //Debug.Log("accessing BuildingProperties get");
                 Dictionary<string, object> dict = new Dictionary<string, object>();
                 dict["ground"] = ground;
                 dict["gfa"] = gfa;
@@ -89,9 +89,11 @@ namespace SGCore
         {
             gfa = 0;
             height = -1;
+            footPrint = 0;
             foreach (Grammar grammar in grammars)
             {
                 int lastIndex = grammar.stagedOutputs.Count - 1;
+                if (grammar.stagedOutputs == null || lastIndex<0) continue;
                 foreach (ShapeObject s in grammar.stagedOutputs[lastIndex].shapes)
                 {
                     try

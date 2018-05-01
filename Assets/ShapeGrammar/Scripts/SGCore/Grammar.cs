@@ -117,7 +117,7 @@ namespace SGCore
         {
             for (int i = start; i < subNodes.Count; i++)
             {
-                Debug.Log("--------------executing (" + i + ")-----");
+                //Debug.Log("--------------executing (" + i + ")-----");
                 Execute(i);
             }
             DisplayStep(subNodes.Count - 1);
@@ -287,7 +287,7 @@ namespace SGCore
                 {
                     if (o != null)
                         //o.gameObject.SetActive(true);
-                        if (o.grammar==null)
+                        if (o.grammar==null || o.alwaysActive)
                             o.Show(true);
 
                 }
@@ -455,14 +455,17 @@ namespace SGCore
                 if (assignedObjects.Count > 0)
                 {
                     foreach (ShapeObject o in assignedObjects)
-                        if (o != null && o.gameObject != null)
-                            o.gameObject.SetActive(true);
+                        o.Show(true);
+                        //if (o != null && o.gameObject != null)
+                        //    o.gameObject.SetActive(true);
                 }
                 if (inputs.shapes != null)
                 {
                     foreach (ShapeObject o in inputs.shapes)
                     {
-                        if (o != null && o.gameObject != null) o.gameObject.SetActive(true);
+                        if (o != null && o.gameObject != null)
+                            o.Show(true);
+                            //o.gameObject.SetActive(true);
                     }
                 }
                 

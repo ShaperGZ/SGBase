@@ -436,8 +436,86 @@ namespace Rules
             return dict;
         }
     }
+    public class Size3D : Rule
+    {
+        Plane cutPlane;
+        public Size3D() : base()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+            paramGroups = DefaultParam();
+        }
+        public Size3D(string inName, string outName, Vector3 size, Vector2? randRange = null) : base(inName, new string[] { outName })
+        {
+            paramGroups = DefaultParam();
+            ((ParameterGroup)paramGroups["Size"]).parameters[0].value = size[0];
+            ((ParameterGroup)paramGroups["Size"]).parameters[1].value = size[1];
+            ((ParameterGroup)paramGroups["Size"]).parameters[2].value = size[2];
+            this.randRange = randRange;
 
-    
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            float dx = ((ParameterGroup)paramGroups["Size"]).parameters[0].value;
+            float dy = ((ParameterGroup)paramGroups["Size"]).parameters[1].value;
+            float dz = ((ParameterGroup)paramGroups["Size"]).parameters[2].value;
+
+            //get Size
+            Vector3 size = new Vector3(dx, dy, dz);
+
+            if (randRange.HasValue)
+            {
+                float min = randRange.Value[0];
+                float max = randRange.Value[1];
+                for (int i = 0; i < 3; i++)
+                {
+                    size[i] = size[i] * (1 + Random.Range(min, max));
+                }
+            }
+
+            Vector3 scale = new Vector3(1, 1, 1);
+            Vector3 soSize = so.transform.localScale;
+            for (int i = 0; i < 3; i++)
+            {
+                scale[i] = size[i] / soSize[i];
+            }
+            
+            Vector3[] vects = so.Vects;
+            Vector3 origin = so.transform.position;
+
+            //get the splited meshables
+            Meshable mb = so.meshable;
+            Meshable scaledMb = mb.Scale(scale, vects, origin, true);
+            //TODO: just scale the bbox
+            scaledMb.bbox = BoundingBox.CreateFromPoints(scaledMb.vertices, so.meshable.bbox);
+            //outMeshables.Add(scaledMb);
+            List<Meshable> outs = new List<Meshable>();
+            outs.Add(scaledMb);
+            AssignNames(outs);
+            //AssignNames(outMeshables.ToArray());
+            return outs;
+
+            //Rule.Execute() will take care of the outMeshables
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+            outParamGroups.Add(pg1);
+            outParamGroups.Add(pg2);
+
+            dict["Size"] = pg1;
+            pg1.Add(new Parameter(30f, 30f, 80f, 0.01f));
+            pg1.Add(new Parameter(18f, 3f, 100f, 0.01f));
+            pg1.Add(new Parameter(8f, 8f, 80f, 0.01f));
+
+            return dict;
+        }
+    }
+
+
 
     //delete this
     public class DivideSurface : Rule
@@ -598,10 +676,10 @@ namespace Rules
             //update each output
             for (int i = 0; i < inputs.shapes.Count; i++)
             {
-                Debug.Log("cloning shapeobject, has bbox=" + (inputs.shapes[i].meshable.bbox != null));
+                //Debug.Log("cloning shapeobject, has bbox=" + (inputs.shapes[i].meshable.bbox != null));
                 inputs.shapes[i].CloneTo(outputs.shapes[i]);
                 //outputs.shapes[i].meshable.bbox = inputs.shapes[i].meshable.bbox;
-                Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
+                //Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
                 outputs.shapes[i].PivotTurn(count);
             }
             AssignNames(outputs.shapes);
@@ -683,6 +761,132 @@ namespace Rules
 
             return dict;
         }
+
     }
-    
+    public class CreateOperableBox : Rule
+    {
+        public CreateOperableBox() : base()
+        {
+            outputs.names.Add("A");
+
+        }
+        public CreateOperableBox(string outName, Vector3 size) : base()
+        {
+            outputs.names.Add("A");
+            for (int i = 0; i < 3; i++)
+            {
+                ((ParameterGroup)paramGroups["Size"]).parameters[i].value = size[i];
+                ((ParameterGroup)paramGroups["Rotation"]).parameters[i].value = 0;
+            }
+        }
+        
+        public override List<Meshable> ExecuteShape(ShapeObject inSo)
+        {
+            float[] size = new float[3];
+            for (int i = 0; i < 3; i++)
+            {
+                size[i] = ((ParameterGroup)paramGroups["Size"]).parameters[i].value;
+            }
+            Vector3 vpos = inSo.Position;
+            Vector3 vsize = new Vector3(size[0], size[1], size[2]);
+
+            Vector3[] pts = new Vector3[4];
+            Vector3 vx = new Vector3(size[0], 0, 0);
+            Vector3 vy = new Vector3(0, size[1], 0);
+            Vector3 vz = new Vector3(0, 0, size[2]);
+
+
+            pts[0] = vpos;
+            pts[1] = vpos + vx;
+            pts[2] = pts[1] + vz;
+            pts[3] = pts[0] + vz;
+            Polygon pg = new Polygon(pts);
+            Meshable f = pg.Extrude(vy);
+
+            List<Meshable> outs = new List<Meshable>();
+            outs.Add(f);
+            AssignNames(outs);
+            return outs;
+
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+
+            for (int i = 0; i < 3; i++)
+            {
+                pg1.Add(new Parameter(10, 0, 100, 3f));
+                pg2.Add(new Parameter(0, 0, 90, 1));
+            }
+            dict.Add("Size", pg1);
+            dict.Add("Rotation", pg2);
+
+            return dict;
+        }
+
+    }
+
+    public class CreateStair : Rule
+    {
+        public float stairW = 4;
+        public float stairH = 10;
+        public CreateStair() : base() { }
+        public CreateStair(string inName, string outName) : base(inName, outName) { }
+        public override List<Meshable> ExecuteShape(ShapeObject inSo)
+        {
+            inSo.PivotTurn(2);
+            float w = inSo.Size[0];
+            List<Vector3> stairLocs = new List<Vector3>();
+            if (w <= 30)
+            {
+                stairLocs.Add(inSo.Position);
+                Vector3 v = inSo.Vects[0];
+                v *= (w - stairW);
+                stairLocs.Add(inSo.Position + v);
+            }
+            else if (w < 45)
+            {
+                stairLocs.Add(inSo.Position);
+                Vector3 v = inSo.Vects[0];
+                v *= 30;
+                stairLocs.Add(inSo.Position + v);
+            }
+            else
+            {
+                float d1 = w / 2 - 15;
+                float d2 = w - d1;
+                Vector3 v1 = inSo.Vects[0] * d1;
+                Vector3 v2 = inSo.Vects[0] * d2;
+                stairLocs.Add(inSo.Position + v1);
+                stairLocs.Add(inSo.Position + v2);
+            }
+
+            List<Meshable> outs = new List<Meshable>();
+            float coreH = inSo.Size[1] + 3;
+            foreach (Vector3 v in stairLocs)
+            {
+                outs.Add(CreateBox(v, new Vector3(stairW, coreH, stairH), inSo.Vects));
+            }
+
+            AssignNames(outs);
+            outs.Add(inSo.meshable);
+            return outs;
+
+        }
+        Meshable CreateBox(Vector3 pos, Vector3 size, Vector3[] vects)
+        {
+            Vector3[] pts = new Vector3[4];
+            Vector3 mv1 = vects[0] * size[0];
+            Vector3 mv2 = vects[1] * size[1];
+            Vector3 mv3 = vects[2] * size[2];
+            pts[0] = pos;
+            pts[1] = pts[0] + mv1;
+            pts[2] = pts[1] + mv3;
+            pts[3] = pts[0] + mv3;
+            Extrusion ext = new Extrusion(pts, size[1]);
+            return ext;
+        }
+    }
 }

@@ -32,7 +32,11 @@ public class ShapeObject : MonoBehaviour {
     public virtual Vector3 Position
     {
         get { return transform.position; }
-        set { transform.position = value; }
+        set {
+            transform.position = value;
+            stale = true;
+            Invalidate();
+        }
     }
 
     public System.Guid guid;
@@ -41,6 +45,7 @@ public class ShapeObject : MonoBehaviour {
     public Rule parentRule;
     public Grammar grammar;
     public int step;
+    public bool alwaysActive = false;
 
     public Dictionary<int, Material> materialsByMode;
     public Material matDefault;
@@ -111,6 +116,7 @@ public class ShapeObject : MonoBehaviour {
             g.Execute();
         }
     }
+    
     public virtual void SetDefaultMaterials()
     {
         materialsByMode[DisplayMode.NORMAL]= MaterialManager.GB.Default;
@@ -160,8 +166,11 @@ public class ShapeObject : MonoBehaviour {
     public void Show(bool flag)
     {
         //if(grammar==null)
-        gameObject.SetActive(flag);
-        if(flag)
+        if (!alwaysActive)
+            gameObject.SetActive(flag);
+        else
+            gameObject.SetActive(true);
+        if (flag)
             Invalidate();
     }
     public void SetDisplayMode(int mode)
@@ -361,6 +370,29 @@ public class ShapeObject : MonoBehaviour {
         o.AddComponent<HighlightMouseOver>();
         //so.meshRenderer.material = DefaultMat;
         return so;
+    }
+    public static ShapeObject CreateBox(Vector3 pos, Vector3 size, Vector3[] vects)
+    {
+        Vector3[] pts = new Vector3[4];
+        Vector3 mv1 = vects[0] * size[0];
+        Vector3 mv2 = vects[1] * size[1];
+        Vector3 mv3 = vects[2] * size[2];
+        pts[0] = pos;
+        pts[1] = pts[0] + mv1;
+        pts[2] = pts[1] + mv3;
+        pts[3] = pts[0] + mv3;
+
+        return CreateExtrusion(pts, mv2.magnitude);
+    }
+    public static ShapeObject CreateBox(Vector3 size)
+    {
+        Vector3[] pts = new Vector3[4];
+        pts[0] = new Vector3(0, 0, 0);
+        pts[1] = new Vector3(size[0], 0, 0);
+        pts[2] = new Vector3(size[0], 0, size[2]);
+        pts[3] = new Vector3(0, 0, size[2]);
+
+        return CreateExtrusion(pts,size[1]);
     }
     public static ShapeObject CreatePolygon(Vector3[] pts)
     {

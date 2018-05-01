@@ -48,7 +48,12 @@ public class SOPoint : ShapeObject{
         set
         {
             _posOrg = value;
-            transform.position = _posOrg + _posOffset;
+            Vector3 newPos= _posOrg + _posOffset;
+            if(newPos != transform.position)
+                stale = true;
+
+            transform.position = newPos;
+            Invalidate();
         }
     }
     public Vector3 PositionOffset
@@ -95,6 +100,7 @@ public class SOPoint : ShapeObject{
             sop.PositionOffset = new Vector3(0, 0, 0);
         }
         sop.Radius = 1;
+        sop.alwaysActive = true;
         BoxCollider bc = o.AddComponent<BoxCollider>();
         bc.center = o.transform.position;
         return sop;
@@ -109,7 +115,7 @@ public class SOPoint : ShapeObject{
     }
     public override void SetDefaultMaterials()
     {
-        Debug.Log("SOP SetDefaultMat");
+        //Debug.Log("SOP SetDefaultMat");
         colorMaterial = Instantiate(MaterialManager.GB.Default) as Material;
         materialsByMode[DisplayMode.NORMAL] = colorMaterial;
         materialsByMode[DisplayMode.NAMES] = colorMaterial;
