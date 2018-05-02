@@ -90,27 +90,13 @@ namespace SGCore
         {
             return null;
         }
-        public void removeOutputsByCount(int num)
-        {
-            if (num > 0)
-            {
-                //Debug.Log("dif >0 ouputs.shapesCount="+outputs.shapes.Count);
-                for (int i = 0; i < num; i++)
-                {
-                    int index = outputs.shapes.Count - 1;
-                    GameObject.Destroy(outputs.shapes[index].gameObject);
-                    outputs.shapes.RemoveAt(index);
-                }
-                //Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
-            }
-        }
+       
         public void UpdateOutputShapes()
         {
             //List<string> newNames = new List<string>();
             //destroy extra shapes
             //Debug.Log(string.Format("{0} outputShapes:{1}, mesable:{2}", name, outputs.shapes.Count, outMeshables.Count));
-            int dif = outputs.shapes.Count - outMeshables.Count;
-            removeOutputsByCount(dif);
+            removeExtraOutputs();
 
             //update output shapes
             int shapeCount = outputs.shapes.Count;
@@ -156,7 +142,7 @@ namespace SGCore
                 paramTexts += (string)kvp.Key+"(";
                 foreach(Parameter p in pg.parameters)
                 {
-                    string pstr = p.min + "-" + p.value + "-" + p.max + "-" + p.step + ",";
+                    string pstr = p.min + "-" + p.Value + "-" + p.max + "-" + p.step + ",";
                     paramTexts += pstr;
                 }
                 paramTexts += ") ";
@@ -216,7 +202,7 @@ namespace SGCore
                     if (pmstr.Length < 3) continue;
                     Parameter pm = new Parameter();
                     pm.min = float.Parse(pmstr[0]);
-                    pm.value = float.Parse(pmstr[1]);
+                    pm.Value = float.Parse(pmstr[1]);
                     pm.max = float.Parse(pmstr[2]);
                     pm.step = float.Parse(pmstr[3]);
                     pg.Add(pm);

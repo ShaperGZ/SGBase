@@ -3,6 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TestPoints : MonoBehaviour {
+    public string message = "";
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(100, 100, 300, 300), message);
+    }
+
+    
+    public Vector3[] boundary;
+    ShapeObject so;
+    ShapeObject xp;
+    public bool isInside = false;
 
     void PointGrid(int wCount, int hCount)
     {
@@ -21,12 +32,6 @@ public class TestPoints : MonoBehaviour {
             }
         }
     }
-    public Vector3[] boundary;
-    ShapeObject so;
-    ShapeObject xp;
-    public bool isInside = false;
-
-
     // Use this for initialization
     void Start () {
 

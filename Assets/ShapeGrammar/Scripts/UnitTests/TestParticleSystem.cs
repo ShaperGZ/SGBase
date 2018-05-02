@@ -8,14 +8,14 @@ public class TestParticleSystem : MonoBehaviour {
     SGParticleSystem particleSystem;
     // Use this for initialization
     public Vector3[] boundary;
-    public static Vector3[] initShape2()
+    public static Vector3[] initShape1()
     {
-        Vector3[] pts = new Vector3[4];
-        pts[0] = new Vector3(-20, 0, 15);
-        pts[1] = new Vector3(-20, 0, -15);
-        pts[2] = new Vector3(20, 0, -15);
-        pts[3] = new Vector3(20, 0, 15);
-        pts[3] = new Vector3(10, 0, 30);
+        Vector3[] pts = new Vector3[5];
+        pts[0] = new Vector3(-80, 0, 46);
+        pts[1] = new Vector3(-80, 0, -11);
+        pts[2] = new Vector3(-10, 0, -54);
+        pts[3] = new Vector3(103, 0, 25);
+        pts[4] = new Vector3(96, 0, 70);
         return pts;
     }
     ShapeObject createBuilding()
@@ -25,27 +25,24 @@ public class TestParticleSystem : MonoBehaviour {
         BuildingProperties bp = new BuildingProperties();
         bp.AddGrammar(g);
         so.SetGrammar(g);
-        g.AddRule(new Rules.CreateOperableBox("A", new Vector3(1, 1, 1)));
+        
         float h = Random.Range(9, 30);
-        g.AddRule(new Rules.Size3D("A", "A", new Vector3(30, h, 15)));
-        g.AddRule(new Rules.PivotTurn("A", "A", 2));
-        g.AddRule(new Rules.BisectLength("A", new string[] { "CD", "A" }, 2, 2));
-        g.AddRule(new Rules.CreateStair("CD", "STAR"));
+        g.AddRule(new Rules.CreateOperableBox("A", new Vector3(30, 60, 20)));
+        g.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, h, 20)));
+        g.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL"));
+        g.AddRule(new Rules.SingleLoaded("SL", "APT"));
+        g.AddRule(new Rules.DoubleLoaded("DL", "APT"));
         //g.AddRule(new Rules.DcpA("A", 9, 3));
         return so;
     }
     void Start () {
 
-        boundary = initShape2();
-        //Vector3[] pts = initShape2();
-
-        ShapeObject b = ShapeObject.CreatePolygon(boundary);
-        particleSystem = new SGParticleSystem(boundary);
-        //particleSystem = new SGPlaningParticleSystem();
-        for (int i = 0; i < 15; i++)
+        boundary = initShape1();
+        particleSystem = new SGPlaningParticleSystem(boundary);
+        for (int i = 0; i < 6; i++)
         {
-            ShapeObject so = SOPoint.CreatePoint();
-            //ShapeObject so = createBuilding();
+            //ShapeObject so = SOPoint.CreatePoint();
+            ShapeObject so = createBuilding();
             particleSystem.AddRand(so);
         }
 	}

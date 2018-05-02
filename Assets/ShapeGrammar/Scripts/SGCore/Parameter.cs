@@ -5,11 +5,31 @@ using SGCore;
 
 namespace SGCore
 {
+    public delegate float ValueGetter();
+    public delegate float ShapeObjectRefValueGetter(ShapeObject so);
+
     public class Parameter
     {
+        public ValueGetter getValueCallback;
+        public ShapeObjectRefValueGetter getSORefValueCallback;
         public float min=0;
         public float max=1;
-        public float value=0.4f;
+        public float _value = 0.4f;
+        public float Value
+        {
+            get
+            {
+                if (getValueCallback != null)
+                {
+                    _value = getValueCallback();
+                }
+                return _value;
+            }
+            set
+            {
+                _value = value;
+            }
+        }
         public float step = 0.01f;
         public Parameter() { }
         public Parameter(float val, float imin=0, float imax=1, float istep=0.01f)
@@ -17,17 +37,17 @@ namespace SGCore
             min = imin;
             max = imax;
             step = istep;
-            value = val;
+            Value = val;
         }
         public void increase()
         {
-            float nv = value + step;
-            value= Mathf.Clamp(nv, min, max);
+            float nv = Value + step;
+            Value= Mathf.Clamp(nv, min, max);
         }
         public void decrease()
         {
-            float nv = value - step;
-            value = Mathf.Clamp(nv, min, max);
+            float nv = Value - step;
+            Value = Mathf.Clamp(nv, min, max);
         }
 
     }

@@ -17,7 +17,7 @@ public class SOPoint : ShapeObject{
     }
     public bool drawOffset = false;
     public bool allowDrag = false;
-
+    private bool startDragging = false;
     public Material colorMaterial;
     public Color Color
     {
@@ -71,7 +71,7 @@ public class SOPoint : ShapeObject{
     Plane plane = new Plane(Vector3.up, Vector3.zero);
     // Update is called once per frame
     void Update () {
-		
+        
 	}
 
     public override ShapeObject Clone(bool geometryOnly = true)
@@ -130,7 +130,7 @@ public class SOPoint : ShapeObject{
         //this.Color = Color.red;
         allowDrag = true;
         this.colorMaterial.color = Color.red;
-        Radius *= 2;
+        Radius *= 3;
         drawOffset = true;
     }
 
@@ -145,14 +145,17 @@ public class SOPoint : ShapeObject{
 
     private void OnMouseExit()
     {
-        //this.Color = Color.white;
         allowDrag = false;
         this.colorMaterial.color = Color.white;
-        Radius *= 0.5f;
+        Radius /=3f;
         drawOffset = false;
     }
 
     private void OnMouseDrag()
+    {
+        Drag();
+    }
+    private void Drag()
     {
         if (!allowDrag) return;
         if(Input.GetKey(KeyCode.LeftShift))

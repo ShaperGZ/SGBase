@@ -46,6 +46,32 @@ namespace SGCore
                 SelectStep(subNodes.Count - 1);
             }
         }
+        public void AddRuleAfter(GraphNode r, int i, bool execute = true)
+        {
+            subNodes.Insert(i + 1, r);
+            r.grammar = this;
+            for (int j = i; j < subNodes.Count; j++)
+            {
+                subNodes[j].step = j;
+            }
+            if (execute)
+            {
+                ExecuteFrom(i+1);
+            }
+        }
+        public void AddRuleAt(GraphNode r, int i, bool execute = true)
+        {
+            subNodes.Insert(i, r);
+            r.grammar = this;
+            for (int j = i; j < subNodes.Count; j++)
+            {
+                subNodes[j].step = j;
+            }
+            if (execute)
+            {
+                ExecuteFrom(i);
+            }
+        }
         public void SubRule(Rule r, bool execute = true)
         {
             int index = subNodes.IndexOf(r);
@@ -90,12 +116,12 @@ namespace SGCore
         {
             Rule rule = GetRule(i);
             ParameterGroup pg = (ParameterGroup)rule.paramGroups[name];
-            pg.parameters[0].value = value;
+            pg.parameters[0].Value = value;
         }
         public void SetParamValue(string name, float value)
         {
             ParameterGroup pg = (ParameterGroup)paramGroups[name];
-            pg.parameters[0].value = value;
+            pg.parameters[0].Value = value;
         }
 
         public override void Execute()

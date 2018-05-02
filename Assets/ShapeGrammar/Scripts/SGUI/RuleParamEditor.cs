@@ -165,14 +165,14 @@ namespace SGGUI {
             for (int i = 0; i < pg.parameters.Count; i++)
             {
                 Parameter p = pg.parameters[i];
-                float value = p.value;
+                float value = p.Value;
                 //GameObject o = new GameObject();
                 InputField ipf = Instantiate(inputFieldPrefab, pgui);
                 RectTransform ipftrans = ipf.transform as RectTransform;
                 ipftrans.anchoredPosition = new Vector2(0, -h * i -h);
-                ipf.text = p.value.ToString();
+                ipf.text = p.Value.ToString();
                 Slider sld = Instantiate(sliderPrefab, pgui);
-                sld.value = p.value;
+                sld.value = p.Value;
                 sld.minValue = p.min;
                 sld.maxValue = p.max;
                 if (p.step == 1) sld.wholeNumbers = true;
@@ -219,7 +219,7 @@ namespace SGGUI {
         void OnSliderValueChanged(Slider sld, InputField ipf, Parameter p, GraphNode r)
         {
             ipf.text = sld.value.ToString();
-            p.value = sld.value;
+            p.Value = sld.value;
             if (r.grammar != null)
                 r.grammar.ExecuteFrom(r);
             else

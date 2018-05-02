@@ -24,113 +24,68 @@ public class TestGrammarUI : MonoBehaviour {
         pts[4] = new Vector3(96, 0, 70);
         return pts;
     }
-    public static Vector3[] initShape2()
+  
+    void Passed_BisectMirror(ShapeObject so)
     {
-        Vector3[] pts = new Vector3[4];
-        pts[0] = new Vector3(-20, 0, 15);
-        pts[1] = new Vector3(-20, 0, -15);
-        pts[2] = new Vector3(20, 0, -15);
-        pts[3] = new Vector3(20, 0, 15);
-        return pts;
+        Grammar g1 = new Grammar();
+        g1.name = "g1";
+        g1.assignedObjects.Add(so);
+        g1.AddRule(new Rules.BisectMirror("A", new string[] { "A", "A" }, 0.4f, 0));
+        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.2f, 0));
     }
-    public static Vector3[] initShape3()
+    
+    void Passed_CreateBuilding(ShapeObject so)
     {
-        Vector3[] pts = initShape2();
-        Vector3 offset = new Vector3(60, 0, 0);
-        for (int i = 0; i < pts.Length; i++)
-        {
-            pts[i] += offset;
-        }
-        return pts;
-    }
+        Grammar g = new Grammar();
+        BuildingProperties bp = new BuildingProperties();
+        bp.AddGrammar(g);
+        so.SetGrammar(g);
 
-
-    public static void Rule1(Grammar g1)
-    {
-        g1.AddRule(new Rules.CreateBox("A", new Vector3(), new Vector3(60, 30, 18), new Vector3()), false);
-        g1.AddRule(new Rules.Scale("A", "A", 2f, 0), false);
-        g1.AddRule(new Rules.DivideTo("A", "A", 30f, 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.5f, 0), false);
-        g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.5f, 2), false);
-        g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
-        g1.AddRule(new Rules.Scale("C", "D", 1.2f, 1), false);
-        g1.AddRule(new Rules.Scale("D", "D", 1.5f, 1), false);
-    }
-    public static void Rule2(Grammar g1)
-    {
-        g1.AddRule(new Rules.Divide("A", new string[] { "A" ,"B"}, new float[] { 0.2f, 0.3f, 0.5f }, 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "B", "C" }, 0.5f, 0), false);
-        g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.5f, 2), false);
-        g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
-        g1.AddRule(new Rules.Scale("C", "D", 0.8f, 1), false);
-        g1.AddRule(new Rules.Scale("D", "D", 0.5f, 1), false);
-    }
-
-    public static void Rule3(Grammar g1)
-    {
-        g1.AddRule(new Rules.BisectMirror("A", new string[] { "B", "B" }, 0.5f, 0), false);
-        g1.AddRule(new Rules.Bisect("B", new string[] { "D", "C" }, 0.2f, 0), false);
-        g1.AddRule(new Rules.Scale("C", "D", 0.8f, 1), false);
-    }
-    public static void Rule4(Grammar g1)
-    {
-        g1.AddRule(new Rules.Bisect("A", new string[] { "A", "A" }, 0.6f, 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "A" }, 0.6f, 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "A", "A" }, 0.6f, 0), false);
-        g1.AddRule(new Rules.Bisect("A", new string[] { "D", "A" }, 0.6f, 0), false);
-        //g1.AddRule(new Rules.PivotMirror("C", "A", 0), false);
-        //g1.AddRule(new Rules.Bisect("A", new string[] { "A", "C" }, 0.6f, 0), false);
-        //g1.AddRule(new Rules.BisectMirror("A", new string[] { "A", "A" }, 0.5f, 0), false);
-        //g1.AddRule(new Rules.Bisect("A", new string[] { "D", "C" }, 0.2f, 2), false);
-        //g1.AddRule(new Rules.Bisect("C", new string[] { "D", "C" }, 0.6f, 0), false);
+        float h = Random.Range(9, 30);
+        g.AddRule(new Rules.CreateOperableBox("A", new Vector3(30, 60, 20)));
+        g.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, h, 20)));
+        g.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL"));
+        g.AddRule(new Rules.SingleLoaded("SL", "APT"));
+        g.AddRule(new Rules.DoubleLoaded("DL", "APT"));
     }
 
     void Start () {
-        Vector3[] pts1 = initShape2();
-        Vector3[] pts2 = initShape3();
+        Vector3[] pts1 = initShape1();
         
         Polygon pg1 = new Polygon(pts1);
-        Polygon pg2 = new Polygon(pts2);
-        Form f1 = pg1.ExtrudeToForm(new Vector3(0, 40, 0));
-        Form f2 = pg2.ExtrudeToForm(new Vector3(0, 30, 0));
 
-        
-        f1.direction = PointsBase.LongestDirection(pts1).Value;
-        f2.direction = f1.direction;
-        //ShapeObject init = ShapeObject.CreateMeshable(f,f.direction);
-        ShapeObject init1 = ShapeObject.CreateMeshable(f1,f1.direction);
-        init1.name = "init1";
-        ShapeObject init2 = ShapeObject.CreateMeshable(f2, f2.direction);
-        init2.name = "init2";
+        Extrusion f1 = pg1.Extrude(new Vector3(0, 40, 0));
+        //ShapeObject so = ShapeObject.CreateMeshable(f1);
+        //so.name = "A";
 
-        //ShapeObject rinit = ShapeObject.CreateMeshable(rpg, f.direction);
+        ShapeObject so = SOPoint.CreatePoint();
 
+        Grammar g1 = new Grammar();
+        g1.name = "g1";
+        g1.assignedObjects.Add(so);
 
+        g1.AddRule(new Rules.CreateOperableBox("A", new Vector3(30, 60, 20)));
+        g1.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, 60, 20)));
+        g1.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL"));
+        g1.AddRule(new Rules.SingleLoaded("SL", "APT"));
+        g1.AddRule(new Rules.DoubleLoaded("DL", "APT"));
 
-        //g1 = new Grammar();
-        //g1.name = "g1";
-        //g1.assignedObjects.Add(init1);
-        //Rule3(g1);
-        //g1.Execute();
 
         Grammar g2 = new Grammar();
-        g2.name = "g2";
-        g2.assignedObjects.Add(init2);
-        Rule4(g2);
-        g2.Execute();
+        g2.AddRule(new Rules.Bisect("APT", new string[] { "B", "C" }, 0.4f, 0));
+        g2.AddRule(new Rules.Bisect("C", new string[] { "C", "B" }, 0.25f, 2));
+        g2.AddRule(new Rules.PivotMirror("C", "C", 2));
+        g2.AddRule(new Rules.PivotMirror("C", "C", 0));
+        g2.AddRule(new Rules.Scale3D("C", "C", new Vector3(1.3f,0.7f,1.6f),null,Alignment.N));
+        g2.inputs.names.Add("APT");
 
-        //relate UI elements
-        stageIOText = GameObject.Find("StagedIOText").GetComponent<Text>();
-        //GrammarInspector gi = GameObject.Find("GrammarInspector").GetComponent<GrammarInspector>();
-        //gi.Load();
-        //gi.SetGrammar(g1);
+        g1.AddRule(g2);
 
-        ruleParamEditor = GameObject.Find("RuleParamEditor").GetComponent<RuleParamEditor>();
+        //g1.AddRule(new Rules.PivotMirror("C", "C", 0));
+        //g1.Execute();
+
         
-        //ruleParamEditor.GenerateUI(g1.rules[1]);
 
-        //SceneManager.SelectedGrammar = g1;
-  
     }
     
     void Update () {

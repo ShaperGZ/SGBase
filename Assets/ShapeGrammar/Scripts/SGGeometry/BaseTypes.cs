@@ -167,6 +167,32 @@ namespace SGGeometry
             bbox.vertices = vertices.ToArray();
             return bbox;
         }
+        public virtual Vector3 GetOriginFromAlignment(int alignment)
+        {
+            switch (alignment)
+            {
+                case Alignment.Center:
+                    return (vertices[0] + vertices[2]) / 2;
+                case Alignment.E:
+                    return (vertices[2] + vertices[1]) / 2;
+                case Alignment.W:
+                    return (vertices[0] + vertices[3]) / 2;
+                case Alignment.S:
+                    return (vertices[0] + vertices[1]) / 2;
+                case Alignment.N:
+                    return (vertices[2] + vertices[3]) / 2;
+                case Alignment.SE:
+                    return vertices[1];
+                case Alignment.SW:
+                    return vertices[0];
+                case Alignment.NE:
+                    return vertices[2];
+                case Alignment.NW:
+                    return vertices[3];
+                default:
+                    return vertices[0];
+            }
+        }
         public string Format()
         {
             string t = "";
@@ -431,6 +457,19 @@ namespace SGGeometry
         }
 
     }
+    public class Alignment
+    {
+        public const int Center = 111;
+        public const int S = 112;
+        public const int N = 113;
+        public const int W = 114;
+        public const int E = 115;
+
+        public const int SE = 116;
+        public const int SW = 117;
+        public const int NE = 118;
+        public const int NW = 119;
+    }
     public class GeometryBase
     {
         public Material _lineMatDefault;
@@ -492,6 +531,7 @@ namespace SGGeometry
             Vector3? ld = PointsBase.LongestDirection(vertices, normalized);
             return ld.Value;
         }
+       
         public virtual PointsBase Clone()
         {
             PointsBase pb = new PointsBase();

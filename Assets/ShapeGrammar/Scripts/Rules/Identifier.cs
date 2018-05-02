@@ -16,8 +16,8 @@ namespace Rules
             inputs.names.Add(inName);
             outputs.names.Add(outName);
             outputs.names.Add(inName);
-            ((ParameterGroup)paramGroups["EdgeCount"]).parameters[0].value = edgeCount;
-            ((ParameterGroup)paramGroups["Area"]).parameters[0].value = area;
+            ((ParameterGroup)paramGroups["EdgeCount"]).parameters[0].Value = edgeCount;
+            ((ParameterGroup)paramGroups["Area"]).parameters[0].Value = area;
 
         }
 
@@ -25,8 +25,8 @@ namespace Rules
         public override void Execute()
         {
             //outMeshables.Clear();
-            int rqEdgeCount = (int)(((ParameterGroup)paramGroups["EdgeCount"]).parameters[0].value);
-            int rqArea = (int)(((ParameterGroup)paramGroups["Area"]).parameters[0].value);
+            int rqEdgeCount = (int)(((ParameterGroup)paramGroups["EdgeCount"]).parameters[0].Value);
+            int rqArea = (int)(((ParameterGroup)paramGroups["Area"]).parameters[0].Value);
             //outputs.shapes.Clear();
             List<ShapeObject> pass = new List<ShapeObject>();
             List<ShapeObject> fail = new List<ShapeObject>();

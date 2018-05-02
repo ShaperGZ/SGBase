@@ -68,6 +68,26 @@ namespace SGCore
                 }
             }
         }
+        public void removeExtraOutputs()
+        {
+            int dif = outputs.shapes.Count - inputs.shapes.Count;
+            if (dif > 0) removeOutputsByCount(dif);
+
+        }
+        public void removeOutputsByCount(int num)
+        {
+            if (num > 0)
+            {
+                //Debug.Log("dif >0 ouputs.shapesCount="+outputs.shapes.Count);
+                for (int i = 0; i < num; i++)
+                {
+                    int index = outputs.shapes.Count - 1;
+                    GameObject.Destroy(outputs.shapes[index].gameObject);
+                    outputs.shapes.RemoveAt(index);
+                }
+                //Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
+            }
+        }
         public virtual OrderedDictionary DefaultParam()
         {
             return new OrderedDictionary();
@@ -76,20 +96,26 @@ namespace SGCore
         {
             if (paramGroups == null)
                 paramGroups = new OrderedDictionary();
-            if (paramGroups.Contains(key))
-                ((ParameterGroup)paramGroups[key]).Add(new Parameter(val, min, max, step));
+            if (!paramGroups.Contains(key))
+                paramGroups[key] = new ParameterGroup();
+            ((ParameterGroup)paramGroups[key]).Add(new Parameter(val, min, max, step));
         }
         public virtual void SetParam(string key, int index, float val, float? min = null, float? max = null, float? step = null)
         {
             ParameterGroup pg = (ParameterGroup)paramGroups[key];
             Parameter pm = pg.parameters[index];
-            pm.value = val;
+            pm.Value = val;
             if (min.HasValue)
                 pm.min = min.Value;
             if (max.HasValue)
                 pm.max = max.Value;
             if (step.HasValue)
                 pm.step = step.Value;
+        }
+        public virtual void SetParamValCallback(string key, int index, ValueGetter callback)
+        {
+            Parameter pm = GetParam(key, index);
+            pm.getValueCallback = callback;
         }
         public virtual Parameter GetParam(string key, int index)
         {
@@ -99,7 +125,7 @@ namespace SGCore
         }
         public virtual float GetParamVal(string key, int index)
         {
-            return GetParam(key, index).value;
+            return GetParam(key, index).Value;
         }
         public virtual ParameterGroup GetParamGroup(string key)
         {

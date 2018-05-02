@@ -66,6 +66,9 @@ namespace SGCore
                 dict["floors"] = floors;
                 dict["floorHeight"] = floorHeight;
                 dict["footPrint"] = footPrint;
+                dict["width"] = width;
+                dict["depth"] = depth;
+                dict["illumination"] = illumination;
                 return dict;
             }
             set
@@ -77,14 +80,21 @@ namespace SGCore
                 floors = (int)dict["floors"];
                 floorHeight = (float)dict["floorHeight"];
                 footPrint = (float)dict["footPrint"];
+                width = (float)dict["width"];
+                depth = (float)dict["depth"];
+                illumination = (float)dict["illumination"];
             }
         }
+
         public float ground = 0;
         public float gfa = -1;
         public float height = -1;
         public int floors = -1;
         public float floorHeight = 3;
         public float footPrint = -1;
+        public float width = -1;
+        public float depth = -1;
+        public float illumination = -1;
         public override void Invalidate()
         {
             gfa = 0;

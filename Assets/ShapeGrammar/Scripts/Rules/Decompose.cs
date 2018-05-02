@@ -12,19 +12,19 @@ namespace Rules
         public DcpA() : base()
         {
             inputs.names.Add("A");
-            ((ParameterGroup)paramGroups["Width"]).parameters[0].value = 6;
-            ((ParameterGroup)paramGroups["Height"]).parameters[0].value = 3;
+            ((ParameterGroup)paramGroups["Width"]).parameters[0].Value = 6;
+            ((ParameterGroup)paramGroups["Height"]).parameters[0].Value = 3;
         }
         public DcpA(string inName, int w, int h) : base(inName, "Terminal")
         {
-            ((ParameterGroup)paramGroups["Width"]).parameters[0].value = w;
-            ((ParameterGroup)paramGroups["Height"]).parameters[0].value = h;
+            ((ParameterGroup)paramGroups["Width"]).parameters[0].Value = w;
+            ((ParameterGroup)paramGroups["Height"]).parameters[0].Value = h;
 
         }
         public override void Execute()
         {
-            int w = (int)(((ParameterGroup)paramGroups["Width"]).parameters[0].value);
-            int h = (int)(((ParameterGroup)paramGroups["Height"]).parameters[0].value);
+            int w = (int)(((ParameterGroup)paramGroups["Width"]).parameters[0].Value);
+            int h = (int)(((ParameterGroup)paramGroups["Height"]).parameters[0].Value);
             //Debug.LogFormat("inputs.shapes.Count={0}", inputs.shapes.Count);
             if (inputs.shapes.Count <= 0) return;
             List<ShapeObject> outSos = new List<ShapeObject>();

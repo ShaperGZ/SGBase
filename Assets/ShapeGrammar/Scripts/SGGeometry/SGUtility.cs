@@ -46,7 +46,7 @@ namespace SGGeometry
                 Vector3 cpN = Vector3.Cross(v1, v2);
                 if (cpN.y > 0)
                 {
-                    Vector3 csp = Intersect.PolylineClosesPoint(pts, point);
+                    Vector3 csp = PolylineClosesPoint(pts, point);
                     return csp;
                 }
             }
@@ -121,6 +121,24 @@ namespace SGGeometry
             close_p1 = new Vector2(p1.x + dx12 * t1, p1.y + dy12 * t1);
             close_p2 = new Vector2(p3.x + dx34 * t2, p3.y + dy34 * t2);
         }
+
+        public static Vector3 LineClosesPoint2D(Vector3 p1, Vector3 p2, Vector3 point)
+        {
+            Vector3 n = Vector3.Cross((p2 - p1).normalized, Vector3.up);
+            n *= 1000000;
+            Vector3 p3 = point + n;
+            Vector3 p4 = point - n;
+            Vector3? xp = Intersect.LineLine2D(p1, p2, p3, p4);
+            if (xp.HasValue)
+            {
+                return xp.Value;
+            }
+            float d1 = Vector3.Distance(p1, point);
+            float d2 = Vector3.Distance(p2, point);
+            if (d1 < d2) return p1;
+            return p2;
+
+        }
         public static Vector3 PolylineClosesPoint(Vector3[] poly, Vector3 point)
         {
             List<Vector3> pts = new List<Vector3>();
@@ -128,29 +146,22 @@ namespace SGGeometry
             {
                 int j = i + 1;
                 if (j >= poly.Length) j = 0;
-                Vector3 n = Vector3.Cross((poly[j] - poly[i]).normalized, Vector3.up);
-                n *= 10000000000;
-                Vector3 p1 = point + n;
-                Vector3 p2 = point - n;
-                Vector3 closes_p1;
-                Vector3 closes_p2;
-                Vector3? xp = Intersect.LineLine2D(p1, p2, poly[i], poly[j],out closes_p1, out closes_p2);
-                pts.Add(closes_p2);
+                Vector3 csp = LineClosesPoint2D(poly[i], poly[j], point);
+                pts.Add(csp);
             }
-            //pts.AddRange(poly);
-            Debug.Log(pts.Count);
             float minD = Vector3.Distance(pts[0], point);
-            Vector3 csp = pts[0];
-            foreach (Vector3 p in pts)
+            Vector3 mincsp = pts[0];
+            foreach(Vector3 v in pts)
             {
-                float d = Vector3.Distance(p, point);
+                if (v == pts[0]) continue;
+                float d = Vector3.Distance(v, point);
                 if (d < minD)
                 {
                     minD = d;
-                    csp = p;
+                    mincsp = v;
                 }
             }
-            return csp;
+            return mincsp;
         }
     }
 
