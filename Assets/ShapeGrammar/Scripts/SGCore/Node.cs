@@ -68,6 +68,17 @@ namespace SGCore
                 }
             }
         }
+        public void Clear()
+        {
+            foreach(ShapeObject o in outputs.shapes)
+            {
+                try
+                {
+                    GameObject.Destroy(o);
+                }
+                catch { }
+            }
+        }
         public void removeExtraOutputs()
         {
             int dif = outputs.shapes.Count - inputs.shapes.Count;

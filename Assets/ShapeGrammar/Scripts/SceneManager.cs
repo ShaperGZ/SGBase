@@ -49,6 +49,7 @@ public class SceneManager : MonoBehaviour {
         _selectedShape = so;
         selectedShapeText.text = so.sguid;
     }
+    public static List<ShapeObject> selectedCommonNameShapes;
 
     private static Grammar _selectedGrammar;
     public static Grammar SelectedGrammar

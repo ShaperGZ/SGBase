@@ -482,21 +482,21 @@ public class ShapeObject : MonoBehaviour {
     }
     public void PivotMirror(int axis)
     {
-        print("Meshable.Type=" + meshable.GetType().FullName);
+        //print("Meshable.Type=" + meshable.GetType().FullName);
         meshable.bbox = BoundingBox.Reflect(meshable.bbox,axis);
         //meshable.ReverseSide();
-        Debug.Log("---pre Reverse----");
-        foreach (Vector3 item in ((Extrusion)meshable).polygon.vertices)
-        {
-            Debug.Log(item);
-        }
+        //Debug.Log("---pre Reverse----");
+        //foreach (Vector3 item in ((Extrusion)meshable).polygon.vertices)
+        //{
+        //    Debug.Log(item);
+        //}
         
         //((Extrusion)meshable).Reverse();
-        Debug.Log("---post Reverse-----");
-        foreach (Vector3 item in ((Extrusion)meshable).polygon.vertices)
-        {
-            Debug.Log(item);
-        }
+        //Debug.Log("---post Reverse-----");
+        //foreach (Vector3 item in ((Extrusion)meshable).polygon.vertices)
+        //{
+        //    Debug.Log(item);
+        //}
         SetMeshable(meshable);
     }
     

@@ -401,6 +401,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\SubSystems\ParticleSystem\SGParticleSystem.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Tools\Draw.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Tools\DrawingGrid.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Tools\ReplaceGrammars.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Tools\Tool.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\DynamicInspector.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\InspectMeshVertices.cs" />

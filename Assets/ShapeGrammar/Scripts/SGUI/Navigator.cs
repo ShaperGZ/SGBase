@@ -181,7 +181,7 @@ namespace SGGUI
             //if (onSelectCallbacks != null)
             //    onSelectCallbacks(i);
             Grammar g = grammar;
-            g.SelectStep(i);
+            g.SelectStep(i,true);
             ruleParamEditor.GenerateUI(g.subNodes[i]);
             ruleParamEditor.ruleNavigator = this;
             printStructure();
@@ -341,11 +341,11 @@ namespace SGGUI
 
         public void ListAllRules()
         {
-            string[] files= System.IO.Directory.GetFiles(SceneManager.directoryRules, "*.sgr");
-            foreach(string s in files)
-            {
-                Debug.Log(s);
-            }
+            //string[] files= System.IO.Directory.GetFiles(SceneManager.directoryRules, "*.sgr");
+            //foreach(string s in files)
+            //{
+            //    Debug.Log(s);
+            //}
         }
     }
 

@@ -699,11 +699,11 @@ namespace Rules
             //update each output
             for (int i = 0; i < inputs.shapes.Count; i++)
             {
-                Debug.Log("cloning shapeobject, has bbox="+(inputs.shapes[i].meshable.bbox!=null));
+                //Debug.Log("cloning shapeobject, has bbox="+(inputs.shapes[i].meshable.bbox!=null));
                 inputs.shapes[i].CloneTo(outputs.shapes[i]);
                 outputs.shapes[i].parentRule = this;
                 //outputs.shapes[i].meshable.bbox = inputs.shapes[i].meshable.bbox;
-                Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
+                //Debug.Log("cloned, has bbox=" + (outputs.shapes[i].meshable.bbox != null));
                 outputs.shapes[i].PivotMirror(axis);
             }
             AssignNames(outputs.shapes);

@@ -70,19 +70,21 @@ public class TestGrammarUI : MonoBehaviour {
         g1.AddRule(new Rules.SingleLoaded("SL", "APT"));
         g1.AddRule(new Rules.DoubleLoaded("DL", "APT"));
 
-
+        
         Grammar g2 = new Grammar();
-        g2.AddRule(new Rules.Bisect("APT", new string[] { "B", "C" }, 0.4f, 0));
-        g2.AddRule(new Rules.Bisect("C", new string[] { "C", "B" }, 0.25f, 2));
-        g2.AddRule(new Rules.PivotMirror("C", "C", 2));
-        g2.AddRule(new Rules.PivotMirror("C", "C", 0));
-        g2.AddRule(new Rules.Scale3D("C", "C", new Vector3(1.3f,0.7f,1.6f),null,Alignment.N));
+        g2.name = "AptFormA";
+        g2.AddRule(new Rules.Bisect("APT", new string[] { "B", "C" }, 0.4f, 0),false);
+        g2.AddRule(new Rules.Bisect("C", new string[] { "C", "B" }, 0.25f, 2), false);
+        g2.AddRule(new Rules.PivotMirror("C", "C", 2), false);
+        g2.AddRule(new Rules.PivotMirror("C", "C", 0), false);
+        g2.AddRule(new Rules.Scale3D("C", "C", new Vector3(1.3f,0.7f,1.6f),null,Alignment.N), false);
         g2.inputs.names.Add("APT");
 
-        g1.AddRule(g2);
+        
 
-        //g1.AddRule(new Rules.PivotMirror("C", "C", 0));
-        //g1.Execute();
+
+        g1.AddRule(g2);
+        g1.Execute();
 
         
 

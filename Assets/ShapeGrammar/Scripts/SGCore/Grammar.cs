@@ -11,6 +11,7 @@ namespace SGCore
 {
     public class Grammar:GraphNode
     {
+        public int selectedStep = -1;
         public int currentStep = -1;
         public int displayStep = -1;
         public List<GraphNode> subNodes;
@@ -45,6 +46,32 @@ namespace SGCore
                 Execute(subNodes.Count-1);
                 SelectStep(subNodes.Count - 1);
             }
+        }
+        public void ClearStage(int index)
+        {
+            SGIO io = stagedOutputs[index];
+            foreach(ShapeObject o in io.shapes)
+            {
+                try
+                {
+                    GameObject.Destroy(o);
+                }
+                catch { }
+            }
+        }
+        public void ReplaceRule(GraphNode r, int index, bool execute=true)
+        {
+            r.grammar = this;
+            r.step = index;
+            ClearStage(index);
+            subNodes[index].Clear();
+            subNodes[index] = r;
+
+            if (execute)
+            {
+                Execute();
+            }
+
         }
         public void AddRuleAfter(GraphNode r, int i, bool execute = true)
         {
@@ -274,12 +301,14 @@ namespace SGCore
         {
             displayStep = step;
         }
-        public void SelectStep(int index)
+        public void SelectStep(int index, bool userSelect=false)
         {
             //when index is -1, show the original input shape
             if (index < -1 || index >= subNodes.Count) return;
             currentStep = index;
             displayStep = index;
+            if(userSelect)
+                selectedStep = index;
             SGIO sgio;
             //TODO: add this to grammar
             if (stagedOutputs.Count > 0)

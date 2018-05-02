@@ -36,7 +36,6 @@ public class TestParticleSystem : MonoBehaviour {
         return so;
     }
     void Start () {
-
         boundary = initShape1();
         particleSystem = new SGPlaningParticleSystem(boundary);
         for (int i = 0; i < 6; i++)

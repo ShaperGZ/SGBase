@@ -75,6 +75,7 @@ public class HighlightMouseOver : MonoBehaviour {
             }
             catch(Exception e) { Debug.Log("EXCEPTION:"+e.ToString()); }
         }
+        SceneManager.selectedCommonNameShapes = commonNameObjects;
         foreach(ShapeObject s in commonNameObjects)
         {
             //Material m = so.GetComponent<MeshRenderer>().material;
