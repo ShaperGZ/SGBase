@@ -34,6 +34,7 @@ public class ShapeObject : MonoBehaviour {
         get { return transform.position; }
         set {
             transform.position = value;
+
             stale = true;
             Invalidate();
         }

@@ -114,16 +114,22 @@ public class HighlightMouseOver : MonoBehaviour {
     }
     private void OnMouseDown()
     {
-        SceneManager.SelectedShape = shapeObject;
-        if (shapeObject.parentRule == null || shapeObject.parentRule.grammar == null)
-        {
-            //SceneManager.ruleNavigator.SetGrammar(null);
-            SceneManager.SelectedGrammar = null;
-            return;
-        }
 
-        SceneManager.SelectedGrammar = shapeObject.parentRule.grammar;
-        SceneManager.displayManager.setRuleMode();
-        commonNameObjects.Clear();
+        SceneManager.SelectedShape = shapeObject;
+
+        if(SceneManager.selectionMode == SelectionMode.GRAMMAR)
+        {
+            if (shapeObject.parentRule == null || shapeObject.parentRule.grammar == null)
+            {
+                //SceneManager.ruleNavigator.SetGrammar(null);
+                SceneManager.SelectedGrammar = null;
+                return;
+            }
+
+            SceneManager.SelectedGrammar = shapeObject.parentRule.grammar;
+            SceneManager.displayManager.setRuleMode();
+            commonNameObjects.Clear();
+        }
+       
     }
 }

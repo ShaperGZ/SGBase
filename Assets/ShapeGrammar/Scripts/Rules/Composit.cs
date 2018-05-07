@@ -65,9 +65,7 @@ namespace Rules
             AddRule(r2, false);
             AddRule(r3, false);
             
-            
         }
-        
     }
     public class DoubleLoaded : Grammar
     {
@@ -110,6 +108,43 @@ namespace Rules
         public float Callback(ShapeObject so)
         {
             return (so.Size[2] - 2) / 2;
+        }
+    }
+    public class CentralVoid : Grammar
+    {
+        public CentralVoid() : base()
+        {
+            name = "CenteralVoid";
+            SetRules();
+        }
+        public CentralVoid(string inName, string outMain, string outSub):
+            base(inName, new string[] { outMain, outSub })
+        {
+            name = "CentralVoid";
+            SetRules();
+        }
+        public void SetRules()
+        {
+            string inName = inputs.names[0];
+            string nameCD = "CD";
+            string nameAPT = outputs.names[0];
+            string nameAPTN = nameAPT + "Mirror";
+            string nameAPT2 = outputs.names[1];
+            string nameTMP = nameAPT + "TMP";
+            float depth=12;
+
+            AddRule(new BisectLength(inName, new string[] { nameAPT, nameTMP }, depth, 2),false);
+            AddRule(new PivotMirror(nameTMP, nameTMP, 2),false);
+            AddRule(new BisectLength(nameTMP, new string[] { nameAPTN, nameTMP }, depth, 2),false);
+            AddRule(new PivotTurn(nameAPTN, nameAPT, 2), false);
+
+            AddRule(new PivotMirror(nameTMP, nameTMP, 2), false);
+            AddRule(new BisectLength(nameTMP, new string[] { nameAPT2, nameTMP }, depth, 0),false);
+            AddRule(new PivotMirror(nameTMP, nameTMP, 0),false);
+            AddRule(new BisectLength(nameTMP, new string[] { nameTMP, nameAPT2 }, -depth, 0), false);
+
+            //AddRule(new BisectLength(inName, new string[] { nameAPT2, nameTMP }, depth, 1),false);
+            AddRule(new Rules.Scale3D(nameTMP, "DEL", new Vector3(1, 0.01f, 1)),false);
         }
     }
    

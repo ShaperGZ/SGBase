@@ -33,6 +33,8 @@ namespace SGCore
             downStreams = new List<GraphNode>();
         }
 
+
+
         public virtual void Execute() { }
         public virtual string GetDescription()
         {

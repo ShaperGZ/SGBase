@@ -9,6 +9,16 @@ using System.Xml.Serialization;
 
 namespace SGCore
 {
+
+    public class GrammarTypes
+    {
+        public const int MASSING= 111;
+        public const int PLANNING= 222;
+        public const int FACADE = 333;
+        public const int LANDSCAPE = 444;
+        public const int TERRACE = 555;
+    }
+
     public class Grammar:GraphNode
     {
         public int selectedStep = -1;
@@ -18,6 +28,7 @@ namespace SGCore
         public List<SGIO> stagedOutputs;
         public List<ShapeObject> assignedObjects;
         public Guid guid;
+        
         
 
         public Grammar():base()
@@ -33,6 +44,17 @@ namespace SGCore
         {
             inputs.names.Add(inName);
             outputs.names.AddRange(outNames);
+        }
+        public void CloneTo(Grammar g)
+        {
+            g.Clear();
+            g.name = name;
+            foreach(GraphNode n in subNodes)
+            {
+                g.AddRule(n);
+            }
+            g.inputs.names.Clear();
+            g.inputs.names.AddRange(inputs.names.ToArray());
         }
         public void AddRule(GraphNode r, bool execute = true)
         {

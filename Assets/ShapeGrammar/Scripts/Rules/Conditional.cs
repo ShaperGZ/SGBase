@@ -24,8 +24,8 @@ namespace Rules
         {
 
         }
-        public ApartmentLoadFilter(string InName, string nameSL, string nameDL) : 
-            base(InName, new string[] { nameSL, nameDL })
+        public ApartmentLoadFilter(string InName, string nameSL, string nameDL, string nameCV) : 
+            base(InName, new string[] { nameSL, nameDL, nameCV })
         {
 
         }
@@ -39,7 +39,7 @@ namespace Rules
                 float depth = inputs.shapes[i].Size[2];
                 if (depth < 13) name = outputs.names[0];
                 else if (depth < 24) name = outputs.names[1];
-                else name = "UnImplement";
+                else name = outputs.names[2];
                 if (i >= outputs.shapes.Count)
                 {
                     outputs.shapes.Add(ShapeObject.CreateBasic());

@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SGCore;
+using SGGeometry;
 
 public class SOPoint : ShapeObject{
 
@@ -53,6 +55,7 @@ public class SOPoint : ShapeObject{
                 stale = true;
 
             transform.position = newPos;
+
             Invalidate();
         }
     }
@@ -130,7 +133,7 @@ public class SOPoint : ShapeObject{
         //this.Color = Color.red;
         allowDrag = true;
         this.colorMaterial.color = Color.red;
-        Radius *= 3;
+        Radius *= 6;
         drawOffset = true;
     }
 
@@ -147,7 +150,7 @@ public class SOPoint : ShapeObject{
     {
         allowDrag = false;
         this.colorMaterial.color = Color.white;
-        Radius /=3f;
+        Radius /=6f;
         drawOffset = false;
     }
 

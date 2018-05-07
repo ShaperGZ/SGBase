@@ -82,6 +82,7 @@ public class SGParticleSystem {
     {
         if (paused) return;
         p.Position = CapInBound(p.Position + v);
+
     }
     public virtual Vector3 CapInBound(Vector3 v)
     {
@@ -127,6 +128,7 @@ public class SGPlaningParticleSystem:SGParticleSystem
     {
         //if (paused) return;
         entrophy = 0;
+        float sideGap = 15;
         foreach (ShapeObject p1 in particles)
         {
             Vector3 offset = new Vector3(0, 0, 0);
@@ -139,25 +141,76 @@ public class SGPlaningParticleSystem:SGParticleSystem
                 if (p1.Position.z < p2.Position.z) south = p1;
                 else south = p2;
 
-                float w = 30 + 15;
-                float h = (float) (south.grammar.properties.properties["height"]);
-                h *= 0.6f;
-                if (h < 30) h = 30;
+                bool EWTooClose = false;
+                bool SNTooClose = false;
 
-                float distH = p1.Position.z - p2.Position.z;
-                float distW = p1.Position.x - p2.Position.x;
+                float dx = p2.Position.x - p1.Position.x;
+                float dz = p2.Position.z - p1.Position.z;
 
-                float distHA = Mathf.Abs(distH);
-                float distWA = Mathf.Abs(distW);
+                float p1W = (float)p1.grammar.properties.properties["width"];
+                float p1D = (float)p1.grammar.properties.properties["depth"];
+                float p1H = (float)p1.grammar.properties.properties["height"];
 
-                if(distWA < w && distHA < h)
+                float p2W = (float)p1.grammar.properties.properties["width"];
+                float p2D = (float)p1.grammar.properties.properties["depth"];
+                float p2H = (float)p1.grammar.properties.properties["height"];
+
+                p1H *= 0.6f;
+                if (p1H < 30) p1H = 30;
+                p2H *= 0.6f;
+                if (p2H < 30) p2H = 30;
+
+
+                //min is p1 on the right of p2;
+                float minW = (p2W + sideGap) * -1;
+                float maxW = p1W + sideGap;
+
+                //min is p1 on the north of p2;
+                float minD = (p2D + p2H) * -1;
+                float maxD = p1D+p1H;
+                
+                
+                if(dx>minW && dx < maxW)
                 {
-                    Vector3 offsetV = new Vector3(distW, 0, distH);
+                    EWTooClose = true;
+                }
+                if (dz > minD && dz < maxD)
+                {
+                    SNTooClose = true;
+                }
+
+                if(SNTooClose && EWTooClose)
+                {
+                    Vector3 offsetV = new Vector3(-dx, 0, -dz);
                     offsetV = offsetV.normalized * this.repellForce;
                     offset += offsetV;
-                    MoveParticle(p2, offsetV / 2);
+                    //MoveParticle(p2, offsetV / 2);
                     entrophy += offsetV.magnitude;
                 }
+
+                ////TODO: WIP
+
+
+                ////below codes might be able to be deleted
+                //float w = 30 + 15;
+                //float h = (float) (south.grammar.properties.properties["height"]);
+                //h *= 0.6f;
+                //if (h < 30) h = 30;
+
+                //float distH = p1.Position.z - p2.Position.z;
+                //float distW = p1.Position.x - p2.Position.x;
+
+                //float distHA = Mathf.Abs(distH);
+                //float distWA = Mathf.Abs(distW);
+
+                //if(distWA < w && distHA < h)
+                //{
+                //    Vector3 offsetV = new Vector3(distW, 0, distH);
+                //    offsetV = offsetV.normalized * this.repellForce;
+                //    offset += offsetV;
+                //    MoveParticle(p2, offsetV / 2);
+                //    entrophy += offsetV.magnitude;
+                //}
                 
             }
             MoveParticle(p1, offset);
@@ -165,5 +218,7 @@ public class SGPlaningParticleSystem:SGParticleSystem
         entrophy /= particles.Count;
         entrophy = Mathf.Round(entrophy * 1000);
         UpdateEntropyDisplay();
+        
     }
+
 }

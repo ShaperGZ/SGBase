@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SGCore;
+using SGGeometry;
 
 public class SGParticle {
 
@@ -19,10 +21,7 @@ public class SGParticle {
         set
         {
             _position = value;
-            if(shapeObject != null)
-            {
-                shapeObject.Position = value;
-            }
         }
     }
+
 }

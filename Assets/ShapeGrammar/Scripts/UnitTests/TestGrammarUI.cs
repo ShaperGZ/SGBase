@@ -44,9 +44,10 @@ public class TestGrammarUI : MonoBehaviour {
         float h = Random.Range(9, 30);
         g.AddRule(new Rules.CreateOperableBox("A", new Vector3(30, 60, 20)));
         g.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, h, 20)));
-        g.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL"));
+        g.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL","CV"));
         g.AddRule(new Rules.SingleLoaded("SL", "APT"));
         g.AddRule(new Rules.DoubleLoaded("DL", "APT"));
+        g.AddRule(new Rules.CentralVoid("CV", "APT", "APT2"));
     }
 
     void Start () {
@@ -65,10 +66,11 @@ public class TestGrammarUI : MonoBehaviour {
         g1.assignedObjects.Add(so);
 
         g1.AddRule(new Rules.CreateOperableBox("A", new Vector3(30, 60, 20)));
-        g1.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, 60, 20)));
-        g1.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL"));
+        g1.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, 60, 40)));
+        g1.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL","CV"));
         g1.AddRule(new Rules.SingleLoaded("SL", "APT"));
         g1.AddRule(new Rules.DoubleLoaded("DL", "APT"));
+        g1.AddRule(new Rules.CentralVoid("CV", "APT", "APT2"));
 
         
         Grammar g2 = new Grammar();

@@ -6,6 +6,12 @@ using SGCore;
 using SGGUI;
 using System;
 
+public class SelectionMode
+{
+    public const int GRAMMAR = 111;
+    public const int BUILDING = 222;
+}
+
 public class SceneManager : MonoBehaviour {
 
     public static Tool _tool=new Tool();
@@ -22,6 +28,18 @@ public class SceneManager : MonoBehaviour {
     }
 
     public static string directoryRules;
+    public static int selectionMode=SelectionMode.BUILDING;
+    public void SetSelectModeBuilding()
+    {
+        selectionMode = SelectionMode.BUILDING;
+        GameObject.Find("TextSelectionMode").GetComponent<Text>().text = "Building Mode";
+    }
+    public void SetSelectModeGrammar()
+    {
+        selectionMode = SelectionMode.GRAMMAR;
+        GameObject.Find("TextSelectionMode").GetComponent<Text>().text = "Grammar Mode";
+    }
+
     static Text _selectedShapeText;
     static Text selectedShapeText
     {

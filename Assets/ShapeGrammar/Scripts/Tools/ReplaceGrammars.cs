@@ -41,13 +41,7 @@ public class ReplaceGrammars : MonoBehaviour {
             g2.inputs.names.Add("APT");
 
             Grammar g = SceneManager.SelectedGrammar;
-            g.Clear();
-            foreach(GraphNode n in g2.subNodes)
-            {
-                g.name = g2.name;
-                g.AddRule(n);
-                g.inputs.names = g2.inputs.names;
-            }
+            g2.CloneTo(g);
             
 
             
@@ -58,7 +52,7 @@ public class ReplaceGrammars : MonoBehaviour {
     {
         if (SceneManager.SelectedGrammar != null)
         {
-            Grammar g = SceneManager.SelectedGrammar;
+            //Grammar g = SceneManager.SelectedGrammar;
 
             Grammar g2 = new Grammar();
             g2.name = "AptFormB";
@@ -69,13 +63,7 @@ public class ReplaceGrammars : MonoBehaviour {
             g2.inputs.names.Add("APT");
 
             Grammar g = SceneManager.SelectedGrammar;
-            g.Clear();
-            foreach (GraphNode n in g2.subNodes)
-            {
-                g.name = g2.name;
-                g.AddRule(n);
-                g.inputs.names = g2.inputs.names;
-            }
+            g2.CloneTo(g);
         }
         //gameObject.SetActive(false);
     }

@@ -8,6 +8,7 @@ namespace SGCore
 {
     public class Properties
     {
+
         
         protected Dictionary<string, object> _properties;
         public virtual Dictionary<string, object> properties
@@ -27,12 +28,14 @@ namespace SGCore
             grammars = new List<Grammar>();
             _properties = new Dictionary<string, object>();
         }
+        
         public void AddGrammar(Grammar g)
         {
             grammars.Add(g);
             g.properties = this;
             Invalidate();
         }
+        
         public string Format()
         {
             string txt = "Properties:";
@@ -54,6 +57,25 @@ namespace SGCore
     }
     public class BuildingProperties:Properties
     {
+        public Vector3 position
+        {
+            get { if (refPos != null)
+                    return refPos.Position;
+                return Vector3.zero;
+            }
+        }
+        public Vector3[] boundary;
+        public Vector3 center;
+        ShapeObject refPos;
+        ShapeObject refSize;
+        public void SetRefPos(ShapeObject so)
+        {
+            refPos = so;
+        }
+        public void SetRefSize(ShapeObject so)
+        {
+            refSize = so;
+        }
         public override Dictionary<string, object> properties
         {
             get

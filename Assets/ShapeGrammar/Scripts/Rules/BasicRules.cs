@@ -498,7 +498,7 @@ namespace Rules
             dict["Size"] = pg1;
             pg1.Add(new Parameter(30f, 30f, 80f, 0.01f));
             pg1.Add(new Parameter(18f, 3f, 100f, 0.01f));
-            pg1.Add(new Parameter(8f, 8f, 30f, 0.01f));
+            pg1.Add(new Parameter(8f, 8f, 40f, 0.01f));
 
             return dict;
         }
@@ -551,6 +551,8 @@ namespace Rules
                 }
             }
 
+            if (size.z > size.x) size.x = size.z;
+
             Vector3 scale = new Vector3(1, 1, 1);
             Vector3 soSize = so.transform.localScale;
             for (int i = 0; i < 3; i++)
@@ -560,6 +562,8 @@ namespace Rules
 
             Vector3[] vects = so.Vects;
             Vector3 origin = so.transform.position;
+
+            
 
             //get the splited meshables
             Meshable mb = so.meshable;
@@ -680,25 +684,15 @@ namespace Rules
         {
             //remove extra or add new
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].Value;
-            int diff = outputs.shapes.Count - inputs.shapes.Count;
-            int absDiff = Mathf.Abs(diff);
-            for (int i = 0; i < absDiff; i++)
-            {
-                if (diff > 0)//remove extra
-                {
-                    int index = outputs.shapes.Count - i;
-                    GameObject.Destroy(outputs.shapes[index].gameObject);
-                    outputs.shapes.RemoveAt(index);
-                }
-                else//add new
-                {
-                    outputs.shapes.Add(ShapeObject.CreateBasic());
-                }
-            }
+            removeExtraOutputs();
 
             //update each output
             for (int i = 0; i < inputs.shapes.Count; i++)
             {
+                if (i >= outputs.shapes.Count)
+                {
+                    outputs.shapes.Add(ShapeObject.CreateBasic());
+                }
                 //Debug.Log("cloning shapeobject, has bbox="+(inputs.shapes[i].meshable.bbox!=null));
                 inputs.shapes[i].CloneTo(outputs.shapes[i]);
                 outputs.shapes[i].parentRule = this;
