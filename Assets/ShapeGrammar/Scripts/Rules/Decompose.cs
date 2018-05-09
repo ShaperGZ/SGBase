@@ -7,59 +7,126 @@ using SGCore;
 
 namespace Rules
 {
-    //public class DcpA : Rule
-    //{
-    //    public DcpA() : base()
-    //    {
-    //        inputs.names.Add("A");
-    //        ((ParameterGroup)paramGroups["Width"]).parameters[0].Value = 6;
-    //        ((ParameterGroup)paramGroups["Height"]).parameters[0].Value = 3;
-    //    }
-    //    public DcpA(string inName, int w, int h) : base(inName, "Terminal")
-    //    {
-    //        ((ParameterGroup)paramGroups["Width"]).parameters[0].Value = w;
-    //        ((ParameterGroup)paramGroups["Height"]).parameters[0].Value = h;
+    public class DcpFace2 : Rule
+    {
+        public DcpFace2():base("A",new string[] { "ATOP","ASIDES"})
+        {
+            name = "DcpFace2";
+        }
+        public DcpFace2(string inName, string[] outNames) : base(inName, outNames)
+        {
+            name = "DcpFace2";
+        }
+        public override void Execute()
+        {
+            string nameSide = outputs.names[0];
+            string nameTop = outputs.names[1];
 
-    //    }
-    //    public override void Execute()
-    //    {
-    //        int w = (int)(((ParameterGroup)paramGroups["Width"]).parameters[0].Value);
-    //        int h = (int)(((ParameterGroup)paramGroups["Height"]).parameters[0].Value);
-    //        //Debug.LogFormat("inputs.shapes.Count={0}", inputs.shapes.Count);
-    //        if (inputs.shapes.Count <= 0) return;
-    //        List<ShapeObject> outSos = new List<ShapeObject>();
-            
-    //        for (int i = 0; i < inputs.shapes.Count; i++)
-    //        {
-    //            ShapeObject so = inputs.shapes[i].Clone();
-    //            so.parentRule = inputs.shapes[i].parentRule;
-    //            outSos.Add(so);
+            List<Meshable> top = new List<Meshable>();
+            List<Meshable> sides = new List<Meshable>();
+            List<Meshable> outMeshables = new List<Meshable>();
 
-    //            //Debug.LogFormat("mesable type={0}", so.meshable.GetType());
+            for(int i = 0; i < inputs.shapes.Count; i++)
+            {
+                ShapeObject so = inputs.shapes[i];
+                CompositMeshable cmp = null;
+                try
+                {
+                    cmp = (CompositMeshable)so.meshable;
+                }
+                catch { }
+                if (cmp != null && cmp.components.Count>2)
+                {
+                    for (int j = 1; j < cmp.components.Count -1; j++)
+                    {
+                        Polygon pg = (Polygon)cmp.components[j];
+                        Vector3 n = pg.GetNormal();
+                        if (n.y == 1 || n.y == -1)
+                            top.Add(pg);
+                        sides.Add(pg);
+                    }//for j
+                }
+                top.Add(cmp.components[cmp.components.Count - 1]);
 
-    //            ShapeObjectM som = ShapeObjectM.CreateSchemeA((CompositMeshable)so.meshable);
-    //            outSos.Add(som);
-    //        }
-    //        if (outputs.shapes != null)
-    //            foreach (ShapeObject o in outputs.shapes)
-    //            {
-    //                GameObject.Destroy(o.gameObject);
-    //            }
-    //        outputs.shapes = outSos;
-    //    }
-    //    public override OrderedDictionary DefaultParam()
-    //    {
-    //        OrderedDictionary dict = new OrderedDictionary();
-    //        ParameterGroup pg1 = new ParameterGroup();
-    //        ParameterGroup pg2 = new ParameterGroup();
-    //        dict.Add("Width", pg1);
-    //        pg1.Add(new Parameter(6, 3, 12, 1));
-    //        dict.Add("Height", pg2);
-    //        pg2.Add(new Parameter(3, 3, 12, 0.5f));
+            }//for i
 
-    //        return dict;
-    //    }
-    //}
+            outMeshables.AddRange(top);
+            outMeshables.AddRange(sides);
+
+            int count = outMeshables.Count;
+            int removeCount= outputs.shapes.Count-count;
+            if (count > 0) removeOutputsByCount(removeCount);
+
+            for(int i = 0; i < count; i++)
+            {
+                if (i <= outputs.shapes.Count)
+                {
+                    ShapeObject nso = ShapeObject.CreateBasic();
+                    nso.parentRule = this;
+                    nso.step = this.step;
+                    outputs.shapes.Add(nso);
+                }
+                Meshable m=outMeshables[i];
+                outputs.shapes[i].SetMeshable(m);
+                if (top.Contains(m)) outputs.shapes[i].name = nameTop;
+                else outputs.shapes[i].name = nameSide;
+            }
+        }
+    }
+
+    public class DcpA : Rule
+    {
+        public DcpA() : base()
+        {
+            inputs.names.Add("A");
+            ((ParameterGroup)paramGroups["Width"]).parameters[0].Value = 6;
+            ((ParameterGroup)paramGroups["Height"]).parameters[0].Value = 3;
+        }
+        public DcpA(string inName, int w, int h) : base(inName, "Terminal")
+        {
+            ((ParameterGroup)paramGroups["Width"]).parameters[0].Value = w;
+            ((ParameterGroup)paramGroups["Height"]).parameters[0].Value = h;
+
+        }
+        public override void Execute()
+        {
+            int w = (int)(((ParameterGroup)paramGroups["Width"]).parameters[0].Value);
+            int h = (int)(((ParameterGroup)paramGroups["Height"]).parameters[0].Value);
+            //Debug.LogFormat("inputs.shapes.Count={0}", inputs.shapes.Count);
+            if (inputs.shapes.Count <= 0) return;
+            List<ShapeObject> outSos = new List<ShapeObject>();
+
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                ShapeObject so = inputs.shapes[i].Clone();
+                so.parentRule = inputs.shapes[i].parentRule;
+                outSos.Add(so);
+
+                //Debug.LogFormat("mesable type={0}", so.meshable.GetType());
+
+                ShapeObjectM som = ShapeObjectM.CreateSchemeA((CompositMeshable)so.meshable);
+                outSos.Add(som);
+            }
+            if (outputs.shapes != null)
+                foreach (ShapeObject o in outputs.shapes)
+                {
+                    GameObject.Destroy(o.gameObject);
+                }
+            outputs.shapes = outSos;
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            dict.Add("Width", pg1);
+            pg1.Add(new Parameter(6, 3, 12, 1));
+            dict.Add("Height", pg2);
+            pg2.Add(new Parameter(3, 3, 12, 0.5f));
+
+            return dict;
+        }
+    }
 
     //public class DubTop : Rule
     //{
@@ -78,7 +145,7 @@ namespace Rules
     //    public override void Execute()
     //    {
     //        outMeshables.Clear();
-            
+
 
     //        List<Meshable> tops = new List<Meshable>();
     //        List<Meshable> sides = new List<Meshable>();
@@ -161,11 +228,11 @@ namespace Rules
     //            {
     //                Extrusion ext = (Extrusion)(so.meshable);
     //                int last = ext.components.Count-1;
-                    
+
     //                tops.Add(ext.components[last]);
     //            }
     //        }
-            
+
     //        //delete extra ouputs
     //        int dif = outputs.shapes.Count - tops.Count;
     //        removeOutputsByCount(dif);
@@ -186,12 +253,12 @@ namespace Rules
     //                o.name = outputs.names[0];
     //                outputs.shapes.Add(o);
     //            }
-               
+
     //        }
     //    }
     //}
 
-    
+
 }
 
 

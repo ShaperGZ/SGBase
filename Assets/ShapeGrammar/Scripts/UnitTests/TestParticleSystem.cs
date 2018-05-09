@@ -105,7 +105,7 @@ public class TestParticleSystem : MonoBehaviour {
             sops[i].Size = new Vector3(r, r, r);
         }
         site.attractions.AddRange(sops);
-
+        
 	}
 	public void SetParticleSystem(SGParticleSystem ps)
     {

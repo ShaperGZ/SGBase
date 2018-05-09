@@ -695,6 +695,7 @@ namespace SGGeometry
     {
         public List<Polyline> displayLines = new List<Polyline>();
         public Vector3 direction = new Vector3(1, 0, 0);
+        
         public Meshable() : base()
         {
 

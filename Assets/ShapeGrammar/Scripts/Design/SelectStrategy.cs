@@ -17,7 +17,7 @@ public class SelectStrategy : MonoBehaviour {
 		
 	}
 
-    public void SetBastic()
+    public void SetBasic()
     {
         testApp.SetParticleSystem(new SGPlaningParticleSystem(testApp.boundary));
         strategyText.text = "basic";

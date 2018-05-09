@@ -451,6 +451,20 @@ public class ShapeObject : MonoBehaviour {
         
         return so;
     }
+    public static ShapeObject CreateComponent(GameObject prefab = null)
+    {
+        GameObject o;
+        if (prefab == null)
+        {
+            o = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        }
+        else
+        {
+            o = GameObject.Instantiate(prefab);
+        }
+        ShapeObject so = o.AddComponent<ShapeObject>();
+        return so;
+    }
     public void PivotTurn(int num=1)
     {
         if (num <= 0) return;
