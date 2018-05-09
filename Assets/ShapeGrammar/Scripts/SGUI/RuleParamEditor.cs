@@ -166,6 +166,7 @@ namespace SGGUI {
             {
                 Parameter p = pg.parameters[i];
                 float value = p.Value;
+                Debug.Log("value=" + value);
                 //GameObject o = new GameObject();
                 InputField ipf = Instantiate(inputFieldPrefab, pgui);
                 RectTransform ipftrans = ipf.transform as RectTransform;
@@ -173,8 +174,14 @@ namespace SGGUI {
                 ipf.text = p.Value.ToString();
                 Slider sld = Instantiate(sliderPrefab, pgui);
                 sld.value = p.Value;
-                sld.minValue = p.min;
-                sld.maxValue = p.max;
+
+                float min = p.min;
+                float max = p.max;
+                if (min > p.Value) min = p.Value / 2;
+                if (max < p.Value) max = p.Value * 2;
+
+                sld.minValue = min;
+                sld.maxValue = max;
                 if (p.step == 1) sld.wholeNumbers = true;
                 ipf.onEndEdit.AddListener(delegate { OnIpfChanged(ipf, sld, p, r);});
                 sld.onValueChanged.AddListener(delegate { OnSliderValueChanged(sld, ipf, p, r); });

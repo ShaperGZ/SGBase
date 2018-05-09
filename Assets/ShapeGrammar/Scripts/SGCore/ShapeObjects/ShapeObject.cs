@@ -34,7 +34,6 @@ public class ShapeObject : MonoBehaviour {
         get { return transform.position; }
         set {
             transform.position = value;
-
             stale = true;
             Invalidate();
         }
@@ -76,7 +75,14 @@ public class ShapeObject : MonoBehaviour {
     protected MeshRenderer meshRenderer;
     protected BoxCollider boxCollider;
     public bool stale = false;
-
+    public void SetVisible(bool flag)
+    {
+        meshRenderer = GetComponent<MeshRenderer>();
+        if(meshRenderer != null)
+        {
+            meshRenderer.enabled = flag;
+        }
+    }
     public virtual void Clear()
     {
 
@@ -86,7 +92,12 @@ public class ShapeObject : MonoBehaviour {
         //guid = System.Guid.NewGuid();
         //sguid = ShortGuid();
     }
-
+    public void Translate(Vector3 offset)
+    {
+        Debug.Log("translate:" + offset);
+        meshable.Translate(offset);
+        transform.position += offset;
+    }
     // Use this for initialization
     protected void Start () {
         materialsByMode = new Dictionary<int, Material>();
@@ -129,7 +140,8 @@ public class ShapeObject : MonoBehaviour {
     }
     public void SetMaterial(int mode)
     {
-        meshRenderer.material = materialsByMode[mode];
+        if(meshRenderer !=null)
+            meshRenderer.material = materialsByMode[mode];
     }
     public void SetMaterial(Material m)
     {
@@ -146,11 +158,16 @@ public class ShapeObject : MonoBehaviour {
     {
         string txt = "";
         string draw = "-";
-        if (gameObject.activeSelf) draw = "+";
-        string ruleName;
-        if (parentRule == null) ruleName = "unnamedRule";
-        else ruleName = parentRule.name;
-        txt += draw + name + "_("+ruleName + "_step" + step+")";
+        try
+        {
+            if (gameObject.activeSelf) draw = "+";
+            string ruleName;
+            if (parentRule == null) ruleName = "unnamedRule";
+            else ruleName = parentRule.name;
+            txt += draw + name + "_(" + ruleName + "_step" + step + ")";
+        }
+        catch { }
+        
 
         return txt;
     }
@@ -334,6 +351,7 @@ public class ShapeObject : MonoBehaviour {
     private void ConformToBBox(BoundingBox bbox)
     {
         transform.position = bbox.vertices[0];
+        //transform.localPosition = bbox.vertices[0];
         transform.LookAt(bbox.vertices[3]);
         transform.localScale = bbox.GetSignedSize();
         

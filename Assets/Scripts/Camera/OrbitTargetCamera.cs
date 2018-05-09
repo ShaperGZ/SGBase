@@ -23,7 +23,7 @@ public class OrbitTargetCamera : MonoBehaviour {
 
     private void Awake()
     {
-        this.runInEditMode = true;
+        //this.runInEditMode = true;
     }
 
     // Use this for initialization

@@ -25,11 +25,13 @@ namespace SGCore
                 return txt;
             }
         }
-        public new string name
+        public string Name
         {
             get
             {
-                return this.GetType().ToString();
+                if(name==null)
+                    return this.GetType().ToString();
+                return name;
             }
         }
 
@@ -50,7 +52,6 @@ namespace SGCore
             inputs.names = new List<string>(new string[] { inName });
             outputs.names = new List<string>(outNames);
         }
-  
         public override void Execute()
         {
             //operate on meshables and update existing shapeobjects
@@ -63,6 +64,7 @@ namespace SGCore
                 for (int i = 0; i < inputs.shapes.Count; i++)
                 {
                     //Debug.Log("processing:" + inputs.shapes[i].Format());
+                    if (inputs.shapes[i] == null) continue;
                     List<Meshable> outs = ExecuteShape(inputs.shapes[i]);
                     outMeshables.AddRange(outs.ToArray());
                     //Debug.Log("meshable COunt=" + outMeshables.Count);

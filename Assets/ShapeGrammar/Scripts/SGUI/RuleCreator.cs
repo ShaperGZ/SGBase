@@ -75,7 +75,7 @@ namespace SGGUI
             rules.Add(typeof(Rules.Bisect)); //name the UI: Bt_Crt_Bisect
             rules.Add(typeof(Rules.Scale));//name the UI: Bt_Crt_Scale
             rules.Add(typeof(Rules.DivideTo));
-            rules.Add(typeof(Rules.DcpA));
+            //rules.Add(typeof(Rules.DcpA));
             rules.Add(typeof(Rules.CreateBox));
             return rules.ToArray();
         }

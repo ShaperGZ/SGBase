@@ -363,6 +363,15 @@
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
     <Compile Include="Assets\Scripts\Camera\OrbitTargetCamera.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Commands\Command.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\BuildingParamVisualizer.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\SelectStrategy.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Building.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\FacadeSystem.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Floor.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Floorheight.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\PlaningGrid.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\PlaningGridCell.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Site.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\GrammarsBuilding.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\Patterns.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />

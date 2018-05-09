@@ -531,7 +531,15 @@ namespace SGGeometry
             Vector3? ld = PointsBase.LongestDirection(vertices, normalized);
             return ld.Value;
         }
-       
+        public virtual void Translate(Vector3 translation)
+        {
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] += translation;
+            }
+        } 
+
+
         public virtual PointsBase Clone()
         {
             PointsBase pb = new PointsBase();
@@ -935,7 +943,7 @@ namespace SGGeometry
             }
             else
             {
-                Debug.LogWarning("no naked edge found!");
+                //Debug.LogWarning("no naked edge found!");
                 nakedEdge = new Polyline();
             }
             return pgs;
@@ -955,7 +963,7 @@ namespace SGGeometry
                 to[0] *= -1;
 
             }
-
+            if (bbox.vects[0].GetType() != typeof(Vector3)) throw new System.Exception("check bbox.vects");
             Quaternion q = Quaternion.FromToRotation(bbox.vects[0], to);
             Matrix4x4 mRotate = Matrix4x4.Rotate(q);
 
@@ -1021,6 +1029,13 @@ namespace SGGeometry
                 components.Add(m);
             }
 
+        }
+        public override void Translate(Vector3 offset)
+        {
+            base.Translate(offset);
+            foreach(Meshable m in components){
+                m.Translate(offset); 
+            }
         }
         public void AddRange(IEnumerable<Meshable> ms)
         {
@@ -1145,7 +1160,7 @@ namespace SGGeometry
         }
         public override Meshable[] SplitByPlane(Plane blade)
         {
-            Debug.Log("split in CompositMeshable");
+            //Debug.Log("split in CompositMeshable");
             List<Polyline> nakedEdges = new List<Polyline>();
             List<Polygon> rights = new List<Polygon>();
             List<Polygon> lefts = new List<Polygon>();
@@ -1155,7 +1170,7 @@ namespace SGGeometry
                 //TODO: debug why there are empty components generated
                 if (pg.vertices == null || pg.vertices.Length < 3)
                 {
-                    Debug.LogWarning("empty components generated as CompositMeshable split");
+                    //Debug.LogWarning("empty components generated as CompositMeshable split");
                     continue;
                 }
 
@@ -1579,6 +1594,11 @@ namespace SGGeometry
             triangles = mb.triangles;
             components = ((CompositMeshable)mb).components;
         }
+        public override void Translate(Vector3 offset)
+        {
+            base.Translate(offset);
+            polygon.Translate(offset);
+        }
         public override void Reverse()
         {
             Debug.Log("!!!!Extrusion Reverse()");
@@ -1590,6 +1610,13 @@ namespace SGGeometry
             components = ((CompositMeshable)mb).components;
         }
         public override Meshable[] SplitByPlane(Plane pln)
+        {
+            //vertical split
+            if (pln.normal == Vector3.up) return SplitVerticallyByPlane(pln);
+            //horizontal split
+            return SplitHorizontallyByPlane(pln);
+        }
+        private Meshable[] SplitHorizontallyByPlane(Plane pln)
         {
             Meshable[] mbs = polygon.SplitByPlane(pln);
             Meshable[] outMbs = new Meshable[mbs.Length];
@@ -1605,6 +1632,26 @@ namespace SGGeometry
                 }
             }
             return outMbs;
+        }
+        private Meshable[] SplitVerticallyByPlane(Plane pln)
+        {
+            float h1 = polygon.vertices[0].y;
+            float h2 = h1 + this.height;
+            float hp = pln.ClosestPointOnPlane(Vector3.zero).y;
+            if(hp>h1 && hp< h2)
+            {
+                Meshable m1 = polygon.Extrude(new Vector3(0, hp - h1));
+                Polygon upPoly = (Polygon)polygon.Clone();
+                upPoly.Translate(new Vector3(0, hp - h1, 0));
+                Meshable m2 = upPoly.Extrude(new Vector3(0, h2 - hp,0));
+                return new Meshable[] {m1, m2};
+            }
+            else if (hp <= h1)
+            {
+                return new Meshable[] { null,(Meshable)this.Clone(),null };
+            }
+            
+            return new Meshable[] { null,(Meshable)this.Clone() };
         }
         public override Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
         {

@@ -108,8 +108,9 @@ namespace Rules
             {
                 size[i] = ((ParameterGroup)paramGroups["Size"]).parameters[i].Value;
             }
+            //Vector3 vpos = Vector3.zero;
             Vector3 vpos = inSo.Position;
-            Vector3 vsize = new Vector3(size[0], size[1], size[2]);
+            //Vector3 vsize = new Vector3(size[0], size[1], size[2]);
 
             Vector3[] pts = new Vector3[4];
             Vector3 vx = new Vector3(size[0], 0, 0);

@@ -7,6 +7,7 @@ using SGGeometry;
 public class SOPoint : ShapeObject{
 
     public float _radius = 1;
+    public bool sizable = true;
     public float Radius
     {
         get { return _radius; }
@@ -49,13 +50,22 @@ public class SOPoint : ShapeObject{
         }
         set
         {
+            
             _posOrg = value;
             Vector3 newPos= _posOrg + _posOffset;
             if(newPos != transform.position)
                 stale = true;
 
+            Vector3 offset = newPos - transform.position;
             transform.position = newPos;
 
+            
+            //if(grammar!=null && grammar.building!=null)
+            //{
+            //    grammar.building.transform.position = newPos;
+            //    //grammar.UpdateToBuildingPosition();
+            //}
+                
             Invalidate();
         }
     }
@@ -133,7 +143,8 @@ public class SOPoint : ShapeObject{
         //this.Color = Color.red;
         allowDrag = true;
         this.colorMaterial.color = Color.red;
-        Radius *= 6;
+        if(sizable)
+            Radius *= 6;
         drawOffset = true;
     }
 
@@ -150,7 +161,8 @@ public class SOPoint : ShapeObject{
     {
         allowDrag = false;
         this.colorMaterial.color = Color.white;
-        Radius /=6f;
+        if(sizable)
+            Radius /=6f;
         drawOffset = false;
     }
 

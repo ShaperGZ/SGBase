@@ -54,7 +54,7 @@ namespace SGCommand{
     {
         public override void run()
         {
-            AddRule(typeof(Rules.DcpA));
+            //AddRule(typeof(Rules.DcpA));
         }
     }
 }

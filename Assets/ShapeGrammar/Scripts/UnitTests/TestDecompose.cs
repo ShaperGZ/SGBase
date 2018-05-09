@@ -44,7 +44,7 @@ public class TestDecompose : MonoBehaviour
         }
         gs.AddRule(new Rules.NamesByAreaEdges("A", "Building", 800, 4));
         gs.AddRule(new Rules.Scale3D("Building", "Building", new Vector3(1, 25, 1), new Vector2(-0.2f, 0.1f)));
-        gs.AddRule(new Rules.DcpA("Building", 6, 3));
+        //gs.AddRule(new Rules.DcpA("Building", 6, 3));
         //gs.AddRule(new Rules.BisectLength("Building", new string[] { "Tower", "Podium"}, 20, 2));
         //gs.AddRule(new Rules.Scale3D("Tower", "Tower", new Vector3(0.6f, 3, 1)));
         //gs.AddRule(new Rules.DubTop("Building"));

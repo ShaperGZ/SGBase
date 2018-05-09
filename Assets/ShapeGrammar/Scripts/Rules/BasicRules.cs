@@ -11,6 +11,7 @@ namespace Rules
         Plane cutPlane;
         public Bisect():base()
         {
+            name = "Bisect";
             inputs.names.Add("A");
             outputs.names.Add("B");
             outputs.names.Add("C");
@@ -18,6 +19,7 @@ namespace Rules
         }
         public Bisect(string inName, string[] outNames, float d, int axis):base(inName,outNames)
         {
+            name = "Bisect";
             ((ParameterGroup)paramGroups["Position"]).parameters[0].Value = d;
             ((ParameterGroup)paramGroups["Axis"]).parameters[0].Value = axis;
         }
@@ -43,12 +45,16 @@ namespace Rules
         {
             Vector3 normal = so.Vects[axis];
             Vector3 v = normal * so.Size[axis] * d;
-            Vector3 org = so.transform.position + v;
+            //Vector3 org = so.transform.position + v;
+            Vector3 org = so.Position + v;
             Plane pln = new Plane(normal, org);
             return pln;
         }
         public override List<Meshable> ExecuteShape(ShapeObject so)
         {
+            List<Meshable> outs = new List<Meshable>();
+            if (so == null || so.meshable == null) return outs;
+
             /////////////////
             //get parameters
             /////////////////
@@ -61,7 +67,7 @@ namespace Rules
             else
                 d = pm.Value;
             int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].Value;
-            List<Meshable> outs = new List<Meshable>();
+            
 
             /////////////////
             //get split plane
@@ -70,6 +76,12 @@ namespace Rules
 
 
             outs = SplitByPlane(so.meshable, pln);
+            foreach (Meshable mb in outs)
+            {
+                if (mb == null) continue;
+                mb.bbox = BoundingBox.CreateFromPoints(mb.vertices, so.meshable.bbox);
+            }
+
             Vector3 direct = so.Vects[0];
             
             AssignNames(outs);
@@ -92,9 +104,10 @@ namespace Rules
     }
     public class BisectLength : Bisect
     {
-        public BisectLength() : base() { }
+        public BisectLength() : base() { name = "BisectLength"; }
         public BisectLength(string inName, string[] outNames, float d, int axis):base(inName,outNames,d,axis)
         {
+            name = "BisectLength";
         }
         public override Plane GetPlane(ShapeObject so, float d, int axis)
         {
@@ -105,13 +118,127 @@ namespace Rules
             return pln;
         }
     }
-    
+    public class DivideToFTFH : Rule
+    {
+        Plane cutPlane;
+        public DivideToFTFH() : base()
+        {
+            name = "DivideToFTFH";
+            inputs.names.Add("A");
+            outputs.names.Add("B");
+            outputs.names.Add("C");
+
+        }
+        public DivideToFTFH(string inName, string outName, float h) : base(inName, outName)
+        {
+            name = "DivideToFTFH";
+            ((ParameterGroup)paramGroups["FTFHeight"]).parameters[0].Value = h;
+            heavy = true;
+        }
+        public virtual List<float> GetDivs(float ftfh, ShapeObject so)
+        {
+            if (ftfh == 0) throw new System.Exception("ftfh can not be zero!");
+            List<float> outDivs = new List<float>();
+
+            float bot = so.Position.y;
+            float top = bot + so.Size[1];
+            float totalH = top - bot;
+            Debug.LogFormat("bot={0}, top={1}", bot, top);
+
+            float h = Mathf.Ceil(bot / ftfh);
+            float trunk = (h - bot);
+            if (trunk != 0)
+                outDivs.Add(trunk);
+            while (h < top)
+            {
+                if (h+ftfh < top)
+                {
+                    outDivs.Add(ftfh);
+                }
+                else
+                {
+                    trunk = top - h;
+                    if(trunk!=0)
+                        outDivs.Add(trunk);
+                    break;
+                }
+                h += ftfh;
+                Debug.Log("h=" + h);
+            }
+            
+            if (outDivs.Count == 0) throw new System.Exception("outDives is empty");
+            foreach (float f in outDivs) Debug.Log(f);
+            return outDivs;
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            //Debug.Log("executing so");
+            List<Meshable> outs = new List<Meshable>();
+            ////////////////
+            //get paramters
+            ////////////////
+
+            ///////////////////////////
+            //sitribute division points
+            ///////////////////////////
+            float ftfh = GetParamVal("FTFHeight", 0);
+            List<float> divs = GetDivs(ftfh, so);
+
+            //tout is the remaining part in division
+            //tout will be updated at each iteration
+            //each iteration divides tout, and stops when there are no more left.
+            List<Meshable> touts = new List<Meshable>();
+            Vector3 org = so.transform.position;
+            int counter = 0;
+            while (counter == 0 || touts.Count > 1)
+            {
+                if (counter >= divs.Count)
+                {
+                    Debug.LogWarning("counter>divs.Count");
+                    break;
+                }
+                //Debug.Log(counter+" div="+divs[counter]);
+                //get split plane
+                Vector3 normal = so.Vects[1];
+                Vector3 v = normal * divs[counter];
+                
+                org += v;
+                Plane pln = new Plane(normal, org);
+
+                if (counter == 0)
+                    touts = Rules.Bisect.SplitByPlane(so.meshable, pln);
+                else
+                    touts = Rules.Bisect.SplitByPlane(touts[1], pln);
+
+                outs.Add(touts[0]);
+
+                counter++;
+            }
+
+            AssignNames(outs);
+            return outs;
+
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            ParameterGroup pg2 = new ParameterGroup();
+            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+            outParamGroups.Add(pg1);
+
+            dict["FTFHeight"] = pg1;
+            pg1.Add(new Parameter(10, 5, 100, 1));
+
+            return dict;
+        }
+    }
     public class Divide : Rule
     {
-
         Plane cutPlane;
         public Divide() : base()
         {
+            name = "Divide";
             inputs.names.Add("A");
             outputs.names.Add("B");
             outputs.names.Add("C");
@@ -119,6 +246,7 @@ namespace Rules
         }
         public Divide(string inName, string[] outNames, float[] ds, int axis) : base(inName, outNames)
         {
+            name = "Divide";
             for (int i = 0; i < ds.Length; i++)
             {
                 float d = ds[i];
@@ -153,8 +281,10 @@ namespace Rules
         }
         public override List<Meshable> ExecuteShape(ShapeObject so)
         {
-            Debug.Log("executing so");
+            //Debug.Log("executing so");
             List<Meshable> outs = new List<Meshable>();
+            if (so.meshable == null) return outs;
+
             ////////////////
             //get paramters
             ////////////////
@@ -224,27 +354,30 @@ namespace Rules
         Plane cutPlane;
         public DivideTo() : base()
         {
+            name = "DivideTo";
             inputs.names.Add("A");
             outputs.names.Add("A");
         }
         public DivideTo(string inName, string outName, float ds, int axis) : base(inName, new string[] { outName }, new float[]{ ds}, axis)
         {
+            name = "DivideTo";
         }
         public DivideTo(string inName, string[] outNames, float ds, int axis) : base(inName, outNames, new float[]{ ds},axis)
         {
+            name = "DivideTo";
         }
         public override List<float> GetDivs(List<Parameter> pms, float max)
         {
-            Debug.Log("cal culating GetDivs");
+            //Debug.Log("cal culating GetDivs");
             float d = pms[0].Value;
             float count = Mathf.Round(max / d);
             d = max / count;
-            Debug.Log(string.Format("cal culating GetDivs d={0}, max={1}, count={2}", d,max,count));
+            //Debug.Log(string.Format("cal culating GetDivs d={0}, max={1}, count={2}", d,max,count));
             List<float> outDivs = new List<float>();
             for (int i = 0; i < count; i++)
             {
                 outDivs.Add(d);
-                Debug.Log(i + " adding" + d);
+                //Debug.Log(i + " adding" + d);
             }
             return outDivs;
         }
@@ -266,18 +399,21 @@ namespace Rules
         }
 
     }
+    
     public class Scale : Rule
     {
 
         Plane cutPlane;
         public Scale() : base()
         {
+            name = "Scale";
             inputs.names.Add("A");
             outputs.names.Add("A");
             paramGroups = DefaultParam();
         }
         public Scale(string inName, string outName, float d, int axis) : base(inName, new string[] { outName })
         {
+            name = "Scale";
             ((ParameterGroup)paramGroups["Position"]).parameters[0].Value = d;
             ((ParameterGroup)paramGroups["Axis"]).parameters[0].Value = axis;
         }
@@ -332,9 +468,11 @@ namespace Rules
             inputs.names.Add("A");
             outputs.names.Add("A");
             paramGroups = DefaultParam();
+            name = "Scale3D";
         }
         public Scale3D(string inName, string outName, Vector3 scale, Vector2? randRange=null,int? ialignment=null) : base(inName, new string[] { outName })
         {
+            name = "Scale3D";
             alignment = ialignment;
             ((ParameterGroup)paramGroups["Scale"]).parameters[0].Value = scale[0];
             ((ParameterGroup)paramGroups["Scale"]).parameters[1].Value = scale[1];
@@ -365,7 +503,7 @@ namespace Rules
             Vector3 origin = so.transform.position;
             if (alignment.HasValue)
             {
-                so.meshable.bbox.GetOriginFromAlignment(alignment.Value);
+                origin=so.meshable.bbox.GetOriginFromAlignment(alignment.Value);
             }
             //get the splited meshables
             Meshable mb = so.meshable;
@@ -406,13 +544,18 @@ namespace Rules
             inputs.names.Add("A");
             outputs.names.Add("A");
             paramGroups = DefaultParam();
+            name = "Size3D";
         }
         public Size3D(string inName, string outName, Vector3 size, Vector2? randRange = null) : base(inName, new string[] { outName })
         {
-            paramGroups = DefaultParam();
-            ((ParameterGroup)paramGroups["Size"]).parameters[0].Value = size[0];
-            ((ParameterGroup)paramGroups["Size"]).parameters[1].Value = size[1];
-            ((ParameterGroup)paramGroups["Size"]).parameters[2].Value = size[2];
+            SetParam("Size", 0, size[0], 30, 80, 0.1f);
+            SetParam("Size", 1, size[1], 3, 180, 0.1f);
+            SetParam("Size", 2, size[2], 50, 0.1f);
+            name = "Size3D";
+            //paramGroups = DefaultParam();
+            //((ParameterGroup)paramGroups["Size"]).parameters[0].Value = size[0];
+            //((ParameterGroup)paramGroups["Size"]).parameters[1].Value = size[1];
+            //((ParameterGroup)paramGroups["Size"]).parameters[2].Value = size[2];
             this.randRange = randRange;
 
         }
@@ -482,18 +625,18 @@ namespace Rules
         public SizeBuilding3D() : base()
         {
             if (grammar.properties == null) grammar.properties = new BuildingProperties();
+            name = "SizeBuilding3D";
         }
         public SizeBuilding3D(string inName, string outName, Vector3 size) : base(inName, outName, size)
         {
+            name = "SizeBuilding3D";
         }
         public override OrderedDictionary DefaultParam()
         {
             OrderedDictionary dict = new OrderedDictionary();
             ParameterGroup pg1 = new ParameterGroup();
-            ParameterGroup pg2 = new ParameterGroup();
             List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
             outParamGroups.Add(pg1);
-            outParamGroups.Add(pg2);
 
             dict["Size"] = pg1;
             pg1.Add(new Parameter(30f, 30f, 80f, 0.01f));
@@ -506,11 +649,15 @@ namespace Rules
         {
             base.Execute();
             if (grammar == null) return;
-            if (grammar.properties == null) grammar.properties = new BuildingProperties();
-            BuildingProperties bp = (BuildingProperties)grammar.properties;
-            bp.width = GetParamVal("Size", 0);
-            bp.depth = GetParamVal("Size", 2);
-            bp.height = GetParamVal("Size", 1);
+
+            if(grammar.building != null)
+            {
+                Building bp = grammar.building;
+                bp.width = GetParamVal("Size", 0);
+                bp.depth = GetParamVal("Size", 2);
+                bp.height = GetParamVal("Size", 1);
+            }
+            
         }
     }
 

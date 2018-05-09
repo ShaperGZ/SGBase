@@ -29,7 +29,6 @@ namespace SGCore
         public List<ShapeObject> assignedObjects;
         public Guid guid;
         
-        
 
         public Grammar():base()
         {
@@ -56,12 +55,22 @@ namespace SGCore
             g.inputs.names.Clear();
             g.inputs.names.AddRange(inputs.names.ToArray());
         }
+        public GraphNode FindFisrt(string name)
+        {
+            foreach (GraphNode n in subNodes)
+            {
+                if (n.name == name) return n;
+            }
+            return null;
+        }
         public void AddRule(GraphNode r, bool execute = true)
         {
             currentStep = subNodes.Count;
             displayStep = currentStep;
             subNodes.Add(r);
             r.grammar = this;
+            r.building = building;
+            r.site = site;
             r.step = subNodes.Count - 1;
             if (execute)
             {
@@ -95,10 +104,23 @@ namespace SGCore
             }
 
         }
+        public override void SetVisible(bool flag)
+        {
+            base.SetVisible(flag);
+            foreach(SGIO sgio in stagedOutputs)
+            {
+                foreach(ShapeObject so in sgio.shapes)
+                {
+                    so.SetVisible(flag);
+                }
+            }
+        }
         public void AddRuleAfter(GraphNode r, int i, bool execute = true)
         {
             subNodes.Insert(i + 1, r);
             r.grammar = this;
+            r.building = building;
+            r.site = site;
             for (int j = i; j < subNodes.Count; j++)
             {
                 subNodes[j].step = j;
@@ -112,6 +134,8 @@ namespace SGCore
         {
             subNodes.Insert(i, r);
             r.grammar = this;
+            r.building = building;
+            r.site = site;
             for (int j = i; j < subNodes.Count; j++)
             {
                 subNodes[j].step = j;
@@ -171,7 +195,7 @@ namespace SGCore
         {
             ParameterGroup pg = (ParameterGroup)paramGroups[name];
             pg.parameters[0].Value = value;
-        }
+        } 
 
         public override void Execute()
         {
@@ -179,7 +203,7 @@ namespace SGCore
                 foreach (ShapeObject s in assignedObjects) s.Show(false);
             if (inputs.shapes != null)
                 foreach (ShapeObject s in inputs.shapes) s.Show(false);
-
+            //removeParent();
             ExecuteFrom(0);
         }
         public virtual void ExecuteFrom(GraphNode rule)
@@ -217,16 +241,45 @@ namespace SGCore
 
             PostExecution(i, tobeMerged);
         }
+        public void removeParent()
+        {
+            Vector3 pos = building.transform.position;
+            building.transform.position = new Vector3(0, 0, 0);
+            foreach (SGIO io in stagedOutputs)
+            {
+                foreach (ShapeObject so in io.shapes)
+                {
+                    //so.gameObject.transform.position += building.transform.position;
+                    so.gameObject.transform.parent = null;
+                }
+            }
+            building.transform.position = pos;
+        }
+        public void addParent()
+        {
+            Vector3 pos = building.transform.position;
+            building.transform.position = new Vector3(0, 0, 0);
+            foreach (SGIO io in stagedOutputs)
+            {
+                foreach (ShapeObject so in io.shapes)
+                {
+                    so.gameObject.transform.position += building.transform.position;
+                    //so.gameObject.transform.parent = null;
+                }
+            }
+            building.transform.position = pos;
+        } 
         public void InvalidateProperties()
         {
-            if (properties != null)
+            if (building != null)
             {
-                properties.Invalidate();
-                GameObject.Find("BuildingPropText").GetComponent<Text>().text = properties.Format();
+                
+                building.Invalidate(true);
+                GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
             }
             else
             {
-                GameObject.Find("BuildingPropText").GetComponent<Text>().text = "this grammar has no proerties";
+                GameObject.Find("BuildingPropText").GetComponent<Text>().text = "this grammar is not associated to a building";
             }
         }
 
@@ -295,6 +348,8 @@ namespace SGCore
         {
             SGIO tempOut = new SGIO();
             tempOut = SGIO.Merge(subNodes[step].outputs, tobeMerged);
+            
+            
             if (step >= stagedOutputs.Count)
             {
                 stagedOutputs.Add(tempOut);
@@ -508,8 +563,27 @@ namespace SGCore
             Rule r = (Rule)subNodes[i];
             return r;
         }
-       
-        
+       public void Translate(Vector3 offset)
+        {
+            //foreach (ShapeObject so in inputs.shapes) so.Translate(offset);
+            foreach (ShapeObject so in outputs.shapes) so.Translate(offset);
+            foreach(SGIO io in stagedOutputs)
+            {
+                foreach(ShapeObject so in io.shapes)
+                {
+                    so.Translate(offset);
+                }
+            }
+        }
+        public void UpdateToBuildingPosition()
+        {
+            if (building == null) return;
+            foreach (ShapeObject so in stagedOutputs[stagedOutputs.Count - 1].shapes)
+            {
+                so.gameObject.transform.position += building.transform.position;
+                //so.gameObject.transform.parent = building.transform;
+            }
+        }
 
         public void Clear(bool callByDestroy=false)
         {

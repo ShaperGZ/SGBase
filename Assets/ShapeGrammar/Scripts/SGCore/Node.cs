@@ -7,21 +7,30 @@ namespace SGCore
 {
     public class GraphNode
     {
+        public Site site;
+        public Building building;
         public SGIO inputs;
         public SGIO outputs;
         public List<GraphNode> upStreams;
         public List<GraphNode> downStreams;
         public Grammar grammar;
         public string name = "unnamedNode";
+        public string category = "default";
         public string description = "";
         public bool invalidated = false;
         public OrderedDictionary paramGroups;
         public int step;
+        public bool visible = true;
+        public bool heavy = false;
         public bool _active;
         public bool active { get { return _active; } }
         public void SetActive(bool flag)
         {
             _active = flag;
+        }
+        public virtual void SetVisible(bool flag)
+        {
+            visible = flag;
         }
         public Properties properties;
 
@@ -33,9 +42,11 @@ namespace SGCore
             downStreams = new List<GraphNode>();
         }
 
-
-
-        public virtual void Execute() { }
+        
+        public virtual void Execute()
+        {
+           
+        }
         public virtual string GetDescription()
         {
             string inName = "";
@@ -95,7 +106,11 @@ namespace SGCore
                 for (int i = 0; i < num; i++)
                 {
                     int index = outputs.shapes.Count - 1;
-                    GameObject.Destroy(outputs.shapes[index].gameObject);
+                    try
+                    {
+                        GameObject.Destroy(outputs.shapes[index].gameObject);
+                    }
+                    catch { }
                     outputs.shapes.RemoveAt(index);
                 }
                 //Debug.Log("post destroy ouputs.shapesCount=" + outputs.shapes.Count);
@@ -145,5 +160,6 @@ namespace SGCore
             ParameterGroup pg = (ParameterGroup)paramGroups[key];
             return pg;
         }
+        
     }
 }

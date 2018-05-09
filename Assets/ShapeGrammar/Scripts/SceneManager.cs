@@ -38,6 +38,10 @@ public class SceneManager : MonoBehaviour {
     {
         selectionMode = SelectionMode.GRAMMAR;
         GameObject.Find("TextSelectionMode").GetComponent<Text>().text = "Grammar Mode";
+        foreach(Guid id in existingBuildings.Keys)
+        {
+            existingBuildings[id].ShowGrammar();
+        }
     }
 
     static Text _selectedShapeText;
@@ -118,6 +122,8 @@ public class SceneManager : MonoBehaviour {
         ruleNavigator.SetGrammar(null);
     }
 
+    public static Dictionary<Guid, Building> existingBuildings = new Dictionary<Guid, Building>();
+    public static Dictionary<Guid, Site> existingSites = new Dictionary<Guid, Site>();
     public static Dictionary<Guid, ShapeObject> existingShapes = new Dictionary<Guid, ShapeObject>();
     public static Dictionary<Guid, Grammar> existingGrammar = new Dictionary<Guid, Grammar>();
     public static void CreateShape(ShapeObject so)
@@ -129,6 +135,17 @@ public class SceneManager : MonoBehaviour {
     {
         updateSystemInspectText();
         existingShapes.Remove(id);
+    }
+    public static void AddBuilding(Building building)
+    {
+        existingBuildings[building.guid] = building;
+    }
+    public static void RemoveBuilding(Guid id)
+    {
+        throw new System.NotImplementedException();
+        //remove all generated objects from building grammars
+        //remove all grammars
+        existingBuildings.Remove(id);
     }
     public static void AddGrammar(Grammar g)
     {
@@ -240,7 +257,6 @@ public class SceneManager : MonoBehaviour {
 	void Update () {
         tool.Update();
         
-
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
             if (SelectedGrammar.grammar != null)

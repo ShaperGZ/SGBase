@@ -181,6 +181,7 @@ namespace SGGUI
             //if (onSelectCallbacks != null)
             //    onSelectCallbacks(i);
             Grammar g = grammar;
+            g.Execute();
             g.SelectStep(i,true);
             ruleParamEditor.GenerateUI(g.subNodes[i]);
             ruleParamEditor.ruleNavigator = this;
