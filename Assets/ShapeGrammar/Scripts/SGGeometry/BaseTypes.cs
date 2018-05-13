@@ -409,6 +409,14 @@ namespace SGGeometry
 
             for (int i = 0; i < 3; i++)
             {
+                if (pts == null) throw new System.Exception("pts is null");
+                if (pts[0] == null) throw new System.Exception("pts[0] is null");
+                if (vects == null) throw new System.Exception("vects is null");
+                if (vects[i] == null) throw new System.Exception("vects[i] is null");
+                Vector3 vtest = vects[i];
+                //Debug.Log(pts.Length);
+                Vector3 ptest = pts[0];
+
                 plnMins[i] = new Plane(-vects[i], pts[0]);
                 plnMaxs[i] = new Plane(vects[i], pts[0]);
                 ptMins[i] = pts[0];
@@ -1580,6 +1588,35 @@ namespace SGGeometry
         public Polygon polygon;
         public float height;
         public Vector3 magUp;
+
+        //topology
+        public List<Meshable> sides
+        {
+            get
+            {
+                if (components.Count > 2)
+                    return components.GetRange(1,components.Count-2);
+                return null;
+            }
+        }
+        public Meshable top {
+            get
+            {
+                if(components.Count>0)
+                    return components[components.Count - 1];
+                return null;
+            }
+        }
+        public Meshable bot
+        {
+            get
+            {
+                if (components.Count > 0)
+                    return components[0];
+                return null;
+            }
+        }
+
         public Extrusion():base()
         {
             polygon = new Polygon(vertices);
@@ -1590,13 +1627,39 @@ namespace SGGeometry
             height = h;
             polygon = new Polygon(pts);
             magUp = new Vector3(0, h, 0);
-            Meshable mb = polygon.ExtrudeToForm(magUp);
-            vertices = mb.vertices;
-            triangles = mb.triangles;
-            components = ((CompositMeshable)mb).components;
+            Form f= polygon.ExtrudeToForm(magUp);
+            vertices = f.vertices;
+            triangles = f.triangles;
+            components = f.components;
+            //_Extrude(magUp);
+            //if (vertices.Length < 1) throw new System.Exception("vertices.length=0");
+        }
+        private void _Extrude(Vector3 magUp)
+        {
+            components = new List<Meshable>();
+            sides.Clear();
+            Vector3[] ptsTop = new Vector3[vertices.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                ptsTop[i] = vertices[i] + magUp;
+                int j = i + 1;
+                if (j >= vertices.Length) j = 0;
+
+                Vector3[] pts = new Vector3[4];
+                pts[0] = vertices[i];
+                pts[1] = vertices[j];
+                pts[2] = vertices[j] + magUp;
+                pts[3] = vertices[i] + magUp;
+                Polygon pg = new Polygon(pts);
+                this.Add(pg);
+                sides.Add(pg);
+            }
+            Polygon top = new Polygon(ptsTop);
+            this.Add(top);
         }
         public override void Translate(Vector3 offset)
         {
+            throw new System.Exception("not fix, translate all components");
             base.Translate(offset);
             polygon.Translate(offset);
         }
@@ -1654,6 +1717,7 @@ namespace SGGeometry
             
             return new Meshable[] { null,(Meshable)this.Clone() };
         }
+
         public override Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
         {
             Meshable dup = base.Scale(scale, vects, origin, duplicate);

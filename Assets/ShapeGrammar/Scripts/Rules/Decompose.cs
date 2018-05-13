@@ -28,38 +28,41 @@ namespace Rules
 
             for(int i = 0; i < inputs.shapes.Count; i++)
             {
+                //Debug.Log("i=" + i);
                 ShapeObject so = inputs.shapes[i];
-                CompositMeshable cmp = null;
-                try
+                if(so!=null && so.meshable.GetType() == typeof(Extrusion))
                 {
-                    cmp = (CompositMeshable)so.meshable;
-                }
-                catch { }
-                if (cmp != null && cmp.components.Count>2)
-                {
-                    for (int j = 1; j < cmp.components.Count -1; j++)
+                    //Debug.Log("is extrusion");
+                    Extrusion ext = (Extrusion)so.meshable;
+                    top.Add(ext.top);
+                    sides.AddRange(ext.sides);
+                    if (top == null) throw new System.Exception("top is null");
+                    for (int j = 0; j < ext.sides.Count; j++)
                     {
-                        Polygon pg = (Polygon)cmp.components[j];
-                        Vector3 n = pg.GetNormal();
-                        if (n.y == 1 || n.y == -1)
-                            top.Add(pg);
-                        sides.Add(pg);
-                    }//for j
+                        Meshable m = ext.sides[j];
+                        if (m == null) throw new System.Exception("side is null at " + j);
+                    }
                 }
-                top.Add(cmp.components[cmp.components.Count - 1]);
 
             }//for i
 
             outMeshables.AddRange(top);
             outMeshables.AddRange(sides);
+            //Debug.Log("meshable.count=" + outMeshables.Count);
 
             int count = outMeshables.Count;
             int removeCount= outputs.shapes.Count-count;
             if (count > 0) removeOutputsByCount(removeCount);
 
+            foreach(Meshable m in outMeshables)
+            {
+                //Debug.Log("m=" + m);
+            }
+
             for(int i = 0; i < count; i++)
             {
-                if (i <= outputs.shapes.Count)
+                //if (outMeshables[i] == null) continue;
+                if (i >= outputs.shapes.Count)
                 {
                     ShapeObject nso = ShapeObject.CreateBasic();
                     nso.parentRule = this;
@@ -67,6 +70,7 @@ namespace Rules
                     outputs.shapes.Add(nso);
                 }
                 Meshable m=outMeshables[i];
+                if (m == null) throw new System.Exception("side is null at " + i);
                 outputs.shapes[i].SetMeshable(m);
                 if (top.Contains(m)) outputs.shapes[i].name = nameTop;
                 else outputs.shapes[i].name = nameSide;

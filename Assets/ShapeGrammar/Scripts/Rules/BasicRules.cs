@@ -118,6 +118,8 @@ namespace Rules
             return pln;
         }
     }
+    
+
     public class DivideToFTFH : Rule
     {
         Plane cutPlane;
@@ -127,13 +129,16 @@ namespace Rules
             inputs.names.Add("A");
             outputs.names.Add("B");
             outputs.names.Add("C");
-
         }
         public DivideToFTFH(string inName, string outName, float h) : base(inName, outName)
         {
             name = "DivideToFTFH";
             ((ParameterGroup)paramGroups["FTFHeight"]).parameters[0].Value = h;
-            heavy = true;
+        }
+        public DivideToFTFH(string inName, string[] outNames, float h) : base(inName, outNames)
+        {
+            name = "DivideToFTFH";
+            ((ParameterGroup)paramGroups["FTFHeight"]).parameters[0].Value = h;
         }
         public virtual List<float> GetDivs(float ftfh, ShapeObject so)
         {
@@ -143,7 +148,7 @@ namespace Rules
             float bot = so.Position.y;
             float top = bot + so.Size[1];
             float totalH = top - bot;
-            Debug.LogFormat("bot={0}, top={1}", bot, top);
+            //Debug.LogFormat("bot={0}, top={1}", bot, top);
 
             float h = Mathf.Ceil(bot / ftfh);
             float trunk = (h - bot);
@@ -163,11 +168,11 @@ namespace Rules
                     break;
                 }
                 h += ftfh;
-                Debug.Log("h=" + h);
+                //Debug.Log("h=" + h);
             }
             
             if (outDivs.Count == 0) throw new System.Exception("outDives is empty");
-            foreach (float f in outDivs) Debug.Log(f);
+            //foreach (float f in outDivs) Debug.Log(f);
             return outDivs;
         }
         public override List<Meshable> ExecuteShape(ShapeObject so)

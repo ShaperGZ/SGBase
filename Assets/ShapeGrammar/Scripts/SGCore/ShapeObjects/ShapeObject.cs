@@ -147,7 +147,7 @@ public class ShapeObject : MonoBehaviour {
     {
         if (meshRenderer != null)
             meshRenderer.material = m;
-        else Debug.Log("MeshRender is Null in " + Format());
+        //else Debug.Log("MeshRender is Null in " + Format());
     }
 	// Update is called once per frame
 	void Update () {
@@ -316,7 +316,7 @@ public class ShapeObject : MonoBehaviour {
     {
         meshable = imeshable;
         Vector3 vectu;
-        BoundingBox bbox;
+        BoundingBox bbox=null;
         if (direction.HasValue)
         {
             vectu = direction.Value;
@@ -350,14 +350,35 @@ public class ShapeObject : MonoBehaviour {
     }
     private void ConformToBBox(BoundingBox bbox)
     {
-        transform.position = bbox.vertices[0];
-        //transform.localPosition = bbox.vertices[0];
-        transform.LookAt(bbox.vertices[3]);
+        //transform.position = bbox.position;
+        transform.localPosition = bbox.vertices[0];
+        if (bbox.vects[2].magnitude > 0)
+            //transform.LookAt(bbox.vertices[3]);
+            transform.LookAt(bbox.vertices[0]+bbox.vects[2]);
+        else
+        {
+            Vector3 n = Vector3.Cross(bbox.vects[0].normalized, bbox.vects[1].normalized);
+            transform.LookAt(bbox.vertices[0] + n);
+        }
         transform.localScale = bbox.GetSignedSize();
         
         Mesh mesh = meshable.GetNormalizedMesh(bbox);
         meshable.bbox = bbox;
         GetComponent<MeshFilter>().mesh = mesh;
+    }
+    public void ConformToBBoxTransform(BoundingBox bbox)
+    {
+        //transform.position = bbox.position;
+        transform.localPosition = bbox.vertices[0];
+        if (bbox.vects[2].magnitude > 0)
+            //transform.LookAt(bbox.vertices[3]);
+            transform.LookAt(bbox.vertices[0] + bbox.vects[2]);
+        else
+        {
+            Vector3 n = Vector3.Cross(bbox.vects[0].normalized, bbox.vects[1].normalized);
+            transform.LookAt(bbox.vertices[0] + n);
+        }
+        transform.localScale = bbox.GetSignedSize();
     }
     public void Invalidate()
     {
@@ -385,6 +406,16 @@ public class ShapeObject : MonoBehaviour {
         so.meshFilter = o.AddComponent<MeshFilter>();
         so.meshRenderer = o.AddComponent<MeshRenderer>();
         BoxCollider bc= o.AddComponent<BoxCollider>();
+        bc.center = new Vector3(0.5f, 0.5f, 0.5f);
+        o.AddComponent<HighlightMouseOver>();
+        //so.meshRenderer.material = DefaultMat;
+        return so;
+    }
+    public static ShapeObject CreateBasic(GameObject prefab)
+    {
+        GameObject o = Instantiate(prefab);
+        ShapeObject so = o.AddComponent<ShapeObject>();
+        BoxCollider bc = o.AddComponent<BoxCollider>();
         bc.center = new Vector3(0.5f, 0.5f, 0.5f);
         o.AddComponent<HighlightMouseOver>();
         //so.meshRenderer.material = DefaultMat;
@@ -447,6 +478,7 @@ public class ShapeObject : MonoBehaviour {
     public static ShapeObject CreateMeshable(Meshable mb, Vector3? direction=null)
     {
         ShapeObject so = ShapeObject.CreateBasic();
+        //Debug.Log("direction=" + direction.Value);
         so.SetMeshable(mb,direction);
         
         return so;

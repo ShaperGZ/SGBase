@@ -403,7 +403,8 @@ namespace SGCore
                         try
                         {
                             //o.gameObject.SetActive(false);
-                            o.Show(false);
+                            if(o.gameObject.activeSelf)
+                                o.Show(false);
                         }
                         catch
                         {
@@ -420,7 +421,8 @@ namespace SGCore
                     if (o != null)
                         //o.gameObject.SetActive(true);
                         if (o.grammar==null || o.alwaysActive)
-                            o.Show(true);
+                            if (!o.gameObject.activeSelf)
+                                o.Show(true);
 
                 }
             }
