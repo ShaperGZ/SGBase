@@ -374,11 +374,13 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Site.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\GrammarsBuilding.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\Patterns.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Aggrigation.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Composit.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Conditional.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Creation.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Decompose.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Rules\DivideRules.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Identifier.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SceneManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\BuildingProperties.cs" />
@@ -390,6 +392,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Parameter.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\Rule.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\SGIO.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\SGTransform.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\ShapeAttributes.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\ShapeObjects\ShapeObject.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\ShapeObjects\ShapeObjectM.cs" />
@@ -397,6 +400,8 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\SOBox.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGGeometry\BaseTypes.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGGeometry\SGUtility.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\BuildingParamEditor.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\FPS.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\GrammarInspector.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\HighlightMouseOver.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\Navigator.cs" />
@@ -414,6 +419,8 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\Tools\Tool.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\DynamicInspector.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\InspectMeshVertices.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestAgg.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestBBox.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestDecompose.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammar.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammarUI.cs" />

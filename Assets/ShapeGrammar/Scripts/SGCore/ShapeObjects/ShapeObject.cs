@@ -53,7 +53,7 @@ public class ShapeObject : MonoBehaviour {
     public Material matNameMode;
     public Material matVisualMode;
     public Material matProgramMode;
-    
+    public bool isGraphics = false;
 
     public static Material DefaultMat
     {
@@ -140,12 +140,12 @@ public class ShapeObject : MonoBehaviour {
     }
     public void SetMaterial(int mode)
     {
-        if(meshRenderer !=null)
+        if(meshRenderer !=null && isGraphics==false)
             meshRenderer.material = materialsByMode[mode];
     }
     public void SetMaterial(Material m)
     {
-        if (meshRenderer != null)
+        if (meshRenderer != null && isGraphics == false)
             meshRenderer.material = m;
         //else Debug.Log("MeshRender is Null in " + Format());
     }
@@ -212,7 +212,8 @@ public class ShapeObject : MonoBehaviour {
     private void OnRenderObject()
     {
         //GLDrawScope(Color.black);
-        if (drawScope && meshRenderer.enabled)
+        if(false)
+        //if (drawScope && meshRenderer.enabled && isGraphics==false )
         {
             Color c = Color.black;
             //if (highlightScope)
@@ -411,13 +412,14 @@ public class ShapeObject : MonoBehaviour {
         //so.meshRenderer.material = DefaultMat;
         return so;
     }
-    public static ShapeObject CreateBasic(GameObject prefab)
+    public static ShapeObject CreateBasic(GameObject prefab,bool isGraphics=false)
     {
         GameObject o = Instantiate(prefab);
         ShapeObject so = o.AddComponent<ShapeObject>();
         BoxCollider bc = o.AddComponent<BoxCollider>();
         bc.center = new Vector3(0.5f, 0.5f, 0.5f);
         o.AddComponent<HighlightMouseOver>();
+        so.isGraphics = isGraphics;
         //so.meshRenderer.material = DefaultMat;
         return so;
     }

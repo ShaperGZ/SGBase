@@ -47,8 +47,12 @@ public class HighlightMouseOver : MonoBehaviour {
     }
     private void OnMouseEnter()
     {
-        
-        if (!shapeObject) return;
+        try
+        {
+            Debug.Log("isgraphics=" + shapeObject.isGraphics);
+        }
+        catch { }
+        if (!shapeObject || shapeObject.isGraphics) return;
         //display GUID
         //guidText.text = "Mouse over:"+so.guid.ToString();
         guidText.text = shapeObject.sguid;
@@ -93,7 +97,7 @@ public class HighlightMouseOver : MonoBehaviour {
     }
     private void OnMouseExit()
     {
-        if (!shapeObject) return;
+        if (!shapeObject || shapeObject.isGraphics) return;
         if (!orgColor.HasValue) return;
         if (shapeObject.parentRule == null) return;
         //if (SceneManager.SelectedGrammar == null) return;

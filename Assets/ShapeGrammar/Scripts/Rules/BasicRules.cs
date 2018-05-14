@@ -464,6 +464,69 @@ namespace Rules
             return dict;
         }
     }
+    public class Extrude : Rule
+    {
+        //protected int? alignment = null;
+        Plane cutPlane;
+        public bool isGraphics = false;
+        public Extrude() : base()
+        {
+            inputs.names.Add("A");
+            outputs.names.Add("A");
+            paramGroups = DefaultParam();
+            name = "Extrude";
+        }
+        public Extrude(string inName, string outName, float mag, bool isGraphics=false, Vector2? randRange = null) : base(inName, new string[] { outName })
+        {
+            name = "Scale3D";
+            SetParam("Up", 0, mag);
+            this.randRange = randRange;
+            this.isGraphics = isGraphics;
+
+        }
+        public override List<Meshable> ExecuteShape(ShapeObject so)
+        {
+            if (so.meshable.GetType() != typeof(Polygon)) return new List<Meshable>();
+
+            float up = ((ParameterGroup)paramGroups["Up"]).parameters[0].Value;
+
+            //get scale
+            Vector3 extrudeVect = new Vector3(0, up, 0);
+
+            if (randRange.HasValue)
+            {
+                float min = randRange.Value[0];
+                float max = randRange.Value[1];
+                extrudeVect[1] = extrudeVect[1] * (1 + Random.Range(min, max));
+                
+            }
+            
+            //get the splited meshables
+            Polygon pg = (Polygon)so.meshable;
+            Extrusion exts = pg.Extrude(extrudeVect);
+           
+            
+            List<Meshable> outs = new List<Meshable>();
+            outs.Add(exts);
+            AssignNames(outs);
+            //AssignNames(outMeshables.ToArray());
+            return outs;
+
+            //Rule.Execute() will take care of the outMeshables
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+            outParamGroups.Add(pg1);
+
+            dict["Up"] = pg1;
+            pg1.Add(new Parameter(1f, 0.2f, 100f, 0.01f));
+
+            return dict;
+        }
+    }
     public class Scale3D : Rule
     {
         protected int? alignment = null;

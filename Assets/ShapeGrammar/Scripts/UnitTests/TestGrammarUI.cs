@@ -96,6 +96,7 @@ public class TestGrammarUI : MonoBehaviour {
         g1.AddRule(new Rules.DcpFace2("APT", new string[] { "APT", "APT" }));
         g1.AddRule(new Rules.DcpFace2("APT2", new string[] { "APT", "APT" }));
 
+
         //g1.AddRule(new Rules.DivideToFTFH("APT2", "APTL", 4));
         //g1.AddRule(new Rules.DivideToFTFH("APT", "APTL", 4));
         //g1.AddRule(new Rules.DcpFace2("APTL", new string[] { "Top", "Side" }));

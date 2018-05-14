@@ -275,11 +275,11 @@ namespace SGCore
             {
                 
                 building.Invalidate(true);
-                GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
+                //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
             }
             else
             {
-                GameObject.Find("BuildingPropText").GetComponent<Text>().text = "this grammar is not associated to a building";
+                //GameObject.Find("BuildingPropText").GetComponent<Text>().text = "this grammar is not associated to a building";
             }
         }
 

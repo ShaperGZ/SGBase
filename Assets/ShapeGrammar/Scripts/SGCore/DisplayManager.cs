@@ -11,17 +11,23 @@ public class DisplayManager:MonoBehaviour
     public Button btRule;
     public Button btVisual;
     public Button btNames;
+    public Button btToggleScope;
 
     public int currMode = DisplayMode.NORMAL;
     public int lastMode = DisplayMode.NORMAL;
+    public bool drawScope = true;
 
     private void Start()
     {
         btNormal.onClick.AddListener(delegate { setNormalMode(); });
         btRule.onClick.AddListener(delegate { setRuleMode(); });
+        btToggleScope.onClick.AddListener(delegate { toggleDrawScope();});
         setNormalMode();  
     }
-
+    public void toggleDrawScope()
+    {
+        drawScope = !drawScope;
+    }
     public void SetMode(int mode)
     {
         currMode = mode;

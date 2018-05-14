@@ -77,7 +77,287 @@ namespace Rules
             }
         }
     }
+    public class DcpFace3 : Rule
+    {
+        public DcpFace3() : base("A", new string[] { "ASIDES","ATOP","ABOT" })
+        {
+            name = "DcpFace3";
+        }
+        public DcpFace3(string inName, string[] outNames) : base(inName, outNames)
+        {
+            name = "DcpFace3";
+        }
+        public override void Execute()
+        {
+            string nameSide = outputs.names[0];
+            string nameTop = outputs.names[1];
+            string nameBot = outputs.names[2];
 
+            List<Meshable> top = new List<Meshable>();
+            List<Meshable> bot = new List<Meshable>();
+            List<Meshable> sides = new List<Meshable>();
+            List<Meshable> outMeshables = new List<Meshable>();
+
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                //Debug.Log("i=" + i);
+                ShapeObject so = inputs.shapes[i];
+                if (so != null && so.meshable.GetType() == typeof(Extrusion))
+                {
+                    //Debug.Log("is extrusion");
+                    Extrusion ext = (Extrusion)so.meshable;
+                    bot.Add(ext.polygon);
+                    top.Add(ext.top);
+                    sides.AddRange(ext.sides);
+                    if (top == null) throw new System.Exception("top is null");
+                    for (int j = 0; j < ext.sides.Count; j++)
+                    {
+                        Meshable m = ext.sides[j];
+                        if (m == null) throw new System.Exception("side is null at " + j);
+                    }
+                }
+
+            }//for i
+
+            outMeshables.AddRange(top);
+            outMeshables.AddRange(bot);
+            outMeshables.AddRange(sides);
+            //Debug.Log("meshable.count=" + outMeshables.Count);
+
+            int count = outMeshables.Count;
+            int removeCount = outputs.shapes.Count - count;
+            if (count > 0) removeOutputsByCount(removeCount);
+
+            foreach (Meshable m in outMeshables)
+            {
+                //Debug.Log("m=" + m);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                //if (outMeshables[i] == null) continue;
+                if (i >= outputs.shapes.Count)
+                {
+                    ShapeObject nso = ShapeObject.CreateBasic();
+                    nso.parentRule = this;
+                    nso.step = this.step;
+                    outputs.shapes.Add(nso);
+                }
+                Meshable m = outMeshables[i];
+                if (m == null) throw new System.Exception("side is null at " + i);
+                outputs.shapes[i].SetMeshable(m);
+                if (top.Contains(m)) outputs.shapes[i].name = nameTop;
+                else if (bot.Contains(m)) outputs.shapes[i].name = nameBot;
+                else outputs.shapes[i].name = nameSide;
+            }
+        }
+    }
+    public class DcpFace4 : Rule
+    {
+        public DcpFace4() : base("A", new string[] { "AFRONTS","ASIDES", "ATOP", "ABOT" })
+        {
+            name = "DcpFace4";
+        }
+        public DcpFace4(string inName, string[] outNames) : base(inName, outNames)
+        {
+            name = "DcpFace4";
+        }
+        public override void Execute()
+        {
+            string nameFronts = outputs.names[0];
+            string nameSide = outputs.names[1];
+            string nameTop = outputs.names[2];
+            string nameBot = outputs.names[3];
+
+            List<Meshable> top = new List<Meshable>();
+            List<Meshable> bot = new List<Meshable>();
+            List<Meshable> sides = new List<Meshable>();
+            List<Meshable> fronts = new List<Meshable>();
+            List<Meshable> outMeshables = new List<Meshable>();
+
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                //Debug.Log("i=" + i);
+                ShapeObject so = inputs.shapes[i];
+                if (so != null && so.meshable.GetType() == typeof(Extrusion))
+                {
+                    //Debug.Log("is extrusion");
+                    Extrusion ext = (Extrusion)so.meshable;
+                    bot.Add(ext.polygon);
+                    top.Add(ext.top);
+                    BoundingBox bbox = ext.bbox;
+                    Vector3 directF = bbox.vects[2].normalized;
+                    foreach(Meshable m in ext.sides)
+                    {
+                        Vector3 v1 = (m.vertices[1] - m.vertices[0]).normalized;
+                        Vector3 v2 = (m.vertices[3] - m.vertices[0]).normalized;
+                        Vector3 n = Vector3.Cross(v1, v2);
+                        Vector3 nn = n * -1;
+                        //Debug.LogFormat("n={0}{3}, nn={1}{4}, vF={2} ", n,nn, directF,n==directF,nn==directF);
+                        //if(Vector3.Distance(n,directF)<0.01f || Vector3.Distance(nn, directF) < 0.1f)
+                        if(n==directF || nn == directF)
+                        {
+                            fronts.Add(m);
+                        }
+                        else
+                        {
+                            sides.Add(m);
+                        }
+                    }
+                    if (top == null) throw new System.Exception("top is null");
+                    for (int j = 0; j < ext.sides.Count; j++)
+                    {
+                        Meshable m = ext.sides[j];
+                        if (m == null) throw new System.Exception("side is null at " + j);
+                    }
+                }
+
+            }//for i
+
+            outMeshables.AddRange(top);
+            outMeshables.AddRange(bot);
+            outMeshables.AddRange(sides);
+            outMeshables.AddRange(fronts);
+            //Debug.Log("meshable.count=" + outMeshables.Count);
+
+            int count = outMeshables.Count;
+            int removeCount = outputs.shapes.Count - count;
+            if (count > 0) removeOutputsByCount(removeCount);
+
+            foreach (Meshable m in outMeshables)
+            {
+                //Debug.Log("m=" + m);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                //if (outMeshables[i] == null) continue;
+                if (i >= outputs.shapes.Count)
+                {
+                    ShapeObject nso = ShapeObject.CreateBasic();
+                    nso.parentRule = this;
+                    nso.step = this.step;
+                    outputs.shapes.Add(nso);
+                }
+                Meshable m = outMeshables[i];
+                if (m == null) throw new System.Exception("side is null at " + i);
+                outputs.shapes[i].SetMeshable(m);
+                if (fronts.Contains(m)) outputs.shapes[i].name = nameFronts;
+                else if (top.Contains(m)) outputs.shapes[i].name = nameTop;
+                else if (bot.Contains(m)) outputs.shapes[i].name = nameBot;
+                else outputs.shapes[i].name = nameSide;
+            }
+        }
+    }
+    public class DcpFace5 : Rule
+    {
+        public DcpFace5() : base("A", new string[] { "AFRONTS", "ABACKS","ASIDES", "ATOP", "ABOT" })
+        {
+            name = "DcpFace5";
+        }
+        public DcpFace5(string inName, string[] outNames) : base(inName, outNames)
+        {
+            name = "DcpFace5";
+        }
+        public override void Execute()
+        {
+            string nameFronts = outputs.names[0];
+            string nameBacks = outputs.names[1];
+            string nameSide = outputs.names[2];
+            string nameTop = outputs.names[3];
+            string nameBot = outputs.names[4];
+
+            List<Meshable> top = new List<Meshable>();
+            List<Meshable> bot = new List<Meshable>();
+            List<Meshable> sides = new List<Meshable>();
+            List<Meshable> fronts = new List<Meshable>();
+            List<Meshable> backs = new List<Meshable>();
+            List<Meshable> outMeshables = new List<Meshable>();
+
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                //Debug.Log("i=" + i);
+                ShapeObject so = inputs.shapes[i];
+                if (so != null && so.meshable.GetType() == typeof(Extrusion))
+                {
+                    //Debug.Log("is extrusion");
+                    Extrusion ext = (Extrusion)so.meshable;
+                    if (outputs.names[3] != "DELETE")
+                        top.Add(ext.top);
+                    if (outputs.names[4] != "DELETE")
+                        bot.Add(ext.polygon);
+                    BoundingBox bbox = ext.bbox;
+                    Vector3 directF = bbox.vects[2].normalized;
+                    foreach (Meshable m in ext.sides)
+                    {
+                        Vector3 v1 = (m.vertices[1] - m.vertices[0]).normalized;
+                        Vector3 v2 = (m.vertices[3] - m.vertices[0]).normalized;
+                        Vector3 n = Vector3.Cross(v1, v2);
+                        Vector3 nn = n * -1;
+                        //Debug.LogFormat("n={0}{3}, nn={1}{4}, vF={2} ", n,nn, directF,n==directF,nn==directF);
+                        //if(Vector3.Distance(n,directF)<0.01f || Vector3.Distance(nn, directF) < 0.1f)
+                        if (n == directF )
+                        {
+                            if(outputs.names[0] != "DELETE")
+                                fronts.Add(m);
+                        }
+                        else if (nn == directF)
+                        {
+                            if (outputs.names[1] != "DELETE")
+                                backs.Add(m);
+                        }
+                        else
+                        {
+                            if (outputs.names[2] != "DELETE")
+                                sides.Add(m);
+                        }
+                    }
+                    //if (top == null) throw new System.Exception("top is null");
+                    //for (int j = 0; j < ext.sides.Count; j++)
+                    //{
+                    //    Meshable m = ext.sides[j];
+                    //    if (m == null) throw new System.Exception("side is null at " + j);
+                    //}
+                }
+
+            }//for i
+
+            outMeshables.AddRange(top);
+            outMeshables.AddRange(bot);
+            outMeshables.AddRange(sides);
+            outMeshables.AddRange(fronts);
+            //Debug.Log("meshable.count=" + outMeshables.Count);
+
+            int count = outMeshables.Count;
+            int removeCount = outputs.shapes.Count - count;
+            if (count > 0) removeOutputsByCount(removeCount);
+
+            foreach (Meshable m in outMeshables)
+            {
+                //Debug.Log("m=" + m);
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                //if (outMeshables[i] == null) continue;
+                if (i >= outputs.shapes.Count)
+                {
+                    ShapeObject nso = ShapeObject.CreateBasic();
+                    nso.parentRule = this;
+                    nso.step = this.step;
+                    outputs.shapes.Add(nso);
+                }
+                Meshable m = outMeshables[i];
+                if (m == null) throw new System.Exception("side is null at " + i);
+                outputs.shapes[i].SetMeshable(m);
+                if (fronts.Contains(m)) outputs.shapes[i].name = nameFronts;
+                else if (backs.Contains(m)) outputs.shapes[i].name = nameBacks;
+                else if (top.Contains(m)) outputs.shapes[i].name = nameTop;
+                else if (bot.Contains(m)) outputs.shapes[i].name = nameBot;
+                else outputs.shapes[i].name = nameSide;
+            }
+        }
+    }
     public class DcpA : Rule
     {
         public DcpA() : base()

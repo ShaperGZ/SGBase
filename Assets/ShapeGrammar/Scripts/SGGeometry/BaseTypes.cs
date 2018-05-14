@@ -1011,7 +1011,7 @@ namespace SGGeometry
                 }
                 m.triangles = tris;
             }
-               
+            m.RecalculateTangents();
             m.RecalculateNormals();
             m.RecalculateBounds();
             return m;
@@ -1499,7 +1499,9 @@ namespace SGGeometry
         }
         public Extrusion Extrude(Vector3 magUp)
         {
-            Extrusion ext = new Extrusion(vertices, magUp.magnitude);
+            float h = magUp.magnitude;
+            if (magUp[1] < 0) h *= -1;
+            Extrusion ext = new Extrusion(vertices, h);
             return ext;
 
             
@@ -1510,7 +1512,8 @@ namespace SGGeometry
             Polygon bot = new Polygon(vertices.Clone() as Vector3[]);
             //bot.ReverseTriangle();
             //bot.ReverseSide();
-
+            if (magUp[1] >= 0)
+                bot.ReverseTriangle();
             pgs.Add(bot);
             Vector3[] ptsTop = new Vector3[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
@@ -1520,14 +1523,28 @@ namespace SGGeometry
                 if (j >= vertices.Length) j = 0;
 
                 Vector3[] pts = new Vector3[4];
-                pts[0] = vertices[i];
-                pts[1] = vertices[j];
-                pts[2] = vertices[j] + magUp;
-                pts[3] = vertices[i] + magUp;
+                if (magUp[1] >= 0)
+                {
+                    pts[0] = vertices[i];
+                    pts[1] = vertices[j];
+                    pts[2] = vertices[j] + magUp;
+                    pts[3] = vertices[i] + magUp;
+                }
+                else
+                {
+                    pts[3] = vertices[i];
+                    pts[2] = vertices[j];
+                    pts[1] = vertices[j] + magUp;
+                    pts[0] = vertices[i] + magUp;
+                }
+                
                 Polygon pg = new Polygon(pts);
                 pgs.Add(pg);
             }
-            pgs.Add(new Polygon(ptsTop));
+            Polygon top = new Polygon(ptsTop);
+            if (magUp[1] < 0)
+                top.ReverseTriangle();
+            pgs.Add(top);
             Form outForm = new Form(pgs.ToArray());
             return outForm;
         }

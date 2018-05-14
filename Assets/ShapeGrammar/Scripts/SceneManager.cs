@@ -99,7 +99,8 @@ public class SceneManager : MonoBehaviour {
             for (int j = 0; j < g.stagedOutputs[i].shapes.Count; j++)
             {
                 ShapeObject so = g.stagedOutputs[i].shapes[j];
-                so.SetMaterial(MaterialManager.GB.RuleEditing);
+                if(!so.isGraphics)
+                    so.SetMaterial(MaterialManager.GB.RuleEditing);
             }
         }
     }
