@@ -85,7 +85,7 @@ public class TestDecompose : MonoBehaviour
         //ShapeObjectM som = ShapeObjectM.CreateSchemeA((CompositMeshable)so.meshable);
         Properties buildingA = new BuildingProperties();
         buildingA.AddGrammar(gs);
-        gs.InvalidateProperties();
+        gs.InvalidateBuilding();
     }
 
 	// Update is called once per frame

@@ -8,6 +8,7 @@ using System;
 public class Building {
 
     public List<Grammar> grammars;
+    public BuildingParamEditor buildingParamEditor;
     public Vector3 _position;
     public Vector3 Position
     {
@@ -35,6 +36,7 @@ public class Building {
     public float depth = -1;
     public float illumination = -1;
     public float efficiency = 0;
+    public bool freeze = false;
     public Guid guid;
     Dictionary<string, float> subGfa;
     public ShapeObject positionReference;
@@ -77,26 +79,44 @@ public class Building {
     }
     public void Invalidate(bool updateFromGrammar=false)
     {
-        //if (!updateFromGrammar)
-        //{
-        //    foreach(Grammar g in grammars)
-        //    {
-        //        g.Execute();
-        //    }
-        //}
-        foreach(Grammar g in grammars)
+        UpdateForms();
+        if (freeze) return;
+        //Debug.Log(buildingParamEditor != null);
+        if (buildingParamEditor != null)
         {
-            //g.SetVisible(false);
+            UpdateParams();
         }
-        //After the gramms are executed, the following actions must take action:
-        // 1. (Optional) group massings by program, this 
-        // 2. divide and group massing by floors
-        // 3. group faces by facade type (currently only 1 type)
-        // 4. divide and group faces by floors
-        
-        //SetHeights();
-        //CutShapeObjectsToFloors();
     }
+    public void UpdateForms()
+    {
+        MaterialManager mm = GameObject.Find("ScriptLoder").GetComponent<MaterialManager>();
+        if (grammars.Count > 0 || grammars[0].stagedOutputs.Count > 0)
+        {
+            List<ShapeObject> shps = grammars[0].stagedOutputs[grammars[0].stagedOutputs.Count-1].shapes;
+            foreach (ShapeObject so in shps)
+            {
+                if (so == null) continue;
+                //Debug.LogFormat("{0}=={1}:{2}", so.name, "T", so.name == "T");
+                if (so.name == "TOP")
+                {
+                    Debug.Log("found top");
+                    so.GetComponent<MeshRenderer>().material = mm.Grass0;
+                    //so.Show(false);
+                }
+
+
+            }
+        }
+        
+    }
+    public void UpdateParams()
+    {
+        if (buildingParamEditor != null)
+        {
+            buildingParamEditor.UpdateBuildingParamDisplay();
+        }
+    }
+    
     private void SetHeights()
     {
         floorHeight = new FloorHeight();
@@ -216,14 +236,14 @@ public class Building {
     }
     public void ShowGrammar()
     {
-        if(floors !=null)
-            foreach(Floor f in floors)
-            {
-                f.SetActive(false);
-            }
-        foreach(Grammar g in grammars)
-        {
-            g.SetVisible(true);
-        }
+        //if(floors !=null)
+        //    foreach(Floor f in floors)
+        //    {
+        //        f.SetActive(false);
+        //    }
+        //foreach(Grammar g in grammars)
+        //{
+        //    g.SetVisible(true);
+        //}
     }
 }

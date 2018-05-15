@@ -361,7 +361,12 @@ public class ShapeObject : MonoBehaviour {
             Vector3 n = Vector3.Cross(bbox.vects[0].normalized, bbox.vects[1].normalized);
             transform.LookAt(bbox.vertices[0] + n);
         }
-        transform.localScale = bbox.GetSignedSize();
+        Vector3 signedSize= bbox.GetSignedSize();
+        for (int i = 0; i < 3; i++)
+        {
+            if (signedSize[i] == 0) signedSize[i] = 1;
+        }
+        transform.localScale = signedSize;
         
         Mesh mesh = meshable.GetNormalizedMesh(bbox);
         meshable.bbox = bbox;

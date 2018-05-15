@@ -66,7 +66,19 @@ namespace Rules
             }
             else
                 d = pm.Value;
-            int axis = (int)((ParameterGroup)paramGroups["Axis"]).parameters[0].Value;
+
+            
+            int axis = (int)GetParamVal("Axis", 0);
+
+            //round to divisible by 4
+            if (axis==1)
+            {
+                float H = so.Size[1];
+                float mag = d * H;
+                mag -= mag % 4;
+                d = mag / H;
+            }
+            
             
 
             /////////////////
@@ -147,7 +159,8 @@ namespace Rules
 
             float bot = so.Position.y;
             float top = bot + so.Size[1];
-            float totalH = top - bot;
+            //float totalH = top - bot;
+            float totalH = so.Size[1];
             //Debug.LogFormat("bot={0}, top={1}", bot, top);
 
             float h = Mathf.Ceil(bot / ftfh);
@@ -272,12 +285,18 @@ namespace Rules
         public virtual List<float> GetDivs(List<Parameter> pms, float max)
         {
             float total = 0;
+            int axis =(int) GetParamVal("Axis", 0);
+
             List<float> outDivs = new List<float>();
             foreach (Parameter p in pms)
             {
                 if (total >= max) break;
                 float rest = max - total;
                 float val = p.Value * max;
+
+                //round to divisible by 4
+                if (axis == 1)
+                    val -= val % 4;
                 if (val > rest) val = rest;
                 outDivs.Add(val);
                 total += val;
@@ -553,8 +572,12 @@ namespace Rules
             float dx = ((ParameterGroup)paramGroups["Scale"]).parameters[0].Value;
             float dy = ((ParameterGroup)paramGroups["Scale"]).parameters[1].Value;
             float dz = ((ParameterGroup)paramGroups["Scale"]).parameters[2].Value;
-            
-            //get scale
+
+            //round to divisible by 4
+            float h = so.Size[1] * dy;
+            h -= h % 4;
+            dy = h / so.Size[1];
+
             Vector3 scale = new Vector3(dx,dy,dz);
 
             if (randRange.HasValue)
@@ -633,8 +656,12 @@ namespace Rules
             float dy = ((ParameterGroup)paramGroups["Size"]).parameters[1].Value;
             float dz = ((ParameterGroup)paramGroups["Size"]).parameters[2].Value;
 
+            //Debug.LogFormat("{0}->{1}", dy, dy - (dy % 4));
+            dy = dy - (dy % 4);
+
             //get Size
             Vector3 size = new Vector3(dx, dy, dz);
+
 
             if (randRange.HasValue)
             {
@@ -728,6 +755,8 @@ namespace Rules
             
         }
     }
+
+
 
     public class SizeAdd : Rule
     {

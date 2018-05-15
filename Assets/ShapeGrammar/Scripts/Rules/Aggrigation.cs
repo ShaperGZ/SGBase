@@ -118,6 +118,23 @@ namespace Rules
             SetParam("DivisionSize", 0, width);
             SetParam("DivisionSize", 1, height);
         }
+
+    }
+    public class AggSD01 : AggBasicSimp
+    {
+        public AggSD01()
+        {
+            name = "AggCW01";
+            prefabPath = "Components\\comp2";
+        }
+        public AggSD01(string inName, string outName, int width, int height) : base(inName, outName, width, height)
+        {
+            name = "AggCW01";
+            prefabPath = "Components\\comp2";
+            SetParam("DivisionSize", 0, width);
+            SetParam("DivisionSize", 1, height);
+        }
+
     }
     public class AggBasicSimp : Rule
     {
@@ -160,8 +177,13 @@ namespace Rules
             float totalW = bbox.size[0];
             float totalH = bbox.size[1];
 
+            
+
             int countW = Mathf.RoundToInt(totalW / stepW);
             int countH = Mathf.RoundToInt(totalH / stepH);
+
+            if (countW < 1) countW = 1;
+            if (countH < 1) countH = 1;
 
             float astepW = totalW / (float)countW;
             float astepH = totalH / (float)countH;

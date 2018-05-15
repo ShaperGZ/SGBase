@@ -103,6 +103,9 @@ public class SceneManager : MonoBehaviour {
                     so.SetMaterial(MaterialManager.GB.RuleEditing);
             }
         }
+
+        SelectedBuilding = g.building;
+        
     }
     public static void unAssignGrammar()
     {
@@ -167,6 +170,37 @@ public class SceneManager : MonoBehaviour {
             );
         if(systemInspectText!=null)
             systemInspectText.text = txt;
+    }
+
+    public static BuildingParamEditor buildingParamEditor;
+    public static Building _selectedBuilding;
+    public static Building SelectedBuilding
+    {
+        get
+        {
+            return _selectedBuilding;
+        }
+        set
+        {
+            if (value == null)
+            {
+                UnSelectBuilding();
+            }
+            SelectBuilding(value);
+        }
+    }
+    public static void SelectBuilding(Building b)
+    {
+        _selectedBuilding = b;
+        BuildingParamEditor bpe= buildingParamEditor;
+        bpe.SetBuilding(b);
+    }
+    public static void UnSelectBuilding()
+    {
+        _selectedBuilding = null;
+        BuildingParamEditor bpe = buildingParamEditor;
+        //BuildingParamEditor bpe = GameObject.Find("BuildingParams").GetComponent<BuildingParamEditor>();
+        bpe.SetBuilding(null);
     }
 
 

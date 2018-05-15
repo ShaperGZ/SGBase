@@ -285,7 +285,7 @@ namespace Rules
                     if (outputs.names[3] != "DELETE")
                         top.Add(ext.top);
                     if (outputs.names[4] != "DELETE")
-                        bot.Add(ext.polygon);
+                        bot.Add(ext.components[0]);
                     BoundingBox bbox = ext.bbox;
                     Vector3 directF = bbox.vects[2].normalized;
                     foreach (Meshable m in ext.sides)
@@ -411,136 +411,85 @@ namespace Rules
             return dict;
         }
     }
+    
 
-    //public class DubTop : Rule
-    //{
-    //    List<ShapeObject> additional = new List<ShapeObject>();
+    public class ExtractFace : Rule
+    {
+        public string extract="NothingToExtract";
+        public List<ShapeObject> extractedObjects = new List<ShapeObject>();
+        public ExtractFace() : base()
+        {
+            
+        }
+        public ExtractFace(string[] inNames, string outname,string extract) : base()
+        {
+            inputs.names.AddRange(inNames);
+            outputs.names.Add(outname);
+            this.extract = extract;
+        }
+        public override void Execute()
+        {
+            string name = outputs.names[0];
+            List<Meshable> outMeshables = new List<Meshable>();
 
-    //    //top, east-west, south-north
-    //    public DubTop(string inName, string[] outNames = null)
-    //    {
-    //        if (outNames == null)
-    //        {
-    //            outNames = new string[] { "faceTop,faceSides" };
-    //        }
-    //        inputs.names.Add(inName);
-    //        outputs.names.AddRange(outNames);
-    //    }
-    //    public override void Execute()
-    //    {
-    //        outMeshables.Clear();
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                //Debug.Log("i=" + i);
+                ShapeObject so = inputs.shapes[i];
+                if (so != null && so.meshable.GetType() == typeof(Extrusion))
+                {
+                    //Debug.Log("is extrusion");
+                    Extrusion ext = (Extrusion)so.meshable;
+                    if (extract == "TOP") outMeshables.Add(ext.top);
+                    else if (extract == "BOT") outMeshables.Add(ext.bot);
+                    else outMeshables.AddRange(ext.sides);
+                }
 
+            }//for i
+            Debug.Log("outMeshables.Count=" + outMeshables.Count);
+            int dif = extractedObjects.Count - outMeshables.Count;
+            if (dif > 0)
+            {
+                for (int i = 0; i < dif; i++)
+                {
+                    int index = extractedObjects.Count - 1;
+                    try
+                    {
+                        GameObject.Destroy(extractedObjects[index].gameObject);
+                        
+                    }
+                    catch { }
+                    extractedObjects.RemoveAt(index);
+                }
+            }
+            
+            
 
-    //        List<Meshable> tops = new List<Meshable>();
-    //        List<Meshable> sides = new List<Meshable>();
-    //        foreach (ShapeObject so in inputs.shapes)
-    //        {
-    //            if (so.meshable.GetType() == typeof(SGGeometry.Extrusion))
-    //            {
-    //                Extrusion ext = (Extrusion)(so.meshable);
-    //                int last = ext.components.Count - 1;
+            for (int i = 0; i < outMeshables.Count; i++)
+            {
+                //if (outMeshables[i] == null) continue;
+                if (i >= extractedObjects.Count)
+                {
+                    ShapeObject nso = ShapeObject.CreateBasic();
+                    nso.parentRule = this;
+                    nso.step = this.step;
+                    nso.name = name;
+                    extractedObjects.Add(nso);
+                }
+                Meshable m = outMeshables[i];
+                if (m == null) throw new System.Exception("side is null at " + i);
+                extractedObjects[i].SetMeshable(m);
+                extractedObjects[i].GetComponent<MeshFilter>().mesh.RecalculateNormals();
+                extractedObjects[i].name = name;
+            }
+            Debug.Log("extractObjects.Count=" + extractedObjects.Count);
+            outputs.shapes.Clear();
+            outputs.shapes.AddRange(inputs.shapes.ToArray());
+            outputs.shapes.AddRange(extractedObjects.ToArray());
+            
+        }
 
-    //                tops.Add(ext.components[last]);
-    //            }
-    //        }
-    //        //delete extra ouputs
-    //        int dif = outputs.shapes.Count - (tops.Count+inputs.shapes.Count);
-    //        removeOutputsByCount(dif);
-
-    //        //assign outputs
-    //        for (int i = 0; i < inputs.shapes.Count; i++)
-    //        {
-    //            Meshable m = inputs.shapes[i].meshable;
-    //            if (i < outputs.shapes.Count)
-    //            {
-    //                outputs.shapes[i].SetMeshable(m);
-    //            }
-    //            else
-    //            {
-    //                ShapeObject o = ShapeObject.CreateMeshable(m);
-    //                o.parentRule = this;
-    //                o.step = step;
-    //                o.name = outputs.names[0];
-    //                outputs.shapes.Add(o);
-    //            }
-
-    //        }
-
-
-    //        for (int i = 0; i < tops.Count; i++)
-    //        {
-    //            int index = i + inputs.shapes.Count;
-    //            Meshable m = tops[i];
-    //            if (index < outputs.shapes.Count)
-    //            {
-    //                outputs.shapes[index].SetMeshable(m);
-    //            }
-    //            else
-    //            {
-    //                ShapeObject o = ShapeObject.CreateMeshable(m);
-    //                o.parentRule = this;
-    //                o.step = step;
-    //                o.name = outputs.names[0];
-    //                outputs.shapes.Add(o);
-    //            }
-
-    //        }
-    //    }
-    //}
-
-    //public class DcpFace2:Rule
-    //{
-    //    //top, east-west, south-north
-    //    public DcpFace2(string inName, string[] outNames = null)
-    //    {
-    //        if (outNames == null)
-    //        {
-    //            outNames = new string[] { "faceTop,faceSides" };
-    //        }
-    //        inputs.names.Add(inName);
-    //        outputs.names.AddRange(outNames);
-
-    //    }
-    //    public override void Execute()
-    //    {
-    //        outMeshables.Clear();
-    //        List<Meshable> tops = new List<Meshable>();
-    //        List<Meshable> sides = new List<Meshable>();
-    //        foreach(ShapeObject so in inputs.shapes)
-    //        {
-    //            if (so.meshable.GetType() == typeof(SGGeometry.Extrusion))
-    //            {
-    //                Extrusion ext = (Extrusion)(so.meshable);
-    //                int last = ext.components.Count-1;
-
-    //                tops.Add(ext.components[last]);
-    //            }
-    //        }
-
-    //        //delete extra ouputs
-    //        int dif = outputs.shapes.Count - tops.Count;
-    //        removeOutputsByCount(dif);
-
-    //        //assign outputs
-    //        for (int i = 0; i < tops.Count; i++)
-    //        {
-    //            Meshable m = tops[i];
-    //            if (i < outputs.shapes.Count)
-    //            {
-    //                outputs.shapes[i].SetMeshable(m);
-    //            }
-    //            else
-    //            {
-    //                ShapeObject o = ShapeObject.CreateMeshable(m);
-    //                o.parentRule = this;
-    //                o.step = step;
-    //                o.name = outputs.names[0];
-    //                outputs.shapes.Add(o);
-    //            }
-
-    //        }
-    //    }
-    //}
+    }
 
 
 }

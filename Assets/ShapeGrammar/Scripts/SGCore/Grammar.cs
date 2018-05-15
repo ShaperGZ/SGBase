@@ -30,10 +30,11 @@ namespace SGCore
         public Guid guid;
         
 
-        public Grammar():base()
+        public Grammar(bool addToScene=true):base()
         {
             guid = Guid.NewGuid();
-            SceneManager.AddGrammar(this);
+            if(addToScene)
+                SceneManager.AddGrammar(this);
             stagedOutputs = new List<SGIO>();
             subNodes = new List<GraphNode>();
             assignedObjects = new List<ShapeObject>();
@@ -223,7 +224,7 @@ namespace SGCore
             SelectStep(subNodes.Count - 1);
             outputs = stagedOutputs[stagedOutputs.Count - 1];
 
-            InvalidateProperties();
+            InvalidateBuilding();
             
         }
         public virtual void Execute(int i)
@@ -269,17 +270,12 @@ namespace SGCore
             }
             building.transform.position = pos;
         } 
-        public void InvalidateProperties()
+        public void InvalidateBuilding()
         {
             if (building != null)
             {
-                
                 building.Invalidate(true);
                 //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
-            }
-            else
-            {
-                //GameObject.Find("BuildingPropText").GetComponent<Text>().text = "this grammar is not associated to a building";
             }
         }
 

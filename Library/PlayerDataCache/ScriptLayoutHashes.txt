@@ -201,5 +201,6 @@ fc885483ac0db34f5efb02d965d53cb2 CTCommon.dll:Crosstales.Common.Util.RandomScale
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:Crosstales.UI.StaticManager
 f62765a452524a09eac0b0ba2341cc9e Assembly-CSharp.dll:.SGTransform
 3557e4544999eafac7f837e908c35411 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.AudioFilterController
-8356520742b4abbc30782d2d148888a7 Assembly-CSharp.dll:.DisplayManager
+165aad1f88a1706e1812bd545760bf2a Assembly-CSharp.dll:.DisplayManager
 b5c45198f4c6671c435fbb86cd823709 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.TakeScreenshot
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.BuildingParamEditor

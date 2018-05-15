@@ -109,6 +109,7 @@ namespace SGCore
                     try
                     {
                         GameObject.Destroy(outputs.shapes[index].gameObject);
+                        //outputs.shapes.RemoveAt(index);
                     }
                     catch { }
                     outputs.shapes.RemoveAt(index);

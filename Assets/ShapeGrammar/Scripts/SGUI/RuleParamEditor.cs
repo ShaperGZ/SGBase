@@ -166,7 +166,7 @@ namespace SGGUI {
             {
                 Parameter p = pg.parameters[i];
                 float value = p.Value;
-                Debug.Log("value=" + value);
+                //Debug.Log("value=" + value);
                 //GameObject o = new GameObject();
                 InputField ipf = Instantiate(inputFieldPrefab, pgui);
                 RectTransform ipftrans = ipf.transform as RectTransform;

@@ -33,7 +33,12 @@ SketchUpImporter:
     2300000: "\u7EC4\u4EF6#1"
     3300000: "\u7EC4\u4EF6#1"
     4300000: "Mesh \u7EC4\u4EF6#1"
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _defaultMat
+    second: {fileID: 2100016, guid: f6738e2930c54f04fa81f41e7712b261, type: 3}
   materials:
     importMaterials: 1
     materialName: 2

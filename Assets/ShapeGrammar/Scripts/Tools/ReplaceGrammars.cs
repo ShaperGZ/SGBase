@@ -24,9 +24,9 @@ public class ReplaceGrammars : MonoBehaviour {
         Debug.Log("show panel");
         gameObject.SetActive(true);
     }
-    public Grammar GA()
+    public Grammar GA(bool addToScene=true)
     {
-        Grammar g = new Grammar();
+        Grammar g = new Grammar(addToScene);
         g.category = "massingForm";
         g.inputs.names.Add("APT");
         g.name = "AptFormA";
@@ -35,9 +35,9 @@ public class ReplaceGrammars : MonoBehaviour {
         g.AddRule(new Rules.Scale3D("C", "APT", new Vector3(1.3f, 0.7f, 1.6f), null, Alignment.NE), false);
         return g;
     }
-    public Grammar GB()
+    public Grammar GB(bool addToScene = true)
     {
-        Grammar g = new Grammar();
+        Grammar g = new Grammar(addToScene);
         g.category = "massingForm";
         g.inputs.names.Add("APT");
         g.name = "AptFormB";
@@ -51,9 +51,9 @@ public class ReplaceGrammars : MonoBehaviour {
         g.AddRule(new Rules.Scale3D("B", "APT", new Vector3(1.2f, 1f, 1.2f), null, Alignment.N), false);
         return g;
     }
-    public Grammar GC()
+    public Grammar GC(bool addToScene = true)
     {
-        Grammar g = new Grammar();
+        Grammar g = new Grammar(addToScene);
         g.category = "massingForm";
         g.inputs.names.Add("APT");
         g.name = "AptFormC";
@@ -105,8 +105,7 @@ public class ReplaceGrammars : MonoBehaviour {
         }
         //gameObject.SetActive(false);
     }
-
-    public void BatchReplaceA()
+    public void BatchReplace(Grammar newGrammar)
     {
         if (SceneManager.existingGrammar.Count < 1) return;
         List<Grammar> gs = new List<Grammar>();
@@ -119,66 +118,35 @@ public class ReplaceGrammars : MonoBehaviour {
         for (int i = 0; i < gs.Count; i++)
         {
             Grammar g = gs[i];
+            Grammar gg = null;
             for (int j = 0; j < g.subNodes.Count; j++)
             {
                 GraphNode n = g.subNodes[j];
                 if (n.category == "massingForm")
                 {
-                    Grammar gg = (Grammar)n;
-                    GA().CloneTo(gg);
+                    gg = (Grammar)n;
+                    break;
+                    
                 }
             }
-            g.Execute();
+            if (gg!=null)
+            {
+                newGrammar.CloneTo(gg);
+                g.Execute();
+            }
+            
         }
+    }
+    public void BatchReplaceA()
+    {
+        BatchReplace(GA(false));
     }
     public void BatchReplaceB()
     {
-        if (SceneManager.existingGrammar.Count < 1) return;
-        List<Grammar> gs = new List<Grammar>();
-        foreach(Grammar g in SceneManager.existingGrammar.Values)
-        {
-            gs.Add(g);
-        }
-
-
-        for(int i=0;i<gs.Count;i++)
-        {
-            Grammar g = gs[i];
-            for(int j=0;j<g.subNodes.Count;j++)
-            {
-                GraphNode n = g.subNodes[j];
-                if (n.category == "massingForm")
-                {
-                    Grammar gg = (Grammar)n;
-                    GB().CloneTo(gg);
-                }
-            }
-            g.Execute();
-        }
+        BatchReplace(GB(false));
     }
     public void BatchReplaceC()
     {
-        if (SceneManager.existingGrammar.Count < 1) return;
-        List<Grammar> gs = new List<Grammar>();
-        foreach (Grammar g in SceneManager.existingGrammar.Values)
-        {
-            gs.Add(g);
-        }
-
-
-        for (int i = 0; i < gs.Count; i++)
-        {
-            Grammar g = gs[i];
-            for (int j = 0; j < g.subNodes.Count; j++)
-            {
-                GraphNode n = g.subNodes[j];
-                if (n.category == "massingForm")
-                {
-                    Grammar gg = (Grammar)n;
-                    GC().CloneTo(gg);
-                }
-            }
-            g.Execute();
-        }
+        BatchReplace(GC(false));
     }
 }

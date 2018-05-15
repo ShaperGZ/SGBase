@@ -376,11 +376,13 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\Patterns.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Aggrigation.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Calculations.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Composit.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Conditional.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Creation.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Decompose.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\DivideRules.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Grow.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Identifier.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SceneManager.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGCore\BuildingProperties.cs" />

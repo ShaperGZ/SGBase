@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: a83c8bf46b3b857499f3727b768839a5
-timeCreated: 1526282682
+timeCreated: 1526384451
 licenseType: Pro
 SketchUpImporter:
   generateBackFace: 0
@@ -8,16 +8,16 @@ SketchUpImporter:
   selectedNodes: 0000000001000000
   assetHash:
     serializedVersion: 2
-    Hash: 581c888773c394b68258c8fb20b3109f
+    Hash: 9c51a9fe0368bcf39f13c84f1b24dd7c
   longitude: 116.38833
   latitude: 39.92889
   northCorrection: -0
   fileUnit: 0
   sketchUpImportData:
     defaultCamera:
-      position: {x: 4.0849285, y: 0.7170666, z: -2.737216}
-      lookAt: {x: -13.258777, y: 1.3374754, z: 14.611898}
-      up: {x: 0.017874414, y: 0.99968034, z: -0.017879989}
+      position: {x: 3.1227107, y: -1.3075117, z: -2.8643644}
+      lookAt: {x: -11.740648, y: 10.238194, z: 12.882319}
+      up: {x: 0.32295674, y: 0.8824015, z: -0.34214997}
       fov: 35
       aspectRatio: 0
       orthoSize: 1
@@ -28,10 +28,33 @@ SketchUpImporter:
     100000: //RootNode
     400000: //RootNode
     2100000: _defaultMat
+    2100002: '[Color_D11]'
+    2100004: '[Color_D10]'
+    2100006: '[Color_D15]'
     2300000: //RootNode
     3300000: //RootNode
     4300000: Mesh comp2
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: '[Color_D10]'
+    second: {fileID: 2100000, guid: d15c0138e6e150141a6bbba6451d6a83, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: '[Color_D11]'
+    second: {fileID: 2100000, guid: 6f923ab4fccab3647a6e8ccad5311df6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: '[Color_D15]'
+    second: {fileID: 2100000, guid: ee2966e9842bad549a13a8647e6d746b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _defaultMat
+    second: {fileID: 2100000, guid: 57227757753f9054bb7be48a7538fe8f, type: 2}
   materials:
     importMaterials: 1
     materialName: 2

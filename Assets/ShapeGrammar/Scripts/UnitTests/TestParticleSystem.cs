@@ -62,7 +62,7 @@ public class TestParticleSystem : MonoBehaviour {
 
 
         g.AddRule(g2);
-
+        //g.AddRule(new Rules.ExtractFace(new string[] { "APT" }, "TOP", "TOP"), false);
         //g.AddRule(new Rules.DivideToFTFH("APT", "APTL", 4));
         //g.AddRule(new Rules.DivideToFTFH("APT2", "APTL", 4));
 
