@@ -446,7 +446,7 @@ namespace Rules
                 }
 
             }//for i
-            Debug.Log("outMeshables.Count=" + outMeshables.Count);
+            //Debug.Log("outMeshables.Count=" + outMeshables.Count);
             int dif = extractedObjects.Count - outMeshables.Count;
             if (dif > 0)
             {

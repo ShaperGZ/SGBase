@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SGGeometry
 {
+    
     public class SGUtility 
     {
         public static Vector3 CenterOfGravity(Vector3[] pts)
@@ -54,6 +55,88 @@ namespace SGGeometry
             return point;
         }
         
+        
+
+        public static Meshable[] DivideFormToLength(Meshable mb,float length,int axis)
+        {
+            float total = mb.bbox.size[axis];
+            int count = Mathf.RoundToInt(total / length);
+            return DivideFormByCount(mb, count, axis);
+        }
+        public static Meshable[] DivideFormByCount(Meshable mb, int count, int axis)
+        {
+            float ratio = (float)1 / (float)count;
+            float[] divs = new float[count];
+            for (int i = 0; i < divs.Length; i++)
+            {
+                divs[i] = ratio;
+                //Debug.LogFormat("ratio[{0}]={1}", i,ratio);
+            }
+
+            return DivideFormByDivsRatio(mb, divs, axis);
+        }
+        public static Meshable[] DivideFormByDivsRatio(Meshable mb, float[] divs, int axis)
+        {
+            List<Meshable> outMeshable = new List<Meshable>();
+            Vector3 n = mb.bbox.vects[axis];
+            //Debug.Log("n=" + n);
+            Vector3 org = mb.bbox.vertices[0];
+            Vector3 offset = n * divs[0]*mb.bbox.size[axis];
+            //Debug.Log("offset=" + offset);
+            org += offset;
+            Plane pln = new Plane(n, org);
+            Meshable[] splits = mb.SplitByPlane(pln);
+            if (splits[0] != null)
+            {
+                splits[0].bbox = BoundingBox.CreateFromPoints(splits[0].vertices, mb.bbox);
+                outMeshable.Add(splits[0]);
+            }
+            else throw new System.Exception("splits[0] is null!");
+
+            Meshable remain = splits[1];
+            int counter = 0;
+            while (remain != null && counter<divs.Length)
+            {
+                org += offset;
+                //Debug.Log("org=" + org);
+                pln = new Plane(n, org);
+                splits = remain.SplitByPlane(pln);
+                //splits = Rules.Bisect.SplitByPlane(remain, pln);
+                if (splits[0] != null)
+                {
+                    splits[0].bbox = BoundingBox.CreateFromPoints(splits[0].vertices, mb.bbox);
+                    outMeshable.Add(splits[0]);
+                }
+                else throw new System.Exception("splits[0] is null!");
+                remain = splits[1];
+                counter++;
+            }
+            return outMeshable.ToArray();
+        }
+        public static void ScaleForm(Meshable mb, float scale, Alignment? alignment = null)
+        {
+            Vector3 vscale = new Vector3(scale, scale, scale);
+            ScaleForm(mb, vscale, alignment);
+        }
+        public static void ScaleForm(Meshable mb, Vector3 scale, Alignment? alignment=null)
+        {
+            Vector3 org = mb.bbox.GetOriginFromAlignment(alignment);
+            mb.Scale(scale, mb.bbox.vects, org, false);
+        }
+
+        public static void RemoveExtraShapeObjects(ref List<ShapeObject> sos, int count)
+        {
+            for (int i= 0; i < count; i++)
+            {
+                int index = sos.Count - 1;
+                try
+                {
+                    GameObject.Destroy(sos[index].gameObject);
+                }
+                catch { }
+                sos.RemoveAt(index);
+            }
+        }
 
         // Find the point of intersection between
         // the lines p1 --> p2 and p3 --> p4.

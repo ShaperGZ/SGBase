@@ -548,7 +548,7 @@ namespace Rules
     }
     public class Scale3D : Rule
     {
-        protected int? alignment = null;
+        protected Alignment? alignment = null;
         Plane cutPlane;
         public Scale3D() : base()
         {
@@ -557,7 +557,7 @@ namespace Rules
             paramGroups = DefaultParam();
             name = "Scale3D";
         }
-        public Scale3D(string inName, string outName, Vector3 scale, Vector2? randRange=null,int? ialignment=null) : base(inName, new string[] { outName })
+        public Scale3D(string inName, string outName, Vector3 scale, Vector2? randRange=null,Alignment? ialignment=null) : base(inName, new string[] { outName })
         {
             name = "Scale3D";
             alignment = ialignment;

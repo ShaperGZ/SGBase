@@ -9,6 +9,8 @@ namespace SGCore
     {
         public Site site;
         public Building building;
+        public SGBuilding sgbuilding;
+
         public SGIO inputs;
         public SGIO outputs;
         public List<GraphNode> upStreams;
@@ -57,17 +59,43 @@ namespace SGCore
             foreach (string n in outputs.names) txt += n + ',';
             return txt;
         }
+        public void ReplaceUpstream(GraphNode org, GraphNode rpl)
+        {
+            int index = upStreams.IndexOf(org);
+            if (index > 0)
+            {
+                upStreams[index].DisconnectDownStream(this);
+                upStreams[index] = rpl;
+                rpl.ConnectDownStream(this);
+            }
 
+        }
         public void ConnectDownStream(GraphNode node)
         {
-            downStreams.Add(node);
-            node.upStreams.Add(this);
-
+            if (downStreams == null)
+            {
+                downStreams = new List<GraphNode>();
+            }
+            if(!downStreams.Contains(node))
+            {
+                downStreams.Add(node);
+                Debug.Log("downStream added:" + node.name);
+            }
+                
+            if(!node.upStreams.Contains(this))
+            {
+                node.upStreams.Add(this);
+                Debug.Log("  upStream added:" + this);
+            }
+                
+            
         }
         public void DisconnectDownStream(GraphNode node)
         {
-            downStreams.Remove(node);
-            node.upStreams.Remove(this);
+            if(downStreams.Contains(node))
+                downStreams.Remove(node);
+            if(node.upStreams.Contains(this))
+                node.upStreams.Remove(this);
         }
 
         public void Invalidate()

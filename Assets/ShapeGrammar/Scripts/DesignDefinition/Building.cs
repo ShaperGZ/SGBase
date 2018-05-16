@@ -27,6 +27,11 @@ public class Building {
     public List<Floor> floors;
     public Site site;
 
+    //units
+    public List<List<Meshable>> units;
+    public List<ShapeObject> unitSOS;
+    
+
     public float ground = 0;
     public float gfa = -1;
     public float height = -1;
@@ -41,6 +46,14 @@ public class Building {
     Dictionary<string, float> subGfa;
     public ShapeObject positionReference;
     public GameObject coordRef;
+    
+    public enum DisplayMode
+    {
+        GRAPHICS,UNIT
+    }
+    public DisplayMode mode = DisplayMode.GRAPHICS;
+    public DisplayMode lastMode = DisplayMode.GRAPHICS;
+
     public Building(Vector3? pos=null)
     {
         coordRef = new GameObject();
@@ -86,6 +99,20 @@ public class Building {
         {
             UpdateParams();
         }
+        
+        switch (mode)
+        {
+            case DisplayMode.GRAPHICS:
+                GraphicsMode();
+                break;
+            case DisplayMode.UNIT:
+                UnitMode();
+                break;
+            default:
+                break;
+        }
+        
+        lastMode = mode;
     }
     public void UpdateForms()
     {
@@ -99,7 +126,7 @@ public class Building {
                 //Debug.LogFormat("{0}=={1}:{2}", so.name, "T", so.name == "T");
                 if (so.name == "TOP")
                 {
-                    Debug.Log("found top");
+                    //Debug.Log("found top");
                     so.GetComponent<MeshRenderer>().material = mm.Grass0;
                     //so.Show(false);
                 }
@@ -246,4 +273,55 @@ public class Building {
         //    g.SetVisible(true);
         //}
     }
+
+    public void UnitMode()
+    {
+        Debug.LogFormat("mode==unit:{0},lastMode==unit:{1}", this.mode == DisplayMode.UNIT, this.lastMode == DisplayMode.UNIT);
+        if (this.lastMode != DisplayMode.UNIT)
+        {
+            Debug.Log("re execute " + grammars[0].name);
+            this.lastMode = DisplayMode.UNIT;
+            this.mode = DisplayMode.UNIT;
+            grammars[0].Execute();
+            Debug.Log("finish reExecute");
+            return;
+        }
+
+        mode = DisplayMode.UNIT;
+        foreach(ShapeObject o in grammars[0].stagedOutputs[grammars[0].stagedOutputs.Count - 1].shapes)
+        {
+            o.Show(false);
+        }
+        if (unitSOS == null) unitSOS = new List<ShapeObject>();
+        //if (unitSOS == null || unitSOS.Count<1) return;
+        if (units==null || units.Count < 1) return;
+        int dif = unitSOS.Count- units[0].Count;
+        if (dif > 0) SGUtility.RemoveExtraShapeObjects(ref unitSOS, dif);
+        for (int i = 0; i < units[0].Count; i++)
+        {
+            if (i >= unitSOS.Count) unitSOS.Add(ShapeObject.CreateBasic());
+            Meshable m = (Meshable)units[0][i].Clone();
+            SGUtility.ScaleForm(m, new Vector3(0.9f, 0.7f, 1f), Alignment.Center3D);
+            unitSOS[i].SetMeshable(m);
+            unitSOS[i].Show(true);
+        }
+
+    }
+    public void GraphicsMode()
+    {
+        mode = DisplayMode.GRAPHICS;
+        foreach (ShapeObject o in grammars[0].stagedOutputs[grammars[0].stagedOutputs.Count - 1].shapes)
+        {
+            o.Show(true);
+        }
+        if (unitSOS != null)
+        {
+            foreach (ShapeObject o in unitSOS)
+            {
+                o.Show(false);
+            }
+        }
+        
+    }
+
 }

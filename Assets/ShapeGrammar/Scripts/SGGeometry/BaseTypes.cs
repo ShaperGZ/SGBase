@@ -167,31 +167,37 @@ namespace SGGeometry
             bbox.vertices = vertices.ToArray();
             return bbox;
         }
-        public virtual Vector3 GetOriginFromAlignment(int alignment)
+        public virtual Vector3 GetOriginFromAlignment(Alignment? alignment)
         {
-            switch (alignment)
+            if(alignment.HasValue)
             {
-                case Alignment.Center:
-                    return (vertices[0] + vertices[2]) / 2;
-                case Alignment.E:
-                    return (vertices[2] + vertices[1]) / 2;
-                case Alignment.W:
-                    return (vertices[0] + vertices[3]) / 2;
-                case Alignment.S:
-                    return (vertices[0] + vertices[1]) / 2;
-                case Alignment.N:
-                    return (vertices[2] + vertices[3]) / 2;
-                case Alignment.SE:
-                    return vertices[1];
-                case Alignment.SW:
-                    return vertices[0];
-                case Alignment.NE:
-                    return vertices[2];
-                case Alignment.NW:
-                    return vertices[3];
-                default:
-                    return vertices[0];
+                switch (alignment.Value)
+                {
+                    case Alignment.Center:
+                        return (vertices[0] + vertices[2]) / 2;
+                    case Alignment.Center3D:
+                        return (vertices[0] + vertices[6]) / 2;
+                    case Alignment.E:
+                        return (vertices[2] + vertices[1]) / 2;
+                    case Alignment.W:
+                        return (vertices[0] + vertices[3]) / 2;
+                    case Alignment.S:
+                        return (vertices[0] + vertices[1]) / 2;
+                    case Alignment.N:
+                        return (vertices[2] + vertices[3]) / 2;
+                    case Alignment.SE:
+                        return vertices[1];
+                    case Alignment.SW:
+                        return vertices[0];
+                    case Alignment.NE:
+                        return vertices[2];
+                    case Alignment.NW:
+                        return vertices[3];
+                    default:
+                        return vertices[0];
+                }
             }
+            return vertices[0];
         }
         public string Format()
         {
@@ -465,18 +471,9 @@ namespace SGGeometry
         }
 
     }
-    public class Alignment
+    public enum Alignment
     {
-        public const int Center = 111;
-        public const int S = 112;
-        public const int N = 113;
-        public const int W = 114;
-        public const int E = 115;
-
-        public const int SE = 116;
-        public const int SW = 117;
-        public const int NE = 118;
-        public const int NW = 119;
+        Center,Center3D,S,N,W,E,SE,SW,NE,NW
     }
     public class GeometryBase
     {
@@ -1734,12 +1731,29 @@ namespace SGGeometry
             
             return new Meshable[] { null,(Meshable)this.Clone() };
         }
+        //public override Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
+        //{
+        //    Extrusion ext;
+        //    if (duplicate) ext = (Extrusion)this.Clone();
+        //    else ext = this;
 
+        //    Meshable smb = base.Scale(scale, vects, origin, true);
+        //    ext.vertices = smb.vertices;
+        //    ext.polygon.Scale(scale, vects, origin, false);
+        //    foreach (Meshable m in ext.components)
+        //    {
+        //        m.Scale(scale, vects, origin, false);
+        //    }
+        //    ext.height = height * scale[1];
+        //    ext.magUp = new Vector3(0, height, 0);
+        //    return ext;
+        //}
         public override Meshable Scale(Vector3 scale, Vector3[] vects, Vector3 origin, bool duplicate = true)
         {
             Meshable dup = base.Scale(scale, vects, origin, duplicate);
             List<Meshable> comps = new List<Meshable>();
-            Meshable mbpolygon = polygon.Scale(scale, vects, origin, duplicate);
+            Meshable mbpolygon = polygon.Scale(scale, vects, origin, true);
+            if (mbpolygon == null) throw new Exception("null scaled polygon");
             Polygon pg = new Polygon(mbpolygon.vertices);
             foreach (Meshable m in components)
             {
@@ -1749,7 +1763,7 @@ namespace SGGeometry
             if (duplicate)
             {
                 Extrusion cm = new Extrusion();
-                cm.height = height*scale[1];
+                cm.height = height * scale[1];
                 cm.magUp = new Vector3(0, cm.height, 0);
                 cm.polygon = pg;
                 cm.vertices = dup.vertices;
@@ -1762,7 +1776,7 @@ namespace SGGeometry
                 magUp = scale * scale[1];
                 components = comps;
             }
-            
+
             return null;
         }
         public override PointsBase Clone()

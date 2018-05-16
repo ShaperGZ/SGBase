@@ -1,6 +1,6 @@
 WindowsStandalone
 SceneListBegin?
-Assets/Scene/scene_rules.unity
+Assets/Scene/ParametricBuilding.unity
 SceneListEnd?
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TextWheeler
 a7a85e3660316548e6df72942099a49d Assembly-CSharp-firstpass.dll:Crosstales.Common.Util.BackgroundController
@@ -23,6 +23,7 @@ a95e17eb201aebf10a73a38260b1d187 Assembly-CSharp-firstpass.dll:Crosstales.UI.UIF
 76e06ba249210c5086ddfccdba52b57c Assembly-CSharp.dll:.IconPreview
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.test
 32d9f3260a7d08d8ff579e99f99ca6ba Assembly-CSharp.dll:.DrawingGrid
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestUtility
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 49cd62a578efc0a599b810a2b66cd49c UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -129,12 +130,14 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 1e0b99b01fbc3b73c8a72e7f6a3667c5 Assembly-CSharp-firstpass.dll:Crosstales.FB.Demo.Examples
 322cb40e1e282f28af980cbef7922a90 UnityEngine.Analytics.dll:UnityEngine.Analytics.AnalyticsEventTracker
 dc07d7ad69b399a46e92c483bf1c04ca UnityEngine.Analytics.dll:UnityEngine.Analytics.AnalyticsTracker
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.SchemeColor
 bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.AudioSpatializerMicrosoft
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInput
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
 7b419e6f4f9e4c87f741e073e6fe5562 Assembly-CSharp-firstpass.dll:Crosstales.FB.Demo.GUIScenes
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.NewBehaviourScript
 3b1e7b3fcbc0070781b85002ada379e7 Assembly-CSharp-firstpass.dll:Crosstales.FB.Demo.GUIMain
 61f7d7e397ed4fa454e6d7d65a61d438 Assembly-CSharp-firstpass.dll:Crosstales.UI.UIResize
 381c649bef02cf61406650d720dff590 Assembly-CSharp.dll:.TestIntersection
@@ -203,4 +206,4 @@ f62765a452524a09eac0b0ba2341cc9e Assembly-CSharp.dll:.SGTransform
 3557e4544999eafac7f837e908c35411 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.AudioFilterController
 165aad1f88a1706e1812bd545760bf2a Assembly-CSharp.dll:.DisplayManager
 b5c45198f4c6671c435fbb86cd823709 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.TakeScreenshot
-05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.BuildingParamEditor
+e38b50790ecfb94daa9a4cde7663f54e Assembly-CSharp.dll:.BuildingParamEditor

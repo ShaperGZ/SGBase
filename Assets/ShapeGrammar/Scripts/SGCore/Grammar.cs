@@ -56,7 +56,7 @@ namespace SGCore
             g.inputs.names.Clear();
             g.inputs.names.AddRange(inputs.names.ToArray());
         }
-        public GraphNode FindFisrt(string name)
+        public GraphNode FindFirst(string name)
         {
             foreach (GraphNode n in subNodes)
             {
@@ -200,10 +200,12 @@ namespace SGCore
 
         public override void Execute()
         {
-            if (assignedObjects != null)
-                foreach (ShapeObject s in assignedObjects) s.Show(false);
-            if (inputs.shapes != null)
-                foreach (ShapeObject s in inputs.shapes) s.Show(false);
+            //if (assignedObjects != null)
+            //    foreach (ShapeObject s in assignedObjects) s.Show(false);
+            //if (inputs.shapes != null)
+            //    foreach (ShapeObject s in inputs.shapes)
+            //    {s.Show(false); }
+
             //removeParent();
             ExecuteFrom(0);
         }
@@ -222,7 +224,18 @@ namespace SGCore
             }
             DisplayStep(subNodes.Count - 1);
             SelectStep(subNodes.Count - 1);
-            outputs = stagedOutputs[stagedOutputs.Count - 1];
+            if(stagedOutputs.Count>0)
+                outputs = stagedOutputs[stagedOutputs.Count - 1];
+
+
+            //Debug.LogFormat("{0} has {1} downstreams", name, downStreams.Count);
+            if (downStreams.Count > 0)
+            {
+                foreach(GraphNode n in downStreams)
+                {
+                    n.Execute();
+                }
+            }
 
             InvalidateBuilding();
             
@@ -277,6 +290,11 @@ namespace SGCore
                 building.Invalidate(true);
                 //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
             }
+            if (sgbuilding != null)
+            {
+                sgbuilding.Invalidate(true);
+                //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
+            }
         }
 
         public virtual SGIO PreExecution(int step)
@@ -291,9 +309,27 @@ namespace SGCore
             if (step == 0)
             {
                 //Debug.Log(string.Format("step==0, inputShapeCount={0} assignedCount={1}", inputs.shapes.Count , assignedObjects.Count));
-                if (assignedObjects.Count > 0)
+                if (upStreams.Count > 0)
                 {
-                    foreach (ShapeObject so in assignedObjects) so.gameObject.active = false;
+                    inputs.shapes.Clear();
+                    foreach (GraphNode g in upStreams)
+                    {
+                        foreach(ShapeObject so in g.outputs.shapes)
+                        {
+                            if (inputs.names.Contains(so.name))
+                            {
+                                inputs.shapes.Add(so);
+                                so.Show(false);
+                            }
+                        }
+                    }
+                    subNodes[0].inputs.shapes = inputs.shapes;
+                    Debug.Log("inputs.shapes.count=" + inputs.shapes.Count);
+                    return tobeMerged;
+                }
+                else if (assignedObjects.Count > 0)
+                {
+                    foreach (ShapeObject so in assignedObjects) so.Show(false);
                     subNodes[0].inputs.shapes = assignedObjects;
                     return tobeMerged;
                 }
@@ -389,7 +425,12 @@ namespace SGCore
                 if (assignedObjects != null)
                     foreach (ShapeObject s in assignedObjects) s.Show(false);
                 if (inputs.shapes != null)
-                    foreach (ShapeObject s in inputs.shapes) s.Show(false);
+                    foreach (ShapeObject s in inputs.shapes)
+                    {
+                        //Debug.Log(s.Format());
+                        if(s!=null)
+                            s.Show(false);
+                    }
 
                 for (int i = 0; i < stagedOutputs.Count; i++)
                 {
@@ -427,7 +468,7 @@ namespace SGCore
                 if(assignedObjects !=null)
                     foreach (ShapeObject s in assignedObjects) s.Show(true);
                 if (inputs.shapes != null)
-                    foreach (ShapeObject s in inputs.shapes) s.Show(true);
+                    foreach (ShapeObject s in inputs.shapes) try { s.Show(true); } catch { Debug.Log("null so"); }
             }
             
 
@@ -589,7 +630,7 @@ namespace SGCore
             {
                 foreach (ShapeObject so in sgio.shapes)
                 {
-                    if (so != null)
+                    if (so != null && !inputs.shapes.Contains(so))
                     {
                         GameObject.Destroy(so.gameObject);
                         GameObject.Destroy(so);

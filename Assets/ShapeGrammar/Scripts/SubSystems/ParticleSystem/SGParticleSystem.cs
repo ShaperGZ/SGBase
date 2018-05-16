@@ -368,8 +368,8 @@ public class SGPlaningParticleSystemAH : SGParticleSystem
                     
                     if (h1>30 && SNTooClose && dz < maxD)
                     {
-                        Rule r1 = (Rule)p1.grammar.FindFisrt("SizeBuilding3D");
-                        Rule r2 = (Rule)p2.grammar.FindFisrt("SizeBuilding3D");
+                        Rule r1 = (Rule)p1.grammar.FindFirst("SizeBuilding3D");
+                        Rule r2 = (Rule)p2.grammar.FindFirst("SizeBuilding3D");
                         if(r1!=null && r2!=null)
                         {
                             float val1 = r1.GetParamVal("Size", 1);
@@ -483,7 +483,7 @@ public class SGPlaningParticleSystemV : SGParticleSystem
             }
             minDA = Mathf.Clamp(minDA,0, 150);
             float h =15 + (minDA/2);
-            Rule r =(Rule)p1.grammar.FindFisrt("SizeBuilding3D");
+            Rule r =(Rule)p1.grammar.FindFirst("SizeBuilding3D");
             r.SetParam("Size", 1, h);
             p1.grammar.building.height = h;
 

@@ -7,8 +7,12 @@ using SGCore;
 public class BuildingParamEditor : MonoBehaviour {
 
     Transform[] trans = new Transform[8];
-    Building building=null;
+    SGBuilding building=null;
     Grammar grammar=null;
+
+    public Button btGraphicsMode;
+    public Button btUnitMode;
+
     // Use this for initialization
     private void Awake()
     {
@@ -45,14 +49,25 @@ public class BuildingParamEditor : MonoBehaviour {
             }
         }
 
-        
+        btGraphicsMode.onClick.AddListener(delegate { buildingGraphicsMode(); });
+        btUnitMode.onClick.AddListener(delegate { buildingProgramMode(); });
 
 
 
     }
     void Start () {
 	}
-	public void SetBuilding(Building b)
+    public void buildingGraphicsMode()
+    {
+        if (building == null) return;
+        building.GraphicsMode();
+    }
+    public void buildingProgramMode()
+    {
+        if (building == null) return;
+        building.ProgramMode();
+    }
+	public void SetBuilding(SGBuilding b)
     {
         if (b == null)
         {
@@ -65,7 +80,7 @@ public class BuildingParamEditor : MonoBehaviour {
         }
         building = b;
         b.buildingParamEditor = this;
-        grammar = b.grammars[0];
+        grammar = b.gPlaning;
         b.UpdateParams();
         b.freeze = true;
         //UpdateBuildingParamDisplay();
@@ -107,7 +122,7 @@ public class BuildingParamEditor : MonoBehaviour {
     public void ChangeHeight(float f)
     {
 
-        GraphNode gn = grammar.FindFisrt("SizeBuilding3D");
+        GraphNode gn = grammar.FindFirst("SizeBuilding3D");
         if(gn!=null)
         {
             //float val = gn.GetParamVal("Size", 1);

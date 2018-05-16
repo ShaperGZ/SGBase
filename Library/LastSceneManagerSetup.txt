@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scene/scene_rules.unity
+- path: Assets/Scene/ParametricBuilding.unity
   isLoaded: 1
   isActive: 1

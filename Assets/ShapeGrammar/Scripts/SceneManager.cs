@@ -104,7 +104,7 @@ public class SceneManager : MonoBehaviour {
             }
         }
 
-        SelectedBuilding = g.building;
+        SelectedBuilding = g.sgbuilding;
         
     }
     public static void unAssignGrammar()
@@ -173,8 +173,8 @@ public class SceneManager : MonoBehaviour {
     }
 
     public static BuildingParamEditor buildingParamEditor;
-    public static Building _selectedBuilding;
-    public static Building SelectedBuilding
+    public static SGBuilding _selectedBuilding;
+    public static SGBuilding SelectedBuilding
     {
         get
         {
@@ -189,7 +189,7 @@ public class SceneManager : MonoBehaviour {
             SelectBuilding(value);
         }
     }
-    public static void SelectBuilding(Building b)
+    public static void SelectBuilding(SGBuilding b)
     {
         _selectedBuilding = b;
         BuildingParamEditor bpe= buildingParamEditor;
