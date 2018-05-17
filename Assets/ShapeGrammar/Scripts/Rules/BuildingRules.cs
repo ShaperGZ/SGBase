@@ -27,7 +27,7 @@ namespace Rules
                 SGBuilding b = o.parentRule.grammar.sgbuilding;
                 //Debug.Log(b.mode.ToString());
                 //Debug.LogFormat("b.mode==unit{0}", b.mode == Building.DisplayMode.UNIT);
-                if (b.mode != SGBuilding.DisplayMode.PROGRAM) continue;
+                if (b.displayMode != SGBuilding.DisplayMode.PROGRAM) continue;
 
                 Debug.Log("getting units");
                 if (!container.ContainsKey(b))
@@ -48,6 +48,7 @@ namespace Rules
             outputs.shapes = inputs.shapes;
         }
     }
+
     public class DcpFlrToUnitsReal : Rule
     {
         public DcpFlrToUnitsReal() : base() { name = "DcpFlrToUnits"; }
@@ -63,15 +64,53 @@ namespace Rules
         {
             //Debug.Log("Executing unit, input count="+inputs.shapes.Count);
             //if(sgbuilding!=null && sgbuilding.mode==SGBuilding.DisplayMode.PROGRAM)
-            
+            int counter = -1;
+            List<string> names = new List<string>();
+            Dictionary<string, Color> namedColors = new Dictionary<string, Color>();
             string namePrefix = outputs.names[0];
             outMeshables.Clear();
+            List<Color> colors = new List<Color>();
+            //Dictionary<float, List<Meshable>> sortedContainer = new Dictionary<float, List<Meshable>>();
 
             foreach (ShapeObject o in inputs.shapes)
             {
+                if(o.name==inputs.names[0])
+                {
+                    Meshable[] units = SGUtility.DivideFormToLength(o.meshable, 3, 0);
+                    float d = o.Size[2];
+                    string mbname = namePrefix + d.ToString();
+                    if (!namedColors.ContainsKey(mbname))
+                    {
+                        counter++;
+                        Color c = SchemeColor.ColorSetDefault[counter];
+                        namedColors.Add(mbname, c);
+                    }
+                    foreach (Meshable mb in units)
+                    {
+                        mb.name = mbname;
+                        mb.Scale(new Vector3(0.9f, 0.8f, 1f), mb.bbox.vects, mb.bbox.GetOriginFromAlignment(Alignment.Center), false);
+                    }
+                    outMeshables.AddRange(units);
+                }
+                if (inputs.names.Count>1 && o.name == inputs.names[1])
+                {
+                    Meshable[] units = SGUtility.DivideFormToLength(o.meshable, 3, 2);
+                    float d = o.Size[2];
+                    string mbname = namePrefix + d.ToString();
+                    if (!namedColors.ContainsKey(mbname))
+                    {
+                        counter++;
+                        Color c = SchemeColor.ColorSetDefault[counter];
+                        namedColors.Add(mbname, c);
+                    }
+                    foreach (Meshable mb in units)
+                    {
+                        mb.name = mbname;
+                        mb.Scale(new Vector3(1f, 0.8f, 0.9f), mb.bbox.vects, mb.bbox.GetOriginFromAlignment(Alignment.Center), false);
+                    }
+                    outMeshables.AddRange(units);
+                }
 
-                Meshable[] units = SGUtility.DivideFormToLength(o.meshable, 3, 0);
-                outMeshables.AddRange(units);
             }
 
             int dif = outputs.shapes.Count - outMeshables.Count;
@@ -84,11 +123,12 @@ namespace Rules
                     outputs.shapes.Add(ShapeObject.CreateBasic());
                 }
                 Meshable m = outMeshables[i];
-                m.Scale(new Vector3(0.8f, 0.8f, 1f), m.bbox.vects, m.bbox.GetOriginFromAlignment(Alignment.Center), false);
                 //Debug.Log("meshable=" + m.ToString());
+                
                 outputs.shapes[i].SetMeshable(m);
-                outputs.shapes[i].name = namePrefix + "_A";
+                outputs.shapes[i].name = m.name;
                 outputs.shapes[i].parentRule = this;
+                outputs.shapes[i].GetComponent<MeshRenderer>().material.color = namedColors[m.name];
             }
             
             

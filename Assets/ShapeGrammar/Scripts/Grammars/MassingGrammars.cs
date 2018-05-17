@@ -11,6 +11,9 @@ public class MassingGrammars : MonoBehaviour {
         Grammar g = new Grammar(addToScene);
         g.category = "massingForm";
         g.inputs.names.Add("APT");
+        g.inputs.names.Add("APT2");
+        g.inputs.names.Add("STA");
+        g.inputs.names.Add("CD");
         g.name = "AptFormA";
         g.AddRule(new Rules.Bisect("APT", new string[] { "APT", "C" }, 0.4f, 0), false);
         g.AddRule(new Rules.Bisect("C", new string[] { "C", "D" }, 0.7f, 1), false);

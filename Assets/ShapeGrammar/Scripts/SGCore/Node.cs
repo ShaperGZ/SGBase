@@ -79,13 +79,13 @@ namespace SGCore
             if(!downStreams.Contains(node))
             {
                 downStreams.Add(node);
-                Debug.Log("downStream added:" + node.name);
+                //Debug.Log("downStream added:" + node.name);
             }
                 
             if(!node.upStreams.Contains(this))
             {
                 node.upStreams.Add(this);
-                Debug.Log("  upStream added:" + this);
+                //Debug.Log("  upStream added:" + this);
             }
                 
             

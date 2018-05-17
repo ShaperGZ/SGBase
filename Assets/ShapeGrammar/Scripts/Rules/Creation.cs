@@ -157,6 +157,7 @@ namespace Rules
         public CreateStair(string inName, string outName) : base(inName, outName) { }
         public override List<Meshable> ExecuteShape(ShapeObject inSo)
         {
+
             inSo.PivotTurn(2);
             float w = inSo.Size[0];
             List<Vector3> stairLocs = new List<Vector3>();
@@ -200,6 +201,7 @@ namespace Rules
             }
 
             AssignNames(outs);
+            inSo.meshable.name = inputs.names[0];
             outs.Add(inSo.meshable);
             return outs;
 

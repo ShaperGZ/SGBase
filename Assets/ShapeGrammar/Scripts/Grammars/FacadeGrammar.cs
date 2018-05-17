@@ -10,6 +10,8 @@ public class FacadeGrammars {
         Grammar g = new Grammar();
         g.name = "CW01";
         g.inputs.names.Add("APT");
+        g.AddRule(new Rules.ExtractFace(new string[] { "APT" }, "ROOF", "TOP"));
+        g.AddRule(new Rules.Colorize(new string[] { "ROOF" }, new Color(130f/255f, 218f/255f, 80f/255f)));
         g.AddRule(new Rules.DivideToFTFH("APT", new string[] { "APTL", "APTLM" }, 4), false);
         g.AddRule(new Rules.PivotMirror("APTLM", "APTL", 0), false);
         g.AddRule(new Rules.DcpFace5("APTL", new string[] { "F", "DELETE", "S", "DELETE", "BT" }), false);

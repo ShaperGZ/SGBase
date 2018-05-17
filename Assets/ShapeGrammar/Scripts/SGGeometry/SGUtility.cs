@@ -137,6 +137,19 @@ namespace SGGeometry
                 sos.RemoveAt(index);
             }
         }
+        public static void RemoveExtraGameObjects(ref List<GameObject> objects, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                int index = objects.Count - 1;
+                try
+                {
+                    GameObject.Destroy(objects[index]);
+                }
+                catch { }
+                objects.RemoveAt(index);
+            }
+        }
 
         // Find the point of intersection between
         // the lines p1 --> p2 and p3 --> p4.

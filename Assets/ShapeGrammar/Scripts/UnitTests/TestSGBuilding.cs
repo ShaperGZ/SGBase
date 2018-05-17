@@ -19,17 +19,7 @@ public class TestSGBuilding : MonoBehaviour {
         g1.AddRule(new Rules.CentralVoid("CV", "APT", "APT2"), false);
         return g1;
     }
-    Grammar G2()
-    {
-        Grammar g2 = new Grammar();
-        g2.name = "AptFormA";
-        g2.category = "massingForm";
-        g2.inputs.names.Add("APT");
-        g2.AddRule(new Rules.Bisect("APT", new string[] { "APT", "C" }, 0.4f, 0), false);
-        g2.AddRule(new Rules.Bisect("C", new string[] { "C", "APT" }, 0.25f, 2), false);
-        g2.AddRule(new Rules.Scale3D("C", "APT", new Vector3(1.3f, 0.7f, 1.6f), null, Alignment.NE), false);
-        return g2;
-    }
+    
 
 	// Use this for initialization
 	void Start () {
@@ -42,9 +32,10 @@ public class TestSGBuilding : MonoBehaviour {
         building.SetFacade(FacadeGrammars.CW01());
 
         //print(building.gMassing.upStreams[0].name);
-        
-
         building.Execute();
+        building.GraphicsMode();
+        building.UpdateParams();
+        //building.Execute();
 
         SceneManager.SelectedGrammar = building.gPlaning;
         SceneManager.SelectedBuilding = building;

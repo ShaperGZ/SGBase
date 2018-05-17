@@ -44,6 +44,8 @@ public class SceneManager : MonoBehaviour {
         }
     }
 
+    public static DefaultControls.Resources uiResources = new DefaultControls.Resources();
+
     static Text _selectedShapeText;
     static Text selectedShapeText
     {
@@ -104,7 +106,7 @@ public class SceneManager : MonoBehaviour {
             }
         }
 
-        SelectedBuilding = g.sgbuilding;
+        //SelectedBuilding = g.sgbuilding;
         
     }
     public static void unAssignGrammar()

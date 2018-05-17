@@ -8,10 +8,13 @@ public class BuildingParamEditor : MonoBehaviour {
 
     Transform[] trans = new Transform[8];
     SGBuilding building=null;
-    Grammar grammar=null;
 
+    public Button btPlanningMode;
+    public Button btMassingMode;
     public Button btGraphicsMode;
     public Button btUnitMode;
+    public bool freeze=false;
+    public ProgramRatioVisualizer programRatioVisualizer;
 
     // Use this for initialization
     private void Awake()
@@ -28,35 +31,75 @@ public class BuildingParamEditor : MonoBehaviour {
             switch (i)
             {
                 case 0:
-                    ipf.onEndEdit.AddListener(
-                        delegate
-                        {
-                            string txt = ipf.text;
-                            float h = float.Parse(txt);
+                    sld.onValueChanged.AddListener(delegate
+                    {
+                        if (building == null) return;
+                        float h = sld.value;
+                        h -= h % 4;
+                        ipf.text = h.ToString();
+                        if(!freeze)
                             ChangeHeight(h);
-
-                        }
-                        );
-                    //sld.onValueChanged.AddListener(delegate
-                    //{
-                    //    if (building == null) return;
-                    //    float h = sld.value;
-                    //    ChangeHeight(h);
-                    //});
+                    });
+                    break;
+                case 2:
+                    sld.onValueChanged.AddListener(delegate
+                    {
+                        if (building == null) return;
+                        float h = sld.value;
+                        h -= h % 3;
+                        ipf.text = h.ToString();
+                        if (!freeze)
+                            ChangeWidth(h);
+                    });
+                    break;
+                case 3:
+                    sld.onValueChanged.AddListener(delegate
+                    {
+                        if (building == null) return;
+                        float h = sld.value;
+                        h -= h % 3;
+                        ipf.text = h.ToString();
+                        if (!freeze)
+                            ChangeDepth(h);
+                    });
                     break;
                 default:
                     break;
             }
         }
+        btPlanningMode.onClick.AddListener(delegate {
+            SceneManager.SelectedGrammar = building.gPlaning;
+            buildingPlanningMode();
+        });
+        btMassingMode.onClick.AddListener(delegate {
+            SceneManager.SelectedGrammar = building.gMassing;
+            buildingMassingMode();
+        });
+        btGraphicsMode.onClick.AddListener(delegate {
+            SceneManager.SelectedGrammar=building.gFacade;
+            buildingGraphicsMode();
+        });
+        btUnitMode.onClick.AddListener(delegate {
+            SceneManager.SelectedGrammar = building.gProgram;
+            buildingProgramMode();
+        });
 
-        btGraphicsMode.onClick.AddListener(delegate { buildingGraphicsMode(); });
-        btUnitMode.onClick.AddListener(delegate { buildingProgramMode(); });
-
+        programRatioVisualizer = transform.Find("ProgramRatioPanel").GetComponent<ProgramRatioVisualizer>();
 
 
     }
     void Start () {
 	}
+    public void buildingPlanningMode()
+    {
+        if (building == null) return;
+        building.PlanningMode();
+    }
+    public void buildingMassingMode()
+    {
+        if (building == null) return;
+        building.MassingMode();
+    }
     public void buildingGraphicsMode()
     {
         if (building == null) return;
@@ -80,11 +123,7 @@ public class BuildingParamEditor : MonoBehaviour {
         }
         building = b;
         b.buildingParamEditor = this;
-        grammar = b.gPlaning;
         b.UpdateParams();
-        b.freeze = true;
-        //UpdateBuildingParamDisplay();
-        b.freeze = false;
         
     }
     public void UpdateBuildingParamDisplay(int skip=-1)
@@ -94,8 +133,14 @@ public class BuildingParamEditor : MonoBehaviour {
         if (skip != 2) UpdateDisplay(2, "面宽", building.width, 15, 80);
         if (skip != 3) UpdateDisplay(3, "深度", building.depth, 6, 80);
         if (skip != 4) UpdateDisplay(4, "面积", building.gfa, 500, 80000);
-        if (skip != 5) UpdateDisplay(5, "效率", building.efficiency, 0, 100);
+        if (skip != 5) UpdateDisplay(5, "效率", building.efficiency, 0, 1);
         if (skip != 6) UpdateDisplay(6, "光线", building.illumination, 0, 1);
+
+        if (programRatioVisualizer != null && building.gProgram!=null)
+        {
+            List<ShapeObject> sos = building.gProgram.outputs.shapes;
+            programRatioVisualizer.SetRatio(sos);
+        }
     }
     public void Clear()
     {
@@ -121,33 +166,53 @@ public class BuildingParamEditor : MonoBehaviour {
     
     public void ChangeHeight(float f)
     {
-
-        GraphNode gn = grammar.FindFirst("SizeBuilding3D");
+        Grammar g = building.gPlaning;
+        GraphNode gn = g.FindFirst("SizeBuilding3D");
         if(gn!=null)
         {
-            //float val = gn.GetParamVal("Size", 1);
-            //Debug.LogFormat("Pre  {0}!={1}: {2}", f, val, f != val);
-            //if(f!=val)
-            //{
             gn.SetParam("Size", 1, f);
             building.freeze = true;
-            grammar.Execute();
-            this.UpdateBuildingParamDisplay();
-            building.freeze = false;
-            //}
-                
-
-            //val = gn.GetParamVal("Size", 1);
-            //Debug.LogFormat("Post {0}!={1}: {2}", f, val, f != val);
-            //grammar.Execute();
+            g.Execute();
+            building.UpdateParams(false);
+            freeze = true;
+            this.UpdateBuildingParamDisplay(0);
+            freeze = false;
         }
-            
-
+    }
+    public void ChangeWidth(float f)
+    {
+        Grammar g = building.gPlaning;
+        GraphNode gn = g.FindFirst("SizeBuilding3D");
+        if (gn != null)
+        {
+            gn.SetParam("Size", 0, f);
+            building.freeze = true;
+            g.Execute();
+            building.UpdateParams(false);
+            freeze = true;
+            this.UpdateBuildingParamDisplay(2);
+            freeze = false;
+        }
+    }
+    public void ChangeDepth(float f)
+    {
+        Grammar g = building.gPlaning;
+        GraphNode gn = g.FindFirst("SizeBuilding3D");
+        if (gn != null)
+        {
+            gn.SetParam("Size", 2, f);
+            building.freeze = true;
+            g.Execute();
+            building.UpdateParams(false);
+            freeze = true;
+            this.UpdateBuildingParamDisplay(3);
+            freeze = false;
+        }
     }
 
 
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update () {
 		
 	}
 }

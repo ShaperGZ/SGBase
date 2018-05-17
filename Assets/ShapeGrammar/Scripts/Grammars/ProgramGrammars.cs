@@ -10,9 +10,15 @@ public class ProgramGrammars : MonoBehaviour {
     {
         Grammar g = new Grammar();
         g.name = "APT1";
+        g.inputs.names.Add("APT2");
         g.inputs.names.Add("APT");
+        g.inputs.names.Add("STA");
+        g.inputs.names.Add("CD");
+        g.AddRule(new Rules.Hide(new string[] { "STA", "CD" }),false);
+        g.AddRule(new Rules.DivideToFTFH("CD", new string[] { "CDL" }, 4), false);
         g.AddRule(new Rules.DivideToFTFH("APT", new string[] { "APTL"}, 4), false);
-        g.AddRule(new Rules.DcpFlrToUnitsReal(new string[] { "APTL" },"UNIT"), false);
+        g.AddRule(new Rules.DivideToFTFH("APT2", new string[] { "APTL2"}, 4), false);
+        g.AddRule(new Rules.DcpFlrToUnitsReal(new string[] { "APTL","APTL2" },"UNIT"), false);
         return g;
     }
 }

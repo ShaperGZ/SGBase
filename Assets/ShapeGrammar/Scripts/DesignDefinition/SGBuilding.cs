@@ -59,10 +59,16 @@ public class SGBuilding
 
     public enum DisplayMode
     {
-        GRAPHICS, PROGRAM, STRUCTURE
+        PLANNING,MASSING,GRAPHICS, PROGRAM, STRUCTURE
     }
-    public DisplayMode mode = DisplayMode.GRAPHICS;
-    public DisplayMode lastMode = DisplayMode.GRAPHICS;
+    public enum UpdateMode
+    {
+        AUTOMATIC,MANUAL
+    }
+    public UpdateMode updateMode = UpdateMode.MANUAL;
+    public UpdateMode lastUpdateMode = UpdateMode.MANUAL;
+    public DisplayMode displayMode = DisplayMode.GRAPHICS;
+    public DisplayMode lastDisplayMode = DisplayMode.GRAPHICS;
 
     public SGBuilding(Vector3? pos = null)
     {
@@ -85,25 +91,7 @@ public class SGBuilding
         {
             gPlaning.Execute();
         }
-        //if (gPlaning != null)
-        //{
-        //    gPlaning.Execute();
-        //}
-        //if(gMassing != null)
-        //{
-        //    gMassing.inputs.shapes = gPlaning.outputs.shapes;
-        //    gMassing.Execute();
-        //}
-        //if(gProgram !=null)
-        //{
-        //    gProgram.inputs.shapes = gMassing.outputs.shapes;
-        //    gProgram.Execute();
-        //}
-        //if(gFacade!=null)
-        //{
-        //    gFacade.inputs.shapes = gMassing.outputs.shapes;
-        //    gFacade.Execute();
-        //}
+        
 
     }
     private void SetGrammar(ref Grammar oldg, Grammar newg, GraphNode upstream=null)
@@ -142,7 +130,7 @@ public class SGBuilding
     {
         g.sgbuilding = this;
 
-        if (mode == DisplayMode.PROGRAM)
+        if (displayMode == DisplayMode.PROGRAM)
             SetGrammar(ref this.gProgram, g, gMassing);
         else
             gProgram = g;
@@ -182,55 +170,46 @@ public class SGBuilding
     }
     public void Invalidate(bool updateFromGrammar = false)
     {
-        //UpdateForms();
-        //if (freeze) return;
-        ////Debug.Log(buildingParamEditor != null);
-        //if (buildingParamEditor != null)
+        //if (updateMode==UpdateMode.AUTOMATIC)
         //{
         //    UpdateParams();
         //}
-
-        //switch (mode)
-        //{
-        //    case DisplayMode.GRAPHICS:
-        //        GraphicsMode();
-        //        break;
-        //    case DisplayMode.PROGRAM:
-        //        UnitMode();
-        //        break;
-        //    default:
-        //        break;
-        //}
-
-        //lastMode = mode;
     }
-    public void UpdateForms()
-    {
-        //MaterialManager mm = GameObject.Find("ScriptLoder").GetComponent<MaterialManager>();
-        //if (grammars.Count > 0 || grammars[0].stagedOutputs.Count > 0)
-        //{
-        //    List<ShapeObject> shps = grammars[0].stagedOutputs[grammars[0].stagedOutputs.Count - 1].shapes;
-        //    foreach (ShapeObject so in shps)
-        //    {
-        //        if (so == null) continue;
-        //        //Debug.LogFormat("{0}=={1}:{2}", so.name, "T", so.name == "T");
-        //        if (so.name == "TOP")
-        //        {
-        //            //Debug.Log("found top");
-        //            so.GetComponent<MeshRenderer>().material = mm.Grass0;
-        //            //so.Show(false);
-        //        }
-
-
-        //    }
-        //}
-
-    }
-    public void UpdateParams()
+    public void UpdateParams(bool updateParamDisplay=true)
     {
         if (buildingParamEditor != null)
         {
-            buildingParamEditor.UpdateBuildingParamDisplay();
+            GraphNode blockRule = gPlaning.FindFirst("SizeBuilding3D");
+            this.width = blockRule.GetParamVal("Size", 0);
+            this.height = blockRule.GetParamVal("Size", 1);
+            this.depth = blockRule.GetParamVal("Size", 2);
+            this.floorCount = Mathf.RoundToInt(this.height / 4);
+            //get gfa
+            List<ShapeObject> shapes = gPlaning.outputs.shapes;
+            float gfa = 0;
+            float apt = 0;
+            float sv = 0;
+            float maxdepth = 0;
+            foreach(ShapeObject so in shapes)
+            {
+                if(so.meshable.GetType() == typeof(Extrusion))
+                {
+                    Extrusion ext = (Extrusion)so.meshable;
+                    float area = ext.polygon.Area();
+                    float barea = area * Mathf.Round(ext.height / 4);
+                    if (so.name == "APT") apt += barea;
+                    if (so.name == "STA" || so.name == "CD") sv += barea;
+                    gfa += barea;
+
+                    float d = ext.bbox.size[2];
+                    if (d > maxdepth) maxdepth = d;
+                }
+            }
+            this.gfa = gfa;
+            this.efficiency = apt / gfa;
+            this.illumination = Mathf.Clamp01(1 - ((maxdepth - 5) / 10)) ;
+            if(updateParamDisplay)
+                buildingParamEditor.UpdateBuildingParamDisplay();
         }
     }
 
@@ -294,11 +273,55 @@ public class SGBuilding
         txt += "\nefficiency:" + efficiency;
         return txt;
     }
-
+    public void PlanningMode()
+    {
+        Debug.Log("MissingMode");
+        displayMode = DisplayMode.MASSING;
+        if (gPlaning != null)
+        {
+            if (gFacade != null)
+            {
+                gFacade.SelectStep(-1);
+            }
+            if (gProgram != null)
+            {
+                gProgram.SelectStep(-1);
+            }
+            if (gMassing != null)
+            {
+                gMassing.SelectStep(-1);
+                gPlaning.DisconnectDownStream(gMassing);
+            }
+            Execute();
+        }
+    }
+    public void MassingMode()
+    {
+        Debug.Log("MissingMode");
+        displayMode = DisplayMode.MASSING;
+        if (gPlaning != null)
+        {
+            if (gFacade != null)
+            {
+                gFacade.SelectStep(-1);
+                gMassing.DisconnectDownStream(gFacade);
+            }
+            if (gProgram != null)
+            {
+                gProgram.SelectStep(-1);
+                gMassing.DisconnectDownStream(gProgram);
+            }
+            if (gMassing != null)
+            {
+                gPlaning.ConnectDownStream(gMassing);
+            }
+            Execute();
+        }
+    }
     public void ProgramMode()
     {
         Debug.Log("ProgramMode");
-        mode = DisplayMode.PROGRAM;
+        displayMode = DisplayMode.PROGRAM;
         if (gMassing != null)
         {
             if(gFacade!=null)
@@ -315,8 +338,8 @@ public class SGBuilding
     }
     public void GraphicsMode()
     {
-        Debug.Log("GraphicsMode");
-        mode = DisplayMode.GRAPHICS;
+        //Debug.Log("GraphicsMode");
+        displayMode = DisplayMode.GRAPHICS;
         if (gMassing != null)
         {
             if (gProgram != null)

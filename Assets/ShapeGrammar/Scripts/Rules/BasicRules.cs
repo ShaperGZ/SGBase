@@ -131,6 +131,51 @@ namespace Rules
         }
     }
     
+    public class Hide : Rule
+    {
+        public Hide() : base() { name = "Hide"; }
+        public Hide(string[] inNames) :base(){
+            name = "Hide";
+            inputs.names.Clear();
+            inputs.names.AddRange(inNames);
+        }
+        public override void Execute()
+        {
+            Debug.Log("inputshapes.Count=" + inputs.shapes.Count);
+            foreach (ShapeObject so in inputs.shapes)
+            {
+                Debug.Log("shapename="+so.name);
+            }
+            outMeshables.Clear();
+            outputs.shapes.Clear();
+        }
+    }
+    public class Colorize : Rule
+    {
+        Color color = SchemeColor.ColorSetDefault[0];
+        public Colorize() : base() { name = "Hide"; }
+        public Colorize(string[] inNames, Color color) : base()
+        {
+            name = "SetMaterial";
+            inputs.names.Clear();
+            inputs.names.AddRange(inNames);
+            this.color = color;
+        }
+        public override void Execute()
+        {
+            outMeshables.Clear();
+            outputs.shapes = inputs.shapes;
+            foreach (ShapeObject so in outputs.shapes)
+            {
+                MeshRenderer mr= so.GetComponent<MeshRenderer>();
+                if (mr != null)
+                {
+                    mr.material.color = color;
+                }
+            }
+            
+        }
+    }
 
     public class DivideToFTFH : Rule
     {

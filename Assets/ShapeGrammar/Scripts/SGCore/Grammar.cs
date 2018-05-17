@@ -290,11 +290,11 @@ namespace SGCore
                 building.Invalidate(true);
                 //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
             }
-            if (sgbuilding != null)
-            {
-                sgbuilding.Invalidate(true);
-                //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
-            }
+            //if (sgbuilding != null)
+            //{
+            //    sgbuilding.Invalidate(true);
+            //    //GameObject.Find("BuildingPropText").GetComponent<Text>().text = building.FormatProperties();
+            //}
         }
 
         public virtual SGIO PreExecution(int step)
@@ -312,6 +312,7 @@ namespace SGCore
                 if (upStreams.Count > 0)
                 {
                     inputs.shapes.Clear();
+                    subNodes[0].inputs.shapes.Clear();
                     foreach (GraphNode g in upStreams)
                     {
                         foreach(ShapeObject so in g.outputs.shapes)
@@ -320,11 +321,16 @@ namespace SGCore
                             {
                                 inputs.shapes.Add(so);
                                 so.Show(false);
+                                if (subNodes[0].inputs.names.Contains(so.name))
+                                    subNodes[0].inputs.shapes.Add(so);
+                                else
+                                    tobeMerged.shapes.Add(so);
+                                
                             }
                         }
                     }
-                    subNodes[0].inputs.shapes = inputs.shapes;
-                    Debug.Log("inputs.shapes.count=" + inputs.shapes.Count);
+                    
+                    //Debug.Log("inputs.shapes.count=" + inputs.shapes.Count);
                     return tobeMerged;
                 }
                 else if (assignedObjects.Count > 0)
