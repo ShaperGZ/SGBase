@@ -6,6 +6,7 @@ using SGCore;
 
 
 public class ShapeObject : MonoBehaviour {
+    public static bool drawScope = true;
     public virtual Vector3 Size
     {
         get
@@ -69,7 +70,6 @@ public class ShapeObject : MonoBehaviour {
     }
 
     public bool highlightScope = false;
-    public bool drawScope = true;
     protected static Material _defaultMat;
     protected MeshFilter meshFilter;
     protected MeshRenderer meshRenderer;
@@ -212,7 +212,7 @@ public class ShapeObject : MonoBehaviour {
     private void OnRenderObject()
     {
         //GLDrawScope(Color.black);
-        if(false)
+        if(ShapeObject.drawScope)
         //if (drawScope && meshRenderer.enabled && isGraphics==false )
         {
             Color c = Color.black;

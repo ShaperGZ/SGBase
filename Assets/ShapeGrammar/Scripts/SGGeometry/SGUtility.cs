@@ -91,7 +91,10 @@ namespace SGGeometry
                 splits[0].bbox = BoundingBox.CreateFromPoints(splits[0].vertices, mb.bbox);
                 outMeshable.Add(splits[0]);
             }
-            else throw new System.Exception("splits[0] is null!");
+            else
+            {
+                throw new System.Exception("splits[0] is null!");
+            }
 
             Meshable remain = splits[1];
             int counter = 0;
@@ -107,7 +110,11 @@ namespace SGGeometry
                     splits[0].bbox = BoundingBox.CreateFromPoints(splits[0].vertices, mb.bbox);
                     outMeshable.Add(splits[0]);
                 }
-                else throw new System.Exception("splits[0] is null!");
+                else
+                {
+                    break;
+                    //throw new System.Exception("splits[0] is null!");
+                }
                 remain = splits[1];
                 counter++;
             }

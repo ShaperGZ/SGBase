@@ -51,7 +51,7 @@ public class ProgramRatioVisualizer : MonoBehaviour {
 
     public void SetRatio(float[] areas, string[] names, Color[] colors)
     {
-
+        if (!gameObject.activeSelf) return;
         float total = 0;
         float[] ratios = new float[areas.Length];
         float[] heights = new float[areas.Length];
@@ -63,8 +63,12 @@ public class ProgramRatioVisualizer : MonoBehaviour {
         float lowest = 0;
         for (int i = 0; i < ratios.Length; i++)
         {
+            #region cal ratio
             ratios[i] = areas[i] / total;
             float h = ratios[i] * hTotal;
+            #endregion
+
+            #region GameObject management
             if (bars == null) bars = new List<GameObject>();
             if (texts == null) texts = new List<GameObject>();
             int dif = bars.Count - ratios.Length;
@@ -86,6 +90,8 @@ public class ProgramRatioVisualizer : MonoBehaviour {
                 text.GetComponent<Text>().text = "";
                 texts.Add(text);
             }
+            #endregion
+
             //bars[i].GetComponent<Image>().material.color = SchemeColor.ColorSetDefault[i];
             bars[i].GetComponent<Image>().color = colors[i];
             RectTransform barRect = (RectTransform)bars[i].transform;
@@ -113,6 +119,7 @@ public class ProgramRatioVisualizer : MonoBehaviour {
             textRect.localScale = new Vector3(1, 1, 1);
             textRect.sizeDelta = new Vector2(500, 30);
             textRect.anchoredPosition = new Vector2(30, lowest);
+
             lowest -= h;
         }
 

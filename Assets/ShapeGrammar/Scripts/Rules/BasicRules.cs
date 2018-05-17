@@ -20,8 +20,8 @@ namespace Rules
         public Bisect(string inName, string[] outNames, float d, int axis):base(inName,outNames)
         {
             name = "Bisect";
-            ((ParameterGroup)paramGroups["Position"]).parameters[0].Value = d;
             ((ParameterGroup)paramGroups["Axis"]).parameters[0].Value = axis;
+            ((ParameterGroup)paramGroups["Position"]).parameters[0].Value = d;
         }
         public static List<Meshable> SplitByPlane(Meshable mb, Plane pln)
         {
@@ -208,7 +208,7 @@ namespace Rules
             float totalH = so.Size[1];
             //Debug.LogFormat("bot={0}, top={1}", bot, top);
 
-            float h = Mathf.Ceil(bot / ftfh);
+            float h = Mathf.Ceil(bot / ftfh)*ftfh;
             float trunk = (h - bot);
             if (trunk != 0)
                 outDivs.Add(trunk);
@@ -226,6 +226,7 @@ namespace Rules
                     break;
                 }
                 h += ftfh;
+                //Debug.LogFormat("top={0}, h={1}", top, h);
                 //Debug.Log("h=" + h);
             }
             

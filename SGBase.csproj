@@ -420,6 +420,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestAgg.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestBBox.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestDecompose.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestExtrude.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammar.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammarUI.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestIntersection.cs" />

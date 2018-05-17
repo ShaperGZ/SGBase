@@ -82,7 +82,8 @@ namespace Rules
                     if (!namedColors.ContainsKey(mbname))
                     {
                         counter++;
-                        Color c = SchemeColor.ColorSetDefault[counter];
+                        int colorIndex = counter % SchemeColor.ColorSetDefault.Length;
+                        Color c = SchemeColor.ColorSetDefault[colorIndex];
                         namedColors.Add(mbname, c);
                     }
                     foreach (Meshable mb in units)

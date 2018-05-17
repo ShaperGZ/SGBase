@@ -231,6 +231,10 @@ namespace SGGUI {
                 r.grammar.ExecuteFrom(r);
             else
                 r.Execute();
+            if (r.sgbuilding != null)
+            {
+                r.sgbuilding.UpdateParams();
+            }
         }
 
         string JoinNames(IEnumerable<string> names)

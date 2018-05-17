@@ -94,21 +94,29 @@ public class BuildingParamEditor : MonoBehaviour {
     {
         if (building == null) return;
         building.PlanningMode();
+        ShapeObject.drawScope = true;
+        //this.programRatioVisualizer.gameObject.SetActive(false);
     }
     public void buildingMassingMode()
     {
         if (building == null) return;
         building.MassingMode();
+        ShapeObject.drawScope = true;
+        //this.programRatioVisualizer.gameObject.SetActive(false);
     }
     public void buildingGraphicsMode()
     {
         if (building == null) return;
+        ShapeObject.drawScope = false;
         building.GraphicsMode();
+        //this.programRatioVisualizer.gameObject.SetActive(false);
     }
     public void buildingProgramMode()
     {
         if (building == null) return;
+        ShapeObject.drawScope = false;
         building.ProgramMode();
+        //this.programRatioVisualizer.gameObject.SetActive(true);
     }
 	public void SetBuilding(SGBuilding b)
     {
