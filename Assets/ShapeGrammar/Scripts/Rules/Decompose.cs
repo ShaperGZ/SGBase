@@ -294,20 +294,26 @@ namespace Rules
                         Vector3 v2 = (m.vertices[3] - m.vertices[0]).normalized;
                         Vector3 n = Vector3.Cross(v1, v2);
                         Vector3 nn = n * -1;
+                        float dot = Vector3.Dot(directF, n);
+                        //float dot2 = Vector3.Dot(new Vector3(0, 1, 0), nn);
                         //Debug.LogFormat("n={0}{3}, nn={1}{4}, vF={2} ", n,nn, directF,n==directF,nn==directF);
                         //if(Vector3.Distance(n,directF)<0.01f || Vector3.Distance(nn, directF) < 0.1f)
-                        if (n == directF )
+                        //if (n == directF )
+                        //if (n.magnitude == 0) throw new System.Exception(n.ToString());
+                        if(Vector3.Distance(n,directF)<0.4f )
                         {
                             if(outputs.names[0] != "DELETE")
                                 fronts.Add(m);
                         }
-                        else if (nn == directF)
+                        //else if (nn == directF)
+                        else if (Vector3.Distance(nn, directF) < 0.4f)
                         {
                             if (outputs.names[1] != "DELETE")
                                 backs.Add(m);
                         }
                         else
                         {
+                            Debug.Log(dot + "," + n+","+directF);
                             if (outputs.names[2] != "DELETE")
                                 sides.Add(m);
                         }

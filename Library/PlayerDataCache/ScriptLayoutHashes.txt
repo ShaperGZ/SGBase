@@ -17,7 +17,7 @@ ff05dcdf90651c3d98a9cad3df5e471e UnityEngine.Timeline.dll:UnityEngine.Timeline.C
 31aaf521b3ef8699466676591ea0efd4 UnityEngine.Timeline.dll:UnityEngine.Timeline.GroupTrack
 31aaf521b3ef8699466676591ea0efd4 UnityEngine.Timeline.dll:UnityEngine.Timeline.PlayableTrack
 df374c01140c2d578bf70cbd60073d1d UnityEngine.Timeline.dll:UnityEngine.Timeline.TimelineAsset
-6b0a5df4b4ebf45697416ad7fe50555f Assembly-CSharp.dll:.ShapeObjectM
+606e061a6d91395871b8e09916a74148 Assembly-CSharp.dll:.ShapeObjectM
 a95e17eb201aebf10a73a38260b1d187 Assembly-CSharp-firstpass.dll:Crosstales.UI.UIFocus
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.InspectMeshVertices
 76e06ba249210c5086ddfccdba52b57c Assembly-CSharp.dll:.IconPreview
@@ -96,7 +96,9 @@ f61c0793411f10cf5fbfa1473fef5ef2 UnityEngine.UI.dll:UnityEngine.UI.ToggleGroup
 c9cd7f0a966f6bf4ce9e1fa01ff824cd Assembly-CSharp.dll:SGGUI.RuleParamEditor
 51a99ecf20a3d6b72f809e16a04aba9e Assembly-CSharp.dll:.SceneManager
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestBBox
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestSGBuilding
 e2a6203109fafcd375da29b7d5df7b24 Assembly-CSharp.dll:.TestProperties
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.ProgramGrammars
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Timeline.dll:UnityEngine.Timeline.ActivationPlayableAsset
 dbc29a6f2739d277c10da432d73adb6d UnityEngine.Timeline.dll:UnityEngine.Timeline.ActivationTrack
 8144169769d51429c4aedc8b0f92d47b UnityEngine.Timeline.dll:UnityEngine.Timeline.AnimationPlayableAsset
@@ -126,11 +128,13 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 528ea1fd7c01796fc60c4e2f172ea229 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.BuildingParamVisualizer
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
+e1505f1f05729c44b6e87eff65f3002c Assembly-CSharp.dll:.Inventory
 37ccd0b41a8ab18c3f8ec347bffd5b82 Assembly-CSharp.dll:.OrbitTargetCamera
 1e0b99b01fbc3b73c8a72e7f6a3667c5 Assembly-CSharp-firstpass.dll:Crosstales.FB.Demo.Examples
 322cb40e1e282f28af980cbef7922a90 UnityEngine.Analytics.dll:UnityEngine.Analytics.AnalyticsEventTracker
 dc07d7ad69b399a46e92c483bf1c04ca UnityEngine.Analytics.dll:UnityEngine.Analytics.AnalyticsTracker
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.SchemeColor
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.MassingGrammars
 bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.AudioSpatializerMicrosoft
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInput
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
@@ -139,6 +143,7 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.Spa
 7b419e6f4f9e4c87f741e073e6fe5562 Assembly-CSharp-firstpass.dll:Crosstales.FB.Demo.GUIScenes
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.NewBehaviourScript
 3b1e7b3fcbc0070781b85002ada379e7 Assembly-CSharp-firstpass.dll:Crosstales.FB.Demo.GUIMain
+e1505f1f05729c44b6e87eff65f3002c Assembly-CSharp.dll:.SGBuildingGrammarInvt
 61f7d7e397ed4fa454e6d7d65a61d438 Assembly-CSharp-firstpass.dll:Crosstales.UI.UIResize
 381c649bef02cf61406650d720dff590 Assembly-CSharp.dll:.TestIntersection
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestTransform
@@ -169,7 +174,8 @@ e2a6203109fafcd375da29b7d5df7b24 Assembly-CSharp.dll:.TestDecompose
 14bc6f5488eb6c846620f50d23822634 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.FPSDisplay
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:Crosstales.UI.UIDrag
 0079b7172faeae4f503ffc09ad55f55c Assembly-CSharp-firstpass.dll:Crosstales.UI.UIWindowManager
-6b0a5df4b4ebf45697416ad7fe50555f Assembly-CSharp.dll:.ShapeObject
+32c35d640bdbde3fd2f913cf9ba7502b Assembly-CSharp.dll:.ProgramRatioVisualizer
+606e061a6d91395871b8e09916a74148 Assembly-CSharp.dll:.ShapeObject
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback
 96d0fbde9fd209878a0a291f82c9bcdd UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.PlaymodeTestsController
 64eb32cc721b1cc68a91ed57461e188c UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.RemoteTestResultSender
@@ -178,13 +184,14 @@ e0f7ffd5d5c2abe4b2e16569a21163da UnityEngine.GoogleAudioSpatializer.dll:UnityEng
 2e79757aa5219fe0dcbb3573ea3246d9 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.ScrollRectHandler
 fa9dfdd6f9515fdcd96733cf542f7647 Assembly-CSharp.dll:.TestPoints
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestSplit
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestExtrude
 bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.AudioSpatializerMicrosoft
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInput
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
 f671a42aea5f34fec6a4450a3668c615 Assembly-CSharp.dll:UnityEngine.PostProcessing.PostProcessingProfile
-24b57ea6aa2f5d6e0f772e4c3b5036b6 Assembly-CSharp.dll:.SOPoint
+fd6a92229ca4ffef3efa30bf41cfa0d7 Assembly-CSharp.dll:.SOPoint
 61a134a201e7210a25308d58e3ffc8b5 Assembly-CSharp.dll:SGGUI.Navigator
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.DynamicInspector
@@ -206,4 +213,5 @@ f62765a452524a09eac0b0ba2341cc9e Assembly-CSharp.dll:.SGTransform
 3557e4544999eafac7f837e908c35411 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.AudioFilterController
 165aad1f88a1706e1812bd545760bf2a Assembly-CSharp.dll:.DisplayManager
 b5c45198f4c6671c435fbb86cd823709 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.TakeScreenshot
-e38b50790ecfb94daa9a4cde7663f54e Assembly-CSharp.dll:.BuildingParamEditor
+3cce32e5593cba95490dafe0dcfedb15 Assembly-CSharp.dll:.BuildingParamEditor
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.DrawDimension

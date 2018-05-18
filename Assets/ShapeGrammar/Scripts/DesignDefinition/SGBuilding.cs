@@ -7,7 +7,6 @@ using System;
 
 public class SGBuilding
 {
-
     public List<Grammar> grammars;
 
     public Grammar gPlaning;
@@ -91,6 +90,30 @@ public class SGBuilding
         {
             gPlaning.Execute();
         }
+    }
+
+    public void SetGrammar(Grammar g,bool execute=false)
+    {
+        switch (g.category)
+        {
+            case GraphNode.Category.Bd_Planing:
+                SetGPlanning(g,execute);
+                break;
+            case GraphNode.Category.Bd_Massing:
+                SetMassing(g, execute);
+                break;
+            case GraphNode.Category.Bd_Program:
+                SetProgram(g, execute);
+                break;
+            case GraphNode.Category.Bd_Struct:
+               
+                break;
+            case GraphNode.Category.Bd_Graphics:
+                SetFacade(g, execute);
+                break;
+            default:
+                break;
+        }
         
 
     }
@@ -98,52 +121,53 @@ public class SGBuilding
     {
         if (oldg != null)
         {
-            foreach (GraphNode gn in oldg.downStreams)
+            if (upstream != null)
             {
-                gn.ReplaceUpstream(oldg, newg);
-
+                upstream.DisconnectDownStream(oldg);
+                Debug.Log("disconnect:" + oldg.guid);
             }
+            for (int i = 0; i < oldg.downStreams.Count; i++)
+            {
+                GraphNode gn = oldg.downStreams[i];
+                gn.ReplaceUpstream(oldg, newg);
+            }
+            
             oldg.Clear();
             oldg = newg;
         }
         else
         {
             oldg = newg;
-            if (upstream != null)
-            {
-                upstream.ConnectDownStream(oldg);
-            }
         }
-            
+        if (upstream != null)
+        {
+            upstream.ConnectDownStream(oldg);
+        }
+
     }
-    public void SetGPlanning(Grammar g)
+    public void SetGPlanning(Grammar g, bool execute = false)
     {
         g.sgbuilding = this;
         SetGrammar(ref this.gPlaning, g);
+        if (execute) Execute();
     }
-    public void SetMassing(Grammar g)
+    public void SetMassing(Grammar g, bool execute = false)
     {
         g.sgbuilding = this;
         SetGrammar(ref this.gMassing, g, gPlaning);
+        if (execute) Execute();
     }
-    public void SetProgram2(Grammar g)
-    {
-        g.sgbuilding = this;
-
-        if (displayMode == DisplayMode.PROGRAM)
-            SetGrammar(ref this.gProgram, g, gMassing);
-        else
-            gProgram = g;
-    }
-    public void SetProgram(Grammar g)
+    public void SetProgram(Grammar g, bool execute = false)
     {
         g.sgbuilding = this;
         SetGrammar(ref this.gProgram, g, gMassing);
+        if (execute) Execute();
     }
-    public void SetFacade(Grammar g)
+    public void SetFacade(Grammar g, bool execute = false)
     {
         g.sgbuilding = this;
         SetGrammar(ref this.gFacade, g, gMassing);
+        if (execute) Execute();
     }
 
     public void ResetProperties()
@@ -209,10 +233,14 @@ public class SGBuilding
             this.efficiency = apt / gfa;
             this.illumination = Mathf.Clamp01(1 - ((maxdepth - 5) / 10)) ;
             if(updateParamDisplay)
-                buildingParamEditor.UpdateBuildingParamDisplay();
+                this.UpdateParamDisplay();
         }
     }
-
+    public void UpdateParamDisplay()
+    {
+        if (buildingParamEditor!=null)
+            buildingParamEditor.UpdateBuildingParamDisplay();
+    }
     private void SetHeights()
     {
         floorHeight = new FloorHeight();

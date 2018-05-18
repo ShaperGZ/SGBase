@@ -135,5 +135,53 @@ namespace Rules
             
         }
     }
+    public class UpdateBuildingParamDisplay : Rule
+    {
+        public UpdateBuildingParamDisplay() : base()
+        {
+            name = "UpdateBuildingParamDisplay";
+        }
+        public UpdateBuildingParamDisplay(string inName) : base(inName, "")
+        {
+            name = "UpdateBuildingParamDisplay";
+        }
+        public override void Execute()
+        {
+            base.Execute();
+            List<SGBuilding> buildings = new List<SGBuilding>();
+            foreach (ShapeObject o in inputs.shapes)
+            {
+                SGBuilding sgbuilding= o.parentRule.sgbuilding;
+                if (!buildings.Contains(sgbuilding)) buildings.Add(sgbuilding);
 
+            }
+
+            foreach (SGBuilding sgbuilding in buildings)
+            {
+                sgbuilding.UpdateParamDisplay();
+            }
+        }
+    }
+    public class DisplayDimension : Rule
+    {
+        public DisplayDimension() : base()
+        {
+            name = "DisplayDimension";
+        }
+        public DisplayDimension(string inName) : base(inName, "")
+        {
+            name = "DisplayDimension";
+        }
+        public override void Execute()
+        {
+            base.Execute();
+            List<SGBuilding> buildings = new List<SGBuilding>();
+            foreach (ShapeObject o in inputs.shapes)
+            {
+                o.gameObject.AddComponent<DrawDimension>();
+
+            }
+            outputs.shapes = inputs.shapes;
+        }
+    }
 }

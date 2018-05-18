@@ -7,6 +7,17 @@ namespace SGCore
 {
     public class GraphNode
     {
+        public enum Category
+        {
+            Generic,
+
+            Bd_Planing,
+            Bd_Massing,
+            Bd_Program,
+            Bd_Struct,
+            Bd_Graphics,
+        }
+        public Category category = Category.Generic;
         public Site site;
         public Building building;
         public SGBuilding sgbuilding;
@@ -17,7 +28,6 @@ namespace SGCore
         public List<GraphNode> downStreams;
         public Grammar grammar;
         public string name = "unnamedNode";
-        public string category = "default";
         public string description = "";
         public bool invalidated = false;
         public OrderedDictionary paramGroups;
@@ -61,13 +71,17 @@ namespace SGCore
         }
         public void ReplaceUpstream(GraphNode org, GraphNode rpl)
         {
-            int index = upStreams.IndexOf(org);
-            if (index > 0)
-            {
-                upStreams[index].DisconnectDownStream(this);
-                upStreams[index] = rpl;
-                rpl.ConnectDownStream(this);
-            }
+            //org : original upstream
+            //rpl : new upstream
+            org.DisconnectDownStream(this);
+            rpl.ConnectDownStream(this);
+
+            //int index = upStreams.IndexOf(org);
+            //if (index >= 0)
+            //{
+            //    upStreams[index].DisconnectDownStream(this);
+            //}
+            //rpl.ConnectDownStream(this);
 
         }
         public void ConnectDownStream(GraphNode node)

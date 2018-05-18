@@ -140,8 +140,8 @@ public class ShapeObject : MonoBehaviour {
     }
     public void SetMaterial(int mode)
     {
-        if(meshRenderer !=null && isGraphics==false)
-            meshRenderer.material = materialsByMode[mode];
+        if (meshRenderer == null || isGraphics == false || meshRenderer.material == null || mode == null) return;
+        meshRenderer.material = materialsByMode[mode];
     }
     public void SetMaterial(Material m)
     {

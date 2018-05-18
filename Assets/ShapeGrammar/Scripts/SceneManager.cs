@@ -13,7 +13,7 @@ public class SelectionMode
 }
 
 public class SceneManager : MonoBehaviour {
-
+    public static Canvas UICanvas;
     public static Tool _tool=new Tool();
     public static Tool tool
     {

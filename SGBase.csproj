@@ -354,6 +354,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\BuildingParamVisualizer.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\SelectStrategy.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Building.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\DrawDimension.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\FacadeSystem.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Floor.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Floorheight.cs" />
@@ -401,6 +402,9 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\FPS.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\GrammarInspector.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\HighlightMouseOver.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\Inventory\Inventory.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\Inventory\InventoryItem.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\Inventory\SGBuildingGrammarInvt.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\Navigator.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\RuleCreator.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\SGUI\RuleParamEditor.cs" />

@@ -9,7 +9,7 @@ public class MassingGrammars : MonoBehaviour {
     public static Grammar GA(bool addToScene = true)
     {
         Grammar g = new Grammar(addToScene);
-        g.category = "massingForm";
+        g.category = GraphNode.Category.Bd_Massing;
         g.inputs.names.Add("APT");
         g.inputs.names.Add("APT2");
         g.inputs.names.Add("STA");
@@ -24,7 +24,7 @@ public class MassingGrammars : MonoBehaviour {
     public static Grammar GB(bool addToScene = true)
     {
         Grammar g = new Grammar(addToScene);
-        g.category = "massingForm";
+        g.category = GraphNode.Category.Bd_Massing;
         g.inputs.names.Add("APT");
         g.name = "AptFormB";
         g.AddRule(new Rules.DivideTo("APT", "APT", 30, 0));
@@ -40,7 +40,7 @@ public class MassingGrammars : MonoBehaviour {
     public static Grammar GC(bool addToScene = true)
     {
         Grammar g = new Grammar(addToScene);
-        g.category = "massingForm";
+        g.category = GraphNode.Category.Bd_Massing;
         g.inputs.names.Add("APT");
         g.name = "AptFormC";
         //g2.AddRule(new Rules.Divide("APT", new string[] { "APT_A", "APT_B" }, new float[] { 0.2f, 0.6f, 0.2f }, 0), false);

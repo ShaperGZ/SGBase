@@ -27,7 +27,7 @@ public class ReplaceGrammars : MonoBehaviour {
     public Grammar GA(bool addToScene=true)
     {
         Grammar g = new Grammar(addToScene);
-        g.category = "massingForm";
+        g.category = GraphNode.Category.Bd_Massing;
         g.inputs.names.Add("APT");
         g.name = "AptFormA";
         g.AddRule(new Rules.Bisect("APT", new string[] { "APT", "C" }, 0.4f, 0), false);
@@ -38,7 +38,7 @@ public class ReplaceGrammars : MonoBehaviour {
     public Grammar GB(bool addToScene = true)
     {
         Grammar g = new Grammar(addToScene);
-        g.category = "massingForm";
+        g.category = GraphNode.Category.Bd_Massing;
         g.inputs.names.Add("APT");
         g.name = "AptFormB";
         g.AddRule(new Rules.DivideTo("APT", "APT", 30, 0));
@@ -54,7 +54,7 @@ public class ReplaceGrammars : MonoBehaviour {
     public Grammar GC(bool addToScene = true)
     {
         Grammar g = new Grammar(addToScene);
-        g.category = "massingForm";
+        g.category = GraphNode.Category.Bd_Massing;
         g.inputs.names.Add("APT");
         g.name = "AptFormC";
         //g2.AddRule(new Rules.Divide("APT", new string[] { "APT_A", "APT_B" }, new float[] { 0.2f, 0.6f, 0.2f }, 0), false);
@@ -68,7 +68,7 @@ public class ReplaceGrammars : MonoBehaviour {
     }
     public void ReplaceAptFormA()
     {
-        if(SceneManager.SelectedGrammar != null &&SceneManager.SelectedGrammar.category == "massingForm")
+        if(SceneManager.SelectedGrammar != null &&SceneManager.SelectedGrammar.category == GraphNode.Category.Bd_Massing)
         {
             Grammar g2 = GA();
             Grammar g = SceneManager.SelectedGrammar;
@@ -122,7 +122,7 @@ public class ReplaceGrammars : MonoBehaviour {
             for (int j = 0; j < g.subNodes.Count; j++)
             {
                 GraphNode n = g.subNodes[j];
-                if (n.category == "massingForm")
+                if (n.category == GraphNode.Category.Bd_Massing)
                 {
                     gg = (Grammar)n;
                     break;

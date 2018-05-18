@@ -10,6 +10,7 @@ public class ProgramRatioVisualizer : MonoBehaviour {
     RectTransform rect;
     List<GameObject> bars;
     List<GameObject> texts;
+    public float totalHGet;
     private void Awake()
     {
         rect = (RectTransform)transform;
@@ -58,6 +59,7 @@ public class ProgramRatioVisualizer : MonoBehaviour {
         foreach (int area in areas) total += area;
 
         float hTotal = rect.sizeDelta[1];
+        totalHGet = hTotal;
 
         DefaultControls.Resources rc = SceneManager.uiResources;
         float lowest = 0;
@@ -99,7 +101,7 @@ public class ProgramRatioVisualizer : MonoBehaviour {
             barRect.anchorMin = new Vector2(0, 1);
             barRect.pivot = new Vector2(0, 1);
             barRect.localScale = new Vector3(1, 1, 1);
-            barRect.sizeDelta = new Vector2(20, barRect.sizeDelta[1]);
+            barRect.sizeDelta = new Vector2(20, h);
             barRect.anchoredPosition = new Vector2(0, lowest);
 
             string message = string.Format("{0}: {1}% area={2}sqm",

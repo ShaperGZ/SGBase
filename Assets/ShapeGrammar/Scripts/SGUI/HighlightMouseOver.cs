@@ -128,6 +128,13 @@ public class HighlightMouseOver : MonoBehaviour {
             SceneManager.displayManager.setRuleMode();
             commonNameObjects.Clear();
         }
+        else if(SceneManager.selectionMode == SelectionMode.BUILDING)
+        {
+            if (shapeObject.parentRule != null || shapeObject.parentRule.grammar != null)
+            {
+                SceneManager.SelectedBuilding = shapeObject.parentRule.grammar.sgbuilding;
+            }
+        }
        
     }
 }

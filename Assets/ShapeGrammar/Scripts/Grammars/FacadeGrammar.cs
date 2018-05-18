@@ -9,6 +9,7 @@ public class FacadeGrammars {
     {
         Grammar g = new Grammar();
         g.name = "CW01";
+        g.category = GraphNode.Category.Bd_Graphics;
         g.inputs.names.Add("APT");
         g.AddRule(new Rules.ExtractFace(new string[] { "APT" }, "ROOF", "TOP"));
         g.AddRule(new Rules.Colorize(new string[] { "ROOF" }, new Color(130f/255f, 218f/255f, 80f/255f)));

@@ -53,7 +53,7 @@ public class TestParticleSystem : MonoBehaviour {
 
 
         Grammar g2 = new Grammar();
-        g2.category = "massingForm";
+        g2.category = GraphNode.Category.Bd_Massing;
         g2.name = "AptFormA";
         g2.inputs.names.Add("APT");
         g2.AddRule(new Rules.Bisect("APT", new string[] { "APT", "C" }, 0.4f, 0), false);

@@ -78,12 +78,20 @@ namespace SGGeometry
         public static Meshable[] DivideFormByDivsRatio(Meshable mb, float[] divs, int axis)
         {
             List<Meshable> outMeshable = new List<Meshable>();
+
+            if (divs.Length == 0)
+            {
+                outMeshable.Add((Meshable)mb.Clone());
+                return outMeshable.ToArray();
+            }
             Vector3 n = mb.bbox.vects[axis];
             //Debug.Log("n=" + n);
             Vector3 org = mb.bbox.vertices[0];
-            Vector3 offset = n * divs[0]*mb.bbox.size[axis];
-            //Debug.Log("offset=" + offset);
+            Vector3 offset = n * divs[0] * mb.bbox.size[axis];
             org += offset;
+            
+            //Debug.Log("offset=" + offset);
+            
             Plane pln = new Plane(n, org);
             Meshable[] splits = mb.SplitByPlane(pln);
             if (splits[0] != null)

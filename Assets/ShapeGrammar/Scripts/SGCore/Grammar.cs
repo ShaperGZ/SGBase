@@ -317,6 +317,15 @@ namespace SGCore
                     {
                         foreach(ShapeObject so in g.outputs.shapes)
                         {
+                            if (so == null)
+                            {
+                                string msg = string.Format("grammar is {0}", this.GetType().ToString());
+                                msg += "\ngrammar.catelog=" + this.category.ToString();
+                                msg += "\nGUID=" + this.guid;
+                                msg += "\nUpstream=" + ((Grammar)g).guid;
+                                msg += " upstream.outputCount=" + g.outputs.shapes.Count;
+                                throw new System.Exception(msg);
+                            }
                             if (inputs.names.Contains(so.name))
                             {
                                 inputs.shapes.Add(so);
