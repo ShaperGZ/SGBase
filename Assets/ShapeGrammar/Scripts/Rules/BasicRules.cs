@@ -801,6 +801,46 @@ namespace Rules
             
         }
     }
+    public class SizeOffice3D : Size3D
+    {
+        public SizeOffice3D() : base()
+        {
+            if (grammar.properties == null) grammar.properties = new BuildingProperties();
+            name = "OfficeBuilding3D";
+        }
+        public SizeOffice3D(string inName, string outName, Vector3 size) : base(inName, outName, size)
+        {
+            name = "OfficeBuilding3D";
+        }
+        public override OrderedDictionary DefaultParam()
+        {
+            OrderedDictionary dict = new OrderedDictionary();
+            ParameterGroup pg1 = new ParameterGroup();
+            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+            outParamGroups.Add(pg1);
+
+            dict["Size"] = pg1;
+            pg1.Add(new Parameter(42f, 42f, 80f, 0.01f));
+            pg1.Add(new Parameter(18f, 3f, 100f, 0.01f));
+            pg1.Add(new Parameter(12f, 12f, 40f, 0.01f));
+
+            return dict;
+        }
+        public override void Execute()
+        {
+            base.Execute();
+            if (grammar == null) return;
+
+            if (grammar.building != null)
+            {
+                Building bp = grammar.building;
+                bp.width = GetParamVal("Size", 0);
+                bp.depth = GetParamVal("Size", 2);
+                bp.height = GetParamVal("Size", 1);
+            }
+
+        }
+    }
 
 
 

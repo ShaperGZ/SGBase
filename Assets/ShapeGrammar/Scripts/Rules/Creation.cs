@@ -206,7 +206,7 @@ namespace Rules
             return outs;
 
         }
-        Meshable CreateBox(Vector3 pos, Vector3 size, Vector3[] vects)
+        protected Meshable CreateBox(Vector3 pos, Vector3 size, Vector3[] vects)
         {
             Vector3[] pts = new Vector3[4];
             Vector3 mv1 = vects[0] * size[0];
@@ -220,5 +220,5 @@ namespace Rules
             return ext;
         }
     }
-
+    
 }

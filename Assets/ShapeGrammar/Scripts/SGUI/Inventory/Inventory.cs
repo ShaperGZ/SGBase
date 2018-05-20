@@ -32,8 +32,17 @@ public class Inventory:MonoBehaviour{
         if (GraphicsInventory != null) GraphicsInventory.SetActive(false);
         if (UnitsInventory != null) UnitsInventory.SetActive(false);
     }
+    public void GraphicsMode()
+    {
+        if (planingInventory != null) planingInventory.SetActive(false);
+        if (massingInventory != null) massingInventory.SetActive(false);
+        if (GraphicsInventory != null) GraphicsInventory.SetActive(true);
+        if (UnitsInventory != null) UnitsInventory.SetActive(false);
+    }
     public void SetMassingA() { SceneManager.SelectedBuilding.SetMassing(MassingGrammars.GA(),true); }
     public void SetMassingB() { SceneManager.SelectedBuilding.SetMassing(MassingGrammars.GB(),true); }
     public void SetMassingC() { SceneManager.SelectedBuilding.SetMassing(MassingGrammars.GC(),true); }
-   
+
+    public void SetCW01(){SceneManager.SelectedBuilding.SetFacade(FacadeGrammars.CW01(), true);}
+    public void SetCW02(){SceneManager.SelectedBuilding.SetFacade(FacadeGrammars.CW02(), true);}
 }

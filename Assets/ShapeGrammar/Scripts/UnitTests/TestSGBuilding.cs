@@ -66,12 +66,6 @@ public class TestSGBuilding : MonoBehaviour {
         b2.SetFacade(FacadeGrammars.CW01());
 
 
-        //building.Execute();
-        //building.GraphicsMode();
-        //building.UpdateParams();
-        //building.Execute();
-
-
 
         SceneManager.SelectedGrammar = b2.gPlaning;
         SceneManager.SelectedBuilding = b2;

@@ -349,9 +349,13 @@
     <Compile Include="Assets\PostProcessing\Runtime\Utils\MaterialFactory.cs" />
     <Compile Include="Assets\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
+    <Compile Include="Assets\Scripts\Camera\OrbitMultipleCameras.cs" />
     <Compile Include="Assets\Scripts\Camera\OrbitTargetCamera.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Commands\Command.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\BuildingParamVisualizer.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\OnMouseOverCalCell.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\PlaningMatrix3.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\TestPLaningMatrix.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\SelectStrategy.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Building.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\DrawDimension.cs" />
@@ -366,6 +370,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\GrammarsBuilding.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\MassingGrammars.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\Patterns.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\PlaningGrammar.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\ProgramGrammars.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\Aggrigation.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Rules\BasicRules.cs" />
@@ -488,6 +493,12 @@
     <None Include="Assets\PostProcessing\Resources\Shaders\Uber.shader" />
     <None Include="Assets\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
     <None Include="Assets\PostProcessing\Utilities\CustomMotionTexture\Shaders\CustomMotionVectorTexture.shader" />
+    <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+    <None Include="Assets\Standard Assets\Environment\Water (Basic)\Shaders\FXWaterBasic.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Advanced.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Simple.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\WaterInclude.cginc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

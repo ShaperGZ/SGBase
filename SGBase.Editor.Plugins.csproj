@@ -263,6 +263,18 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="CTCommonEditor">
+      <HintPath>Assets/Plugins/crosstales/Common/Editor/CTCommonEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="CTCommon">
+      <HintPath>Assets/Plugins/crosstales/Common/Scripts/CTCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="Ookii.Dialogs">
+      <HintPath>Assets/Plugins/crosstales/FileBrowser/Native/Windows/Ookii.Dialogs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>Assets/Plugins/crosstales/FileBrowser/Native/Windows/System.Windows.Forms.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.Advertisements">
       <HintPath>C:/Users/seah/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.3/UnityEngine.Advertisements.dll</HintPath>
     </Reference>
@@ -283,18 +295,6 @@
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/Users/seah/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="CTCommonEditor">
-      <HintPath>Assets/Plugins/crosstales/Common/Editor/CTCommonEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="CTCommon">
-      <HintPath>Assets/Plugins/crosstales/Common/Scripts/CTCommon.dll</HintPath>
-    </Reference>
-    <Reference Include="Ookii.Dialogs">
-      <HintPath>Assets/Plugins/crosstales/FileBrowser/Native/Windows/Ookii.Dialogs.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <HintPath>Assets/Plugins/crosstales/FileBrowser/Native/Windows/System.Windows.Forms.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -363,6 +363,12 @@
     <None Include="Assets\PostProcessing\Resources\Shaders\Uber.shader" />
     <None Include="Assets\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
     <None Include="Assets\PostProcessing\Utilities\CustomMotionTexture\Shaders\CustomMotionVectorTexture.shader" />
+    <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+    <None Include="Assets\Standard Assets\Environment\Water (Basic)\Shaders\FXWaterBasic.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water\Shaders\FXWaterPro.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Advanced.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Simple.shader" />
+    <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\WaterInclude.cginc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

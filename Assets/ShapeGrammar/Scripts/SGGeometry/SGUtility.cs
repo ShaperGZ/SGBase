@@ -7,6 +7,30 @@ namespace SGGeometry
     
     public class SGUtility 
     {
+
+        public static Color colorScale(Color[] colors, float i)
+        {
+            i *= colors.Length;
+            float zone = Mathf.Floor(i);
+            int indexA = (int)zone;
+            int indexB = (int)zone + 1;
+            float pos = i - zone;
+
+            if (indexB < colors.Length)
+            {
+                Color c1 = colors[indexA];
+                Color c2 = colors[indexB];
+                Color co = new Color();
+                for (int j = 0; j < 4; j++)
+                {
+                    co[j] = c1[j] + ((c2[j] - c1[j]) * pos);
+                }
+                float r = c1.r + (c2.r - c1.r) * pos;
+                return co;
+            }
+            return colors[colors.Length - 1];
+        }
+
         public static Vector3 CenterOfGravity(Vector3[] pts)
         {
             Vector3 p = Vector3.zero;

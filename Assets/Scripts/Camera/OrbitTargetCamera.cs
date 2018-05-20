@@ -12,14 +12,15 @@ public class OrbitTargetCamera : MonoBehaviour {
 
     public class InputStates
     {
-        public static Vector3 mouseMoveDeltaPos = new Vector3();
+        public  Vector3 mouseMoveDeltaPos = new Vector3();
         // this is the actuall real world vect of the mouse pointer 
         // unprojected to world space
-        public static Vector3 mouseMoveVectWorld = new Vector3();
-        public static Vector3 mouseDownDeltaPos = new Vector3();
-        public static Vector3 mouseDownPos = new Vector3();
-        public static Vector3 mouseLastPos = new Vector3();
+        public Vector3 mouseMoveVectWorld = new Vector3();
+        public Vector3 mouseDownDeltaPos = new Vector3();
+        public Vector3 mouseDownPos = new Vector3();
+        public Vector3 mouseLastPos = new Vector3();
     }
+    InputStates inputStates;
 
     private void Awake()
     {
@@ -31,11 +32,15 @@ public class OrbitTargetCamera : MonoBehaviour {
         camera_mag = (target_pos - transform.position).magnitude;
         _camera = GetComponent<Camera>();
         lookAtTarget();
+        inputStates = new InputStates();
     }
     // Update is called once per frame
     public virtual void Update()
     {
-       
+        Camera cam = GetComponent<Camera>();
+        Vector3 p = cam.ScreenToViewportPoint(Input.mousePosition);
+        if (p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1) return;
+
         getInputStates();
         if (Input.GetMouseButton(1))
             cameraRotate();
@@ -56,13 +61,14 @@ public class OrbitTargetCamera : MonoBehaviour {
     }
     void cameraRotate()
     {
-        //transform.Rotate(Vector3.up, InputStates.mouseMoveDeltaPos.x);
+        //transform.Rotate(Vector3.up, inputStates.mouseMoveDeltaPos.x);
+        //transform.Rotate(Vector3.up, inputStates.mouseMoveDeltaPos.x);
         Vector3 pos = transform.position;
 
         /////////////////////////
         //// rotate around y ////
         /////////////////////////
-        Quaternion rotation = Quaternion.Euler(0, InputStates.mouseMoveDeltaPos.x, 0);
+        Quaternion rotation = Quaternion.Euler(0, inputStates.mouseMoveDeltaPos.x, 0);
         pos = rotation * (pos - target_pos);
         transform.position = pos + target_pos;
 
@@ -74,7 +80,7 @@ public class OrbitTargetCamera : MonoBehaviour {
         lookVect.Normalize();
 
         Vector3 side = Vector3.Cross(lookVect, Vector3.up);
-        rotation = Quaternion.AngleAxis(InputStates.mouseMoveDeltaPos.y, side);
+        rotation = Quaternion.AngleAxis(inputStates.mouseMoveDeltaPos.y, side);
         pos = rotation * (pos - target_pos);
         transform.position = pos + target_pos;
         //transform.position = rotation * transform.position;
@@ -101,10 +107,10 @@ public class OrbitTargetCamera : MonoBehaviour {
         //float mag = look.magnitude;
         float panFactor = camera_mag*0.004f;
         //float panFactor = 0.02f;
-        transform.position += side * InputStates.mouseMoveDeltaPos.x * panFactor;
-        transform.position += up * InputStates.mouseMoveDeltaPos.y * panFactor;
-        target_pos += side * InputStates.mouseMoveDeltaPos.x * panFactor;
-        target_pos += up * InputStates.mouseMoveDeltaPos.y * panFactor;
+        transform.position += side * inputStates.mouseMoveDeltaPos.x * panFactor;
+        transform.position += up * inputStates.mouseMoveDeltaPos.y * panFactor;
+        target_pos += side * inputStates.mouseMoveDeltaPos.x * panFactor;
+        target_pos += up * inputStates.mouseMoveDeltaPos.y * panFactor;
         // TODO back project 
 
     }
@@ -135,19 +141,19 @@ public class OrbitTargetCamera : MonoBehaviour {
         // reset input states on mouse button down
         if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2) || Input.mousePresent == false)
         {
-            InputStates.mouseLastPos = Input.mousePosition;
-            InputStates.mouseDownPos = Input.mousePosition;
-            InputStates.mouseDownDeltaPos.x = 0;
-            InputStates.mouseDownDeltaPos.y = 0;
+            inputStates.mouseLastPos = Input.mousePosition;
+            inputStates.mouseDownPos = Input.mousePosition;
+            inputStates.mouseDownDeltaPos.x = 0;
+            inputStates.mouseDownDeltaPos.y = 0;
         }
 
         //action on pressing the button
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
-            InputStates.mouseDownDeltaPos = Input.mousePosition - InputStates.mouseDownPos;
-            InputStates.mouseMoveDeltaPos = Input.mousePosition - InputStates.mouseLastPos;
+            inputStates.mouseDownDeltaPos = Input.mousePosition - inputStates.mouseDownPos;
+            inputStates.mouseMoveDeltaPos = Input.mousePosition - inputStates.mouseLastPos;
 
-            InputStates.mouseLastPos = Input.mousePosition;
+            inputStates.mouseLastPos = Input.mousePosition;
         }
     }
 

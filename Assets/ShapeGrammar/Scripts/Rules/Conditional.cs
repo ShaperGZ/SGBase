@@ -50,4 +50,36 @@ namespace Rules
             }
         }
     }
+    public class OfficeFilter : Rule
+    {
+        public OfficeFilter() : base()
+        {
+
+        }
+        public OfficeFilter(string InName, string nameSL, string nameDL, string nameCV) :
+            base(InName, new string[] { nameSL, nameDL, nameCV })
+        {
+
+        }
+        public override void Execute()
+        {
+            removeExtraOutputs();
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                Meshable m = inputs.shapes[i].meshable;
+                string name = outputs.names[0];
+                float depth = inputs.shapes[i].Size[2];
+                if (depth < 13) name = outputs.names[0];
+                else if (depth < 32) name = outputs.names[1];
+                else name = outputs.names[2];
+                if (i >= outputs.shapes.Count)
+                {
+                    outputs.shapes.Add(ShapeObject.CreateBasic());
+                }
+                inputs.shapes[i].CloneTo(outputs.shapes[i]);
+                outputs.shapes[i].name = name;
+                outputs.shapes[i].parentRule = this;
+            }
+        }
+    }
 }

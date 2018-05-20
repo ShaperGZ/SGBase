@@ -120,11 +120,11 @@ public class BuildingParamEditor : MonoBehaviour {
     }
 	public void SetBuilding(SGBuilding b)
     {
-        if (b == null)
-        {
-            Clear();
-            return;
-        }
+        //if (b == null)
+        //{
+        //    Clear();
+        //    return;
+        //}
         if (building != null)
         {
             building.buildingParamEditor = null;

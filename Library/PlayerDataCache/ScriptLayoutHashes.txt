@@ -24,6 +24,7 @@ a95e17eb201aebf10a73a38260b1d187 Assembly-CSharp-firstpass.dll:Crosstales.UI.UIF
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.test
 32d9f3260a7d08d8ff579e99f99ca6ba Assembly-CSharp.dll:.DrawingGrid
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.TestUtility
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.DrawDimension
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 49cd62a578efc0a599b810a2b66cd49c UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -214,4 +215,11 @@ f62765a452524a09eac0b0ba2341cc9e Assembly-CSharp.dll:.SGTransform
 165aad1f88a1706e1812bd545760bf2a Assembly-CSharp.dll:.DisplayManager
 b5c45198f4c6671c435fbb86cd823709 Assembly-CSharp-firstpass.dll:Crosstales.UI.Util.TakeScreenshot
 3cce32e5593cba95490dafe0dcfedb15 Assembly-CSharp.dll:.BuildingParamEditor
-05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.DrawDimension
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.WaterBasic
+6746ad828d32ad6e5c07a63950fd4be6 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.WaterTile
+cfa93710d56cd4da2a3b2eec27bc1139 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.PlanarReflection
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.GerstnerDisplace
+aa13baec1c19c8fa869cb21cb01a3767 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.WaterBase
+2c62b9ae79b8b54dd7b55fa7d311452b Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.Water
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.Displace
+21984f001d5a114ee9fbf62810ee8eb7 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Water.SpecularLighting

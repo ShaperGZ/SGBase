@@ -111,10 +111,25 @@ namespace Rules
             name = "AggCW01";
             prefabPath = "Components\\comp1u";
         }
-        public AggCW01(string inName, string outName, int width, int height) : base(inName, outName,width,height)
+        public AggCW01(string inName, string outName, int width, int height) : base(inName, outName, width, height)
         {
             name = "AggCW01";
             prefabPath = "Components\\comp1u";
+            SetParam("DivisionSize", 0, width);
+            SetParam("DivisionSize", 1, height);
+        }
+    }
+    public class AggCW02 : AggBasicSimp
+    {
+        public AggCW02()
+        {
+            name = "AggCW02";
+            prefabPath = "Components\\comp2u";
+        }
+        public AggCW02(string inName, string outName, int width, int height) : base(inName, outName, width, height)
+        {
+            name = "AggCW02";
+            prefabPath = "Components\\comp2u";
             SetParam("DivisionSize", 0, width);
             SetParam("DivisionSize", 1, height);
         }

@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scene/ParametricBuilding.unity
+- path: Assets/Scene/PrametricSite.unity
   isLoaded: 1
   isActive: 1
