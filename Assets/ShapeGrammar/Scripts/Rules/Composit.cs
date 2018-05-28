@@ -147,5 +147,59 @@ namespace Rules
             AddRule(new Rules.Scale3D(nameTMP, "DEL", new Vector3(1, 0.01f, 1)),false);
         }
     }
-   
+
+
+    //residential
+    public class ResitTower : Grammar
+    {
+        public ResitTower() : base()
+        {
+            name = "ResitTower";
+            SetRules();
+        }
+        public ResitTower(string inName, string outName) : base(inName, new string[] { outName })
+        {
+            name = "ResitTower";
+            SetRules();
+        }
+        public void SetRules()
+        {
+            throw new NotImplementedException();
+
+        }
+    }
+    public class ResitHouse : Grammar
+    {
+        public ResitHouse() : base()
+        {
+            name = "ResitHouse";
+            SetRules();
+        }
+        public ResitHouse(string inName, string outName) : base(inName, new string[] { outName })
+        {
+            name = "ResitHouse";
+            SetRules();
+        }
+        public void SetRules()
+        {
+            string inName = inputs.names[0];
+            string outName = outputs.names[0];
+            Rule r1 = new Rules.DivideTo(inName, new string[] { "A", "A" }, 15, 2);
+            Rule r2 = new Rules.DivideTo("A", new string[] { "A", "B" }, 15, 0);
+            Rule r3 = new Rules.PivotMirror("B", "A", 0);
+            Rule r4 = new Rules.Bisect("A", new string[] { "A", "B" }, 0.5f, 0);
+            Rule r5 = new Rules.BisectLength("A", new string[] { "A", outName }, 1, 2);
+            Rule r6 = new Rules.Scale3D("A", outName, new Vector3(1, 0.5f, 1f),null,Alignment.Center);
+            Rule r7 = new Rules.Scale3D("B", outName, new Vector3(1, 0.8f, 0.6f),null,Alignment.Center);
+
+            AddRule(r1, false);
+            AddRule(r2, false);
+            AddRule(r3, false);
+            AddRule(r4, false);
+            AddRule(r5, false);
+            AddRule(r6, false);
+            AddRule(r7, false);
+
+        }
+    }
 }

@@ -313,7 +313,7 @@ namespace Rules
                         }
                         else
                         {
-                            Debug.Log(dot + "," + n+","+directF);
+                            //Debug.Log(dot + "," + n+","+directF);
                             if (outputs.names[2] != "DELETE")
                                 sides.Add(m);
                         }
@@ -488,7 +488,7 @@ namespace Rules
                 extractedObjects[i].GetComponent<MeshFilter>().mesh.RecalculateNormals();
                 extractedObjects[i].name = name;
             }
-            Debug.Log("extractObjects.Count=" + extractedObjects.Count);
+            //Debug.Log("extractObjects.Count=" + extractedObjects.Count);
             outputs.shapes.Clear();
             outputs.shapes.AddRange(inputs.shapes.ToArray());
             outputs.shapes.AddRange(extractedObjects.ToArray());

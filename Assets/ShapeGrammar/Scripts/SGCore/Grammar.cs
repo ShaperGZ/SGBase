@@ -70,6 +70,7 @@ namespace SGCore
             displayStep = currentStep;
             subNodes.Add(r);
             r.grammar = this;
+            r.sgbuilding = sgbuilding;
             r.building = building;
             r.site = site;
             r.step = subNodes.Count - 1;
@@ -638,7 +639,50 @@ namespace SGCore
                 //so.gameObject.transform.parent = building.transform;
             }
         }
+        public void ClearAllAssociated()
+        {
+            if (inputs.shapes != null)
+            {
+                for (int i = 0; i < inputs.shapes.Count; i++)
+                {
+                    try
+                    {
+                        GameObject.Destroy(inputs.shapes[i].gameObject);
+                    }
+                    catch { }
+                    
+                }
+            }
+            inputs.shapes.Clear();
 
+            if (assignedObjects != null)
+            {
+                if (assignedObjects != null)
+                {
+                    for (int i = 0; i < assignedObjects.Count; i++)
+                    {
+                        try
+                        {
+                            GameObject.Destroy(assignedObjects[i].gameObject);
+                        }
+                        catch { }
+
+                    }
+                }
+                assignedObjects.Clear();
+            }
+
+            Clear();
+        }
+        public void ClearForDestroy()
+        {
+            if(inputs.shapes!=null)
+                inputs.shapes.Clear();
+            if (assignedObjects != null)
+                assignedObjects.Clear();
+            
+            Clear();
+        }
         public void Clear(bool callByDestroy=false)
         {
             foreach(SGIO sgio in stagedOutputs)

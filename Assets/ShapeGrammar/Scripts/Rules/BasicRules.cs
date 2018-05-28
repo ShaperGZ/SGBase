@@ -141,11 +141,11 @@ namespace Rules
         }
         public override void Execute()
         {
-            Debug.Log("inputshapes.Count=" + inputs.shapes.Count);
-            foreach (ShapeObject so in inputs.shapes)
-            {
-                Debug.Log("shapename="+so.name);
-            }
+            //Debug.Log("inputshapes.Count=" + inputs.shapes.Count);
+            //foreach (ShapeObject so in inputs.shapes)
+            //{
+            //    Debug.Log("shapename="+so.name);
+            //}
             outMeshables.Clear();
             outputs.shapes.Clear();
         }
@@ -768,24 +768,42 @@ namespace Rules
             if (grammar.properties == null) grammar.properties = new BuildingProperties();
             name = "SizeBuilding3D";
         }
-        public SizeBuilding3D(string inName, string outName, Vector3 size) : base(inName, outName, size)
+        public SizeBuilding3D(string inName, string outName, Vector3 size) : base()
         {
+            inputs.names.Clear();
+            outputs.names.Clear();
+            inputs.names.Add(inName);
+            outputs.names.Add(outName);
+
             name = "SizeBuilding3D";
-        }
-        public override OrderedDictionary DefaultParam()
-        {
-            OrderedDictionary dict = new OrderedDictionary();
-            ParameterGroup pg1 = new ParameterGroup();
-            List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
-            outParamGroups.Add(pg1);
+            if (size != null)
+            {
+                SetParam("Size", 0, size[0]);
+                SetParam("Size", 1, size[1]);
+                SetParam("Size", 2, size[2]);
+            }
+            else
+            {
+                SetParam("Size", 45, size[0]);
+                SetParam("Size", 30, size[1]);
+                SetParam("Size", 20, size[2]);
+            }
 
-            dict["Size"] = pg1;
-            pg1.Add(new Parameter(30f, 30f, 80f, 0.01f));
-            pg1.Add(new Parameter(18f, 3f, 100f, 0.01f));
-            pg1.Add(new Parameter(8f, 8f, 40f, 0.01f));
-
-            return dict;
         }
+        //public override OrderedDictionary DefaultParam()
+        //{
+        //    OrderedDictionary dict = new OrderedDictionary();
+        //    ParameterGroup pg1 = new ParameterGroup();
+        //    List<ParameterGroup> outParamGroups = new List<ParameterGroup>();
+        //    outParamGroups.Add(pg1);
+
+        //    dict["Size"] = pg1;
+        //    pg1.Add(new Parameter(30f, 30f, 80f, 0.01f));
+        //    pg1.Add(new Parameter(18f, 3f, 100f, 0.01f));
+        //    pg1.Add(new Parameter(8f, 8f, 40f, 0.01f));
+
+        //    return dict;
+        //}
         public override void Execute()
         {
             base.Execute();

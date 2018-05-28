@@ -18,23 +18,29 @@ public class SGBuilding
 
 
     public BuildingParamEditor buildingParamEditor;
-    public Vector3 _position;
-    public Vector3 Position
-    {
-        set { _position = value; }
-        get
-        {
-            if (positionReference != null) return positionReference.Position;
-            return _position;
-        }
-    }
     public Transform transform
     {
         get { return coordRef.transform; }
     }
     public FloorHeight floorHeight;
     public List<Floor> floors;
-    public Site site;
+    public DesignContext site;
+
+    public Grammar[] GetGrammars()
+    {
+        Grammar[] grammars = new Grammar[]
+        {
+            gPlaning,
+            gMassing,
+            gProgram,
+            gFacade,
+            gStruct,
+            gCalculate
+        };
+
+        return grammars;
+
+    }
 
     //units
     public List<List<Meshable>> units;
@@ -53,7 +59,6 @@ public class SGBuilding
     public bool freeze = false;
     public Guid guid;
     Dictionary<string, float> subGfa;
-    public ShapeObject positionReference;
     public GameObject coordRef;
 
     public enum DisplayMode
@@ -69,19 +74,36 @@ public class SGBuilding
     public DisplayMode displayMode = DisplayMode.GRAPHICS;
     public DisplayMode lastDisplayMode = DisplayMode.GRAPHICS;
 
-    public SGBuilding(Vector3? pos = null)
+    public SGBuilding()
     {
         coordRef = new GameObject();
         guid = Guid.NewGuid();
         //SceneManager.AddBuilding(this);
         ResetProperties();
         grammars = new List<Grammar>();
-        if (pos.HasValue) Position = pos.Value;
-        else pos = new Vector3(0, 0, 0);
+
     }
-    public void SetRefPos(ShapeObject so)
+    public static SGBuilding CreateApt(SOPoint sop, Vector3 size)
     {
-        positionReference = so;
+        SGBuilding building = new SGBuilding();
+        Grammar gp = new Grammar();
+        gp.name = "planing1";
+        gp.inputs.shapes.Add(sop);
+        gp.AddRule(new Rules.CreateOperableBox("A", new Vector3(30, 30, 20)));
+        gp.AddRule(new Rules.SizeBuilding3D("A", "A", new Vector3(30, 20, 15)));
+        gp.AddRule(new Rules.ResidentialLoadFilter("A", "IHUS", "DHUS", "A"));
+        gp.AddRule(new Rules.ApartmentLoadFilter("A", "SL", "DL", "CV"), false);
+        gp.AddRule(new Rules.SingleLoaded("SL", "APT"), false);
+        gp.AddRule(new Rules.DoubleLoaded("DL", "APT"), false);
+        gp.AddRule(new Rules.CentralVoid("CV", "APT", "APT2"), false);
+        building.SetGPlanning(gp);
+        building.SetMassing(MassingGrammars.GA());
+        //building.SetFacade(FacadeGrammars.CW01());
+        building.SetSize(size);
+        sop.grammar = gp;
+        //sop.onPositionChanged += delegate { building.Execute(); };
+        //sop.onDestroy += delegate { building.ClearForDestroy(); };
+        return building;
     }
 
     public void Execute()
@@ -124,7 +146,7 @@ public class SGBuilding
             if (upstream != null)
             {
                 upstream.DisconnectDownStream(oldg);
-                Debug.Log("disconnect:" + oldg.guid);
+                //Debug.Log("disconnect:" + oldg.guid);
             }
             for (int i = 0; i < oldg.downStreams.Count; i++)
             {
@@ -185,11 +207,32 @@ public class SGBuilding
     }
     public void Destroy()
     {
-        throw new System.NotImplementedException();
+        if (gPlaning != null) gPlaning.Clear();
+        if (gMassing != null) gMassing.Clear();
+        if (gProgram != null) gProgram.Clear();
+        if (gStruct != null) gStruct.Clear();
     }
-    public void Clear()
+    public void ClearAllAssociated()
     {
-        grammars.Clear();
+        Grammar[] grammars = GetGrammars();
+        foreach (Grammar g in grammars)
+        {
+            if (g != null)
+                g.ClearAllAssociated();
+        }
+
+        ResetProperties();
+    }
+    public void ClearForDestroy()
+    {
+        //grammars.Clear(); 
+        Grammar[] grammars = GetGrammars();
+        foreach(Grammar g in grammars)
+        {
+            if(g!=null)
+                g.ClearForDestroy();
+        }
+
         ResetProperties();
     }
     public void Invalidate(bool updateFromGrammar = false)
@@ -241,6 +284,20 @@ public class SGBuilding
         if (buildingParamEditor!=null)
             buildingParamEditor.UpdateBuildingParamDisplay();
     }
+    public void SetSize(Vector3 size)
+    {
+        if (gPlaning != null)
+        {
+            GraphNode g=gPlaning.FindFirst("SizeBuilding3D");
+            if (g == null) return;
+            Debug.Log("setSize:"+size[1]);
+            g.SetParam("Size", 0, size[0]);
+            g.SetParam("Size", 1, size[1]);
+            g.SetParam("Size", 2, size[2]);
+           
+            g.Execute();
+        }
+    }
     private void SetHeights()
     {
         floorHeight = new FloorHeight();
@@ -280,7 +337,7 @@ public class SGBuilding
 
         }
     }
-    public void AddToSite(Site site)
+    public void AddToSite(DesignContext site)
     {
         this.site = site;
         foreach (Grammar g in grammars)

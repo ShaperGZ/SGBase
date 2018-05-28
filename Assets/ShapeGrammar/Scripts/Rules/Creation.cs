@@ -220,5 +220,95 @@ namespace Rules
             return ext;
         }
     }
+
+    public class CreateBuilding : Rule
+    {
+        public DesignContext site;
+        public SGParticleSystem psys;
+        PlaningMatrix3 matrix;
+        public List<SGBuilding> buildings;
+        public CreateBuilding() : base() { }
+        public CreateBuilding(string inName, PlaningMatrix3 matrix=null, SGParticleSystem psys=null) : base(inName, new string[] { })
+        {
+            this.matrix = matrix;
+            this.psys = psys;
+            Debug.Log("assigned matrix=" + matrix);
+        }
+        public override void Execute()
+        {
+            if (matrix == null) return;
+            PlaningScheme scheme = matrix.recommendedScheme;
+            //Debug.Log("scheme="+scheme);
+            if (scheme == null) return;
+            //Debug.Log("has scheme");
+            int total = 0;
+            for (int i = 0; i < scheme.counts.Count; i++)
+            {
+                total += scheme.counts[i];
+            }
+            total = Mathf.Clamp(total, 0,inputs.shapes.Count);
+
+            if (buildings == null) buildings = new List<SGBuilding>();
+            else
+            {
+                //先删除多出来的building
+                int dif = buildings.Count - total;
+                for (int i = 0; i < dif; i++)
+                {
+                    int index = buildings.Count - 1;
+                    buildings[index].ClearAllAssociated();
+                    buildings.RemoveAt(index);
+                }//for
+            }
+
+
+            int typeIndex = 0;
+            int nextLevel = scheme.counts[0];
+            for (int i = 0; i < total; i++)
+            {
+                if (i >= nextLevel)
+                {
+                    //Debug.LogFormat("i={0}, typeIndex={1}, total={2}", i, typeIndex,total);
+                    typeIndex++;
+                    nextLevel = nextLevel + scheme.counts[typeIndex];
+                }
+                     
+                ShapeObject so = inputs.shapes[i];
+                //补足不够的building
+                if (i >= buildings.Count)
+                {
+                    SOPoint sop = SOPoint.CreatePoint(new Vector3(i * 40, 0, 0));
+                    SGBuilding building = SGBuilding.CreateApt(sop, new Vector3(30, 60, 15));
+                    building.Execute();
+                    buildings.Add(building);
+                }
+
+                
+                BuildingType bt = scheme.buildingTypes[typeIndex];
+                
+                Vector3 size=new Vector3(bt.width,bt.height,bt.depth);
+                SGBuilding b = buildings[i];
+                b.gPlaning.inputs.shapes[0].Position = so.Position;
+                b.SetSize(size);
+                b.Execute();
+
+            }//for
+
+
+            //update particle system
+            if (psys != null)
+            {
+                psys.particles.Clear() ;
+                for (int i = 0; i < buildings.Count; i++)
+                {
+                    GraphNode g = buildings[i].gPlaning;
+                    ShapeObject sop = g.inputs.shapes[0];
+                    psys.particles.Add(sop);
+                }
+            }
+            
+        }
+    }
+
     
 }

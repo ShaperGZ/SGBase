@@ -50,6 +50,44 @@ namespace Rules
             }
         }
     }
+
+    public class ResidentialLoadFilter : Rule
+    {
+        public ResidentialLoadFilter() : base()
+        {
+
+        }
+        public ResidentialLoadFilter(string InName, string nameSL, string nameDL, string nameCV) :
+            base(InName, new string[] { nameSL, nameDL, nameCV })
+        {
+
+        }
+        public override void Execute()
+        {
+            removeExtraOutputs();
+            for (int i = 0; i < inputs.shapes.Count; i++)
+            {
+                Meshable m = inputs.shapes[i].meshable;
+                string name = outputs.names[0];
+                float h = inputs.shapes[i].Size[1];
+                float w = inputs.shapes[i].Size[0];
+
+                if (w<10 && h <= 12) name = outputs.names[0];
+                else if (h < 15) name = outputs.names[1];
+                else name = outputs.names[2];
+
+                if (i >= outputs.shapes.Count)
+                {
+                    outputs.shapes.Add(ShapeObject.CreateBasic());
+                }
+                inputs.shapes[i].CloneTo(outputs.shapes[i]);
+                outputs.shapes[i].name = name;
+                outputs.shapes[i].parentRule = this;
+            }
+        }
+    }
+
+
     public class OfficeFilter : Rule
     {
         public OfficeFilter() : base()

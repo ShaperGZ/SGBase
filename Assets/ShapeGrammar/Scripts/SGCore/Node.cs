@@ -18,7 +18,7 @@ namespace SGCore
             Bd_Graphics,
         }
         public Category category = Category.Generic;
-        public Site site;
+        public DesignContext site;
         public Building building;
         public SGBuilding sgbuilding;
 

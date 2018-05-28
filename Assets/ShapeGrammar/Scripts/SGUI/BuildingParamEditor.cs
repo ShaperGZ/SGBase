@@ -14,6 +14,7 @@ public class BuildingParamEditor : MonoBehaviour {
     public Button btGraphicsMode;
     public Button btUnitMode;
     public bool freeze=false;
+    public bool readParamOnly = false;
     public ProgramRatioVisualizer programRatioVisualizer;
 
     // Use this for initialization
@@ -131,7 +132,11 @@ public class BuildingParamEditor : MonoBehaviour {
         }
         building = b;
         b.buildingParamEditor = this;
+
+        readParamOnly = true;
         b.UpdateParams();
+        UpdateBuildingParamDisplay();
+        readParamOnly = false;
         
     }
     public void UpdateBuildingParamDisplay(int skip=-1)
@@ -174,6 +179,7 @@ public class BuildingParamEditor : MonoBehaviour {
     
     public void ChangeHeight(float f)
     {
+        if (readParamOnly) return;
         Grammar g = building.gPlaning;
         GraphNode gn = g.FindFirst("SizeBuilding3D");
         if(gn!=null)
@@ -189,6 +195,7 @@ public class BuildingParamEditor : MonoBehaviour {
     }
     public void ChangeWidth(float f)
     {
+        if (readParamOnly) return;
         Grammar g = building.gPlaning;
         GraphNode gn = g.FindFirst("SizeBuilding3D");
         if (gn != null)
@@ -204,6 +211,7 @@ public class BuildingParamEditor : MonoBehaviour {
     }
     public void ChangeDepth(float f)
     {
+        if (readParamOnly) return;
         Grammar g = building.gPlaning;
         GraphNode gn = g.FindFirst("SizeBuilding3D");
         if (gn != null)

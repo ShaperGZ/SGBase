@@ -11,6 +11,9 @@ public class BuildingType
     public float height = 100f;
     public float floorCount = 30;
     public float unitPrice = 1.2f;
+    public float width = 40;
+    public float depth = 20;
+ 
     public float GFA
     {
         get
@@ -18,6 +21,7 @@ public class BuildingType
             return footprint * floorCount;
         }
     }
+
     
 }
 
@@ -27,19 +31,42 @@ public class PlaningMatrix3 {
     public float area = 80000;
     public float plotRatio = 1.5f;
     public float density = 0.5f;
+    public float cellSize = 0.1f;
+    public Recommendation recommendation=null;
+    public PlaningScheme recommendedScheme=null;
+    public int? recommendationIndex = null;
+
+    public List<PlaningScheme> schemes;
+    public SiteProperty siteProp;
+
     public List<BuildingType> buildingTypes;
     public List<GameObject> cells;
-    public List<float> countAs;
-    public List<float> countBs;
-    public List<float> countCs;
-    public SiteProperty siteProp;
+    //public List<float> countAs;
+    //public List<float> countBs;
+    //public List<float> countCs;
+
 
     List<Vector3> positions;
     public PlaningMatrix3(ref SiteProperty siteProp)
     {
         buildingTypes = new List<BuildingType>();
+        schemes = new List<PlaningScheme>();
         this.siteProp = siteProp;
+        recommendation = new Recommendation(this);
     }
+    public void AddType(string name,Vector3 size, float unitPrice)
+    {
+        BuildingType bt = new BuildingType();
+        bt.name = name;
+        bt.width = size.x;
+        bt.height = size.y;
+        bt.depth = size.z;
+        bt.footprint = size.x * size.z;
+        bt.floorCount = size.y / 3;
+        bt.unitPrice = unitPrice;
+        buildingTypes.Add(bt);
+    }
+
     public void AddType(string name, float footPrint, float height, float floorCount, float unitPrice)
     {
         BuildingType bt = new BuildingType();
@@ -54,44 +81,27 @@ public class PlaningMatrix3 {
     public void genGrid(int maxCountA=10, int maxCountB = 10, int maxCountC = 10)
     {
         if(cells==null)cells = new List<GameObject>();
-
-        countAs = new List<float>();
-        countBs = new List<float>();
-        countCs = new List<float>();
-        float targetGFA = siteProp.siteArea * siteProp.sitePlotRatio;
-
-        float stepX = 1f / (float)maxCountA;
-        float stepY = 1f / (float)maxCountB;
-        float stepZ = 1f / (float)maxCountC;
-
-        float cellSizeX = stepX * 0.8f;  
-        float cellSizeY = stepY * 0.8f;  
-        float cellSizeZ = stepZ * 0.8f;
+        //countAs = new List<float>();
+        //countBs = new List<float>();
+        //countCs = new List<float>();
+        float targetGFA = siteProp.siteArea * siteProp.plotRatio;
 
 
         positions = new List<Vector3>();
         List<float> difs = new List<float>();
         List<float> gfas = new List<float>();
-        float maxDif=0;
-        float minDif=100000000000000;
+
+        //calculate all options and update cell positions
         for (int i = 0; i < maxCountA; i++)
         {
             for (int k = 0; k < maxCountB; k++)
             {
-                //for (int k = 0; k < maxCountC; k++)
-                //{
-
                 float designAreaA = (float)i * buildingTypes[0].GFA;
                 float designAreaB = (float)k * buildingTypes[2].GFA;
-                
-                float j = (targetGFA - designAreaA - designAreaB) / buildingTypes[1].GFA;
-                j = Mathf.Round(j);
-                if (j < 0) j = 0;
-                //if (j < 0) continue;
 
-                countAs.Add((float)i);
-                countBs.Add(j);
-                countCs.Add((float)k);
+                float remainGFA = targetGFA - designAreaA - designAreaB;
+                int j = Mathf.RoundToInt(remainGFA / buildingTypes[1].GFA);
+                if (j < 0) j = 0;
                
                 float designArea =
                     ((float)i * buildingTypes[0].GFA)  +
@@ -102,17 +112,30 @@ public class PlaningMatrix3 {
                 float dif = targetGFA - designArea;
                 dif = Mathf.Abs(dif);
                 difs.Add(dif);
-
-                if (dif > maxDif) maxDif = dif;
-                //if (dif < minDif) minDif = dif;
+                if(j>0)
+                    Debug.LogFormat("targetGFA={4}, remain={3},i={0},j={1},k={2}",i,j,k,remainGFA,targetGFA);
+                PlaningScheme scheme = new PlaningScheme();
+                if (j > 0)
+                    Debug.LogFormat("---Pre i={0},j={1},k={2}", i,j,k);
+                scheme.AddTypeAndQuantity(buildingTypes[0], i);
+                scheme.AddTypeAndQuantity(buildingTypes[1], j);
+                scheme.AddTypeAndQuantity(buildingTypes[2], k);
+                if (j > 0)
+                    Debug.LogFormat("---Pst i={0},j={1},k={2}", 
+                    scheme.counts[0],
+                    scheme.counts[1],
+                    scheme.counts[2]);
+                scheme.site = siteProp;
+                scheme.gfa = designArea;
+                schemes.Add(scheme);
                 
-                Vector3 pos = new Vector3(i * stepX, j * stepY *0.3f, k * stepZ);
+                Vector3 pos = new Vector3(i * cellSize, j * cellSize * 0.3f, k * cellSize);
                 positions.Add(pos);
                 //Debug.LogFormat("A:{0}, B:{1}, C:{2}, dif:{3}", i, j, k, dif);
                 
             }
         }
-        Debug.LogFormat("minDif={0}, maxDif={1}", minDif, maxDif);
+        //Debug.LogFormat("minDif={0}, maxDif={1}", minDif, maxDif);
         Color[] colorSet = new Color[] { Color.blue, Color.green, Color.yellow, Color.red };
         for (int i = 0; i < positions.Count; i++)
         {
@@ -126,32 +149,27 @@ public class PlaningMatrix3 {
             }
             GameObject o = cells[i];
             o.transform.position = (positions[i]);
+            o.transform.localScale = new Vector3(cellSize,cellSize,cellSize);
             o.layer = 10;
+
             OnMouseOverCalCell cc= o.GetComponent<OnMouseOverCalCell>();
-            cc.calCamera = camera;
-            cc.countA = countAs[i];
-            cc.countB = countBs[i];
-            cc.countC = countCs[i];
-            cc.dif = difs[i];
-            cc.gfa = gfas[i];
-            cc.totalSales =
-                    (cc.countA * buildingTypes[0].GFA * buildingTypes[0].unitPrice) +
-                    (cc.countB * buildingTypes[1].GFA * buildingTypes[1].unitPrice) +
-                    (cc.countC * buildingTypes[2].GFA * buildingTypes[2].unitPrice)
-                    ;
-            float d = difs[i];
-            d = Mathf.Clamp(d, 100, 10000);
-            float ratio = d / 10000;
-            ratio = Mathf.Clamp(ratio, 0f, 0.9f);
-            //float ratio = d/ maxDif;
-            //float ratio = (d +1000)/ (2000);
-            Color color = SGUtility.colorScale( colorSet, ratio);
-            o.GetComponent<MeshRenderer>().material.color = color;
-            Debug.Log(ratio);
-            //cellSizeY = dif / targetGFA / 30;
-            o.transform.localScale = new Vector3(cellSizeX * (1-ratio), cellSizeY * (1 - ratio), cellSizeZ * (1 - ratio));
-            
+            cc.scheme = schemes[i];
         }// for i
+
+        Recommand();
+    }
+    public void Recommand()
+    {
+        if (recommendation != null)
+        {
+            recommendationIndex = null;
+            recommendation.visualize();
+            recommendationIndex = recommendation.recommendedIndex;
+            //Debug.Log("recommendedIndex=" + recommendationIndex);
+            if (recommendationIndex.HasValue)
+                recommendedScheme = schemes[recommendationIndex.Value];
+            //Debug.Log("recommendedScheme=" + recommendedScheme);
+        }
     }
     public void OnRenderObjects()
     {
@@ -169,7 +187,20 @@ public class PlaningMatrix3 {
             pts.Add(new Vector3(1, 0, i));
 
         }
+        
         SGGeometry.GLRender.Lines(pts.ToArray(), new Color(0.1f,0.1f,0.1f));
+
+        if (recommendationIndex != null)
+        {
+            int i = recommendationIndex.Value;
+            pts = new List<Vector3>();
+            Vector3 pos = cells[i].transform.position;
+            pts.Add(pos);
+            pts.Add(pos + new Vector3(0, 1, 0));
+            SGGeometry.GLRender.Lines(pts.ToArray(), Color.white);
+        }
+        
+
     }
     
 

@@ -6,6 +6,8 @@ using SGCore;
 
 
 public class ShapeObject : MonoBehaviour {
+    public delegate void OnDestroyHandler();
+    public OnDestroyHandler onDestroy;
     public static bool drawScope = true;
     public virtual Vector3 Size
     {
@@ -83,6 +85,7 @@ public class ShapeObject : MonoBehaviour {
             meshRenderer.enabled = flag;
         }
     }
+   
     public virtual void Clear()
     {
 
@@ -403,6 +406,8 @@ public class ShapeObject : MonoBehaviour {
         {
             grammar.Clear(true);
         }
+        if(onDestroy!=null)
+            onDestroy();
         //Debug.LogWarning("SHAPE OBJECT DESTROY WARNING:" + Format());
     }
     public static ShapeObject CreateBasic()

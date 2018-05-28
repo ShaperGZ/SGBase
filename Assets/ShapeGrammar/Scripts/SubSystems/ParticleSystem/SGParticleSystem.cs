@@ -92,6 +92,7 @@ public class SGParticleSystem {
     }
     public virtual void Update()
     {
+        //Debug.Log("psys update");
         //if (paused) return;
         foreach(ShapeObject p1 in particles)
         {
@@ -130,14 +131,17 @@ public class SGPlaningParticleSystem:SGParticleSystem
         //if (paused) return;
         entrophy = 0;
         float sideGap = 15;
+        Debug.Log("particel count:" + particles.Count);
         foreach (ShapeObject p1 in particles)
         {
+
+            Debug.Log("p1.grammar=" + p1.grammar.sgbuilding);
             Vector3 offset = new Vector3(0, 0, 0);
             foreach (ShapeObject p2 in particles)
             {
                 if (p1 == p2) continue;
                 if (p1.grammar == null || p2.grammar == null) continue;
-                if (p1.grammar.building == null || p2.grammar.building == null) continue;
+                if (p1.grammar.sgbuilding == null || p2.grammar.sgbuilding == null) continue;
                 ShapeObject south;
                 if (p1.Position.z < p2.Position.z) south = p1;
                 else south = p2;
@@ -148,13 +152,26 @@ public class SGPlaningParticleSystem:SGParticleSystem
                 float dx = p2.Position.x - p1.Position.x;
                 float dz = p2.Position.z - p1.Position.z;
 
-                float p1W = (float)p1.grammar.building.width;
-                float p1D = (float)p1.grammar.building.depth;
-                float p1H = (float)p1.grammar.building.height;
+                GraphNode gP1 = p1.grammar.sgbuilding.gPlaning.FindFirst("SizeBuilding3D");
+                float p1W = gP1.GetParamVal("Size", 0);
+                float p1H = gP1.GetParamVal("Size", 1);
+                float p1D = gP1.GetParamVal("Size", 2);
 
-                float p2W = (float)p1.grammar.building.width;
-                float p2D = (float)p1.grammar.building.depth;
-                float p2H = (float)p1.grammar.building.height;
+                //Debug.LogFormat("w={0}, h={1}, d={2}", p1W, p1H, p1D);
+
+                GraphNode gP2 = p2.grammar.sgbuilding.gPlaning.FindFirst("SizeBuilding3D");
+                float p2W = gP2.GetParamVal("Size", 0);
+                float p2H = gP2.GetParamVal("Size", 1);
+                float p2D = gP2.GetParamVal("Size", 2);
+
+                
+                //float p1W = (float)p1.grammar.sgbuilding.width;
+                //float p1D = (float)p1.grammar.sgbuilding.depth;
+                //float p1H = (float)p1.grammar.sgbuilding.height;
+
+                //float p2W = (float)p1.grammar.sgbuilding.width;
+                //float p2D = (float)p1.grammar.sgbuilding.depth;
+                //float p2H = (float)p1.grammar.sgbuilding.height;
 
                 p1H *= 0.6f;
                 if (p1H < 30) p1H = 30;
@@ -188,7 +205,7 @@ public class SGPlaningParticleSystem:SGParticleSystem
                     //MoveParticle(p2, offsetV / 2);
                     entrophy += offsetV.magnitude;
                 }
-
+                if (offset.magnitude > 0) Debug.Log(offset.magnitude);
                
             }
             MoveParticle(p1, offset);

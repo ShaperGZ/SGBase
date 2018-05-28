@@ -355,9 +355,12 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\BuildingParamVisualizer.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\OnMouseOverCalCell.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\PlaningMatrix3.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\Recommendation.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\Scheme.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\Planning1\TestPLaningMatrix.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Design\SelectStrategy.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Building.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\DesignContext.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\DrawDimension.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\FacadeSystem.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Floor.cs" />
@@ -365,7 +368,6 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\PlaningGrid.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\PlaningGridCell.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\SGBuilding.cs" />
-    <Compile Include="Assets\ShapeGrammar\Scripts\DesignDefinition\Site.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\FacadeGrammar.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\GrammarsBuilding.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\Grammars\MassingGrammars.cs" />
@@ -433,6 +435,7 @@
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammar.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestGrammarUI.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestIntersection.cs" />
+    <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestMoveAnimateSGBuilding.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestOffset.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestParticleSystem.cs" />
     <Compile Include="Assets\ShapeGrammar\Scripts\UnitTests\TestPivot.cs" />

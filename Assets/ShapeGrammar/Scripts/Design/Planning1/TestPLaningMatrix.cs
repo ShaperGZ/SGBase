@@ -7,19 +7,20 @@ using SGCore;
 
 public class SiteProperty
 {
-    public float siteArea;
-    public float sitePlotRatio;
-    public float siteCoverage;
+    public float siteArea=0;
+    public float plotRatio=0;
+    public float coverage=0;
+    public float gfa { get { return siteArea * plotRatio; } }
     
 }
 
 public class TestPLaningMatrix : MonoBehaviour {
     PlaningMatrix3 pm3;
     public Camera calCamera;
-
+    DesignContext context;
+    public SGPlaningParticleSystem particleSystem;
     public ShapeObject initShape;
     public Grammar grammar;
-
 
     public GameObject sldSiteW;
     public GameObject sldSiteH;
@@ -40,24 +41,28 @@ public class TestPLaningMatrix : MonoBehaviour {
         boundaryLine.positionCount=4;
         boundaryLine.SetWidth(3, 3);
 
+        particleSystem = new SGPlaningParticleSystem();
         siteProp = new SiteProperty();
-        UpdateSiteParam();
-        
-
 
         pm3 = new PlaningMatrix3(ref siteProp);
         pm3.camera = calCamera;
-        pm3.AddType("A", 1200, 100, 30, 1.2f);
-        pm3.AddType("B", 1200, 50, 15, 1.5f);
-        pm3.AddType("C", 800, 40, 8,1.8f);
+        pm3.AddType("A", new Vector3(45, 100, 20), 1.2f);
+        pm3.AddType("B", new Vector3(45, 60, 20), 1.6f);
+        pm3.AddType("C", new Vector3(45, 9, 20), 1.8f);
+        //pm3.AddType("A", 1200, 100, 30, 1.2f);
+        //pm3.AddType("B", 1200, 50, 15, 1.5f);
+        //pm3.AddType("C", 800, 40, 8,1.8f);
 
         pm3.genGrid();
+
+        UpdateSiteParam();
 
         AssignSliderAction(sldSiteW);
         AssignSliderAction(sldSiteH);
         AssignSliderAction(sldSitePlotRatio);
         AssignSliderAction(sldSiteCoverage);
 
+        //updateDesign();
 
     }
     private void AssignSliderAction(GameObject go)
@@ -74,12 +79,13 @@ public class TestPLaningMatrix : MonoBehaviour {
 
         UpdateSiteParam();
         pm3.genGrid();
+        updateDesign();
     }
     public void UpdateSiteParam()
     {
         float w = sldSiteW.transform.Find("Slider").GetComponent<Slider>().value;
         float h = sldSiteH.transform.Find("Slider").GetComponent<Slider>().value;
-        siteProp.sitePlotRatio = sldSitePlotRatio.transform.Find("Slider").GetComponent<Slider>().value;
+        siteProp.plotRatio = sldSitePlotRatio.transform.Find("Slider").GetComponent<Slider>().value;
 
         siteProp.siteArea = w * h;
         siteW = w;
@@ -92,7 +98,7 @@ public class TestPLaningMatrix : MonoBehaviour {
             new Vector3(-siteW/2,0,siteH/2),
         };
 
-        
+        particleSystem.boundary = boundaryPts;
         boundaryLine.SetPositions(boundaryPts);
         boundaryLine.loop = true;
 
@@ -113,20 +119,29 @@ public class TestPLaningMatrix : MonoBehaviour {
         {
             grammar = new Grammar();
             grammar.inputs.shapes.Add(initShape);
+            grammar.AddRule(new Rules.PivotTurn("A", "A", 2));
             grammar.AddRule(new Rules.DivideTo("A", new string[] { "A", "B" }, 30, 2),false);
-            grammar.AddRule(new Rules.DivideTo("A", new string[] { "A", "B" }, 60, 0), false);
+            grammar.AddRule(new Rules.DivideTo("A", new string[] { "A", "A" }, 60, 0), false);
+            grammar.AddRule(new Rules.Hide(new string[] { "B" }), false);
+            grammar.AddRule(new Rules.Extrude("A", "A", 30),false);
+            grammar.AddRule(new Rules.CreateBuilding("A",pm3,particleSystem), false);
+
         }
 
         grammar.Execute();
+        
     }
 
     // Update is called once per frame
     void Update () {
 
-	}
+        particleSystem.Update();
+        particleSystem.UpdateEntropyDisplay();
+    }
     private void OnRenderObject()
     {
-        pm3.OnRenderObjects();
+        if(pm3!=null)
+            pm3.OnRenderObjects();
     }
 
 

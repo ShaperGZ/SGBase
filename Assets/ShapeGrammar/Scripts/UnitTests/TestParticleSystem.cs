@@ -69,14 +69,14 @@ public class TestParticleSystem : MonoBehaviour {
         //g.AddRule(new Rules.DcpA("A", 9, 3));
         return so;
     }
-    Site site;
+    DesignContext designContext;
     void Start () {
         //boundary = initShape1();
         boundary = initShapeL();
         BoundingBox bbox = BoundingBox.CreateFromPoints(boundary);
         Debug.Log(bbox.Format());
 
-        site = new Site(boundary);
+        designContext = new DesignContext(boundary);
 
 
         particleSystem = new SGPlaningParticleSystem(boundary);
@@ -88,9 +88,9 @@ public class TestParticleSystem : MonoBehaviour {
             ShapeObject so = createBuilding();
             Building building = so.grammar.building;
             building.SetRefPos(so);
-            building.site = site;
+            building.site = designContext;
             
-            site.buildings.Add(building);
+            designContext.buildings.Add(building);
             particleSystem.AddRand(so);
         }
 
@@ -104,7 +104,7 @@ public class TestParticleSystem : MonoBehaviour {
             float r = 20;
             sops[i].Size = new Vector3(r, r, r);
         }
-        site.attractions.AddRange(sops);
+        designContext.attractions.AddRange(sops);
         
 	}
 	public void SetParticleSystem(SGParticleSystem ps)
@@ -115,7 +115,7 @@ public class TestParticleSystem : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         particleSystem.Update();
-        site.Invalidate();
+        designContext.Invalidate();
 	}
 
     private void OnRenderObject()

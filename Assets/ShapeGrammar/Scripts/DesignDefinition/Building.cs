@@ -25,7 +25,7 @@ public class Building {
     }
     public FloorHeight floorHeight;
     public List<Floor> floors;
-    public Site site;
+    public DesignContext site;
 
     //units
     public List<List<Meshable>> units;
@@ -191,7 +191,7 @@ public class Building {
         grammars.Add(g);
        
     }
-    public void AddToSite(Site site)
+    public void AddToSite(DesignContext site)
     {
         this.site = site;
         foreach(Grammar g in grammars)

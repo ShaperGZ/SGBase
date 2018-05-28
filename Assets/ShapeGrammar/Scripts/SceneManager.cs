@@ -129,7 +129,7 @@ public class SceneManager : MonoBehaviour {
     }
 
     public static Dictionary<Guid, Building> existingBuildings = new Dictionary<Guid, Building>();
-    public static Dictionary<Guid, Site> existingSites = new Dictionary<Guid, Site>();
+    public static Dictionary<Guid, DesignContext> existingSites = new Dictionary<Guid, DesignContext>();
     public static Dictionary<Guid, ShapeObject> existingShapes = new Dictionary<Guid, ShapeObject>();
     public static Dictionary<Guid, Grammar> existingGrammar = new Dictionary<Guid, Grammar>();
     public static void CreateShape(ShapeObject so)

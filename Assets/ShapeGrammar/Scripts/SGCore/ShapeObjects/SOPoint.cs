@@ -4,8 +4,12 @@ using UnityEngine;
 using SGCore;
 using SGGeometry;
 
-public class SOPoint : ShapeObject{
+public delegate void OnPositionChanged(Vector3 newPos);
 
+public class SOPoint : ShapeObject{
+    
+    public OnPositionChanged onPositionChanged;
+    //public SGBuilding sgbuilding;
     public float _radius = 1;
     public bool sizable = true;
     public float Radius
@@ -58,7 +62,8 @@ public class SOPoint : ShapeObject{
 
             Vector3 offset = newPos - transform.position;
             transform.position = newPos;
-
+            if(onPositionChanged!=null)
+                onPositionChanged(newPos);
             
             //if(grammar!=null && grammar.building!=null)
             //{
@@ -118,7 +123,7 @@ public class SOPoint : ShapeObject{
         bc.center = o.transform.position;
         return sop;
     }
-
+    
     private void OnRenderObject()
     {
         if (PositionOffset.magnitude > 0.1f && drawOffset)
